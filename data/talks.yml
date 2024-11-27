@@ -1,0 +1,70 @@
+- title: "Quarkus : Greener, Better, Faster, stronger!"
+  description: |
+    Quarkus n'est maintenant plus un nouveau venu dans l'écosystème java, et de plus en plus de projets l'adoptent comme base de travail,  mais peu de développeurs comprennent vraiment à quel point la magie se cache dans ses extensions.
+
+    C'est en développant l'extension [Quarkus Min.io](https://github.com/quarkiverse/quarkus-minio) que j'ai  découvert une partie de leurs capacités,  et comment elles sont en fait au coeur des promesses du framework. Leur développement est simple et permet de rendre un grand nombre de services à nos utilisateurs. Mais surtout elles permettent de ne rendre que les services dont l'utilisateur à besoin nous permettant d'économiser mémoire, cpu et de raccourcir les temps de démarrage.
+  
+    Et si vous veniez en développer une avec moi et que nous mettions en oeuvre quelques uns de ces tours de magie ?
+  
+    Vous pourriez peut être aussi aimer ça et repartir avec quelques idées !
+  slides: https://jtama.github.io/quarkus-greener-better-faster-stronger/rivieraDev/#/
+  code: https://github.com/jtama/quarkus-extension-demo
+  conferences:
+    - name: SnowCamp 2024
+    - name: Touraine Tech 2024
+    - name: RivieraDev 2024
+    - name: Bordeaux JUG
+      video: https://youtu.be/2rKAtA1u7iY?si=PrjlDAwaRTKwgznw
+    - name: Devfest Toulouse 2024
+- title: "Les super pouvoirs du package java.util.function "
+  description: |
+    Le package `java.util.function` fêtera ses 10 ans en 2024 et force est de constater que malgré son omniprésence dans nos développements, son utilisation reste probablement sous-estimé et mal comprise.  
+  
+    Avez-vous déjà utilisé ces classes comme paramètre de vos méthodes ? Avez-vous déjà utilisé leur capacité de composition ?  Ne vous êtes vous jamais dit que cet héritage douteux entre deux classes, ne vous plait pas, mais que faute de mieux, il reste là ?
+    
+    Sans pour autant abuser des concepts de programmation fonctionnelle, nous aimerions vous présenter pendant ce talk à travers de cas concrets, une utilisation plus avancée du package java.util.function.
+    
+    Fonctions anonymes, d'ordre supérieur ou encore la composition de fonctions, toutes ces notions n'auront désormais plus de secret pour vous et trouveront une place de choix dans votre boîte à outils de refactoring.
+    
+    Vous repartirez avec un dépôt git avant/après en prime !
+    Avec le merveilleux https://github.com/dlucasd[Damien Lucas,] image:https://github.com/dlucasd.png[Damien Lucas,role=avatar]
+  slides: https://jtama.github.io/les-super-pouvoirs-du-package-java.util.function/#/
+  code: https://github.com/jtama/les-super-pouvoirs-du-package-java.util.function
+  conferences:
+    - name: SnowCamp 2024
+    - name: Touraine Tech 2024
+    - name: RivieraDev 2024
+    - name: Bordeaux JUG
+      video: https://youtu.be/2rKAtA1u7iY?si=PrjlDAwaRTKwgznw
+    - name: Devfest Toulouse 2024
+- title: Alice au pays d'Opentelemetry
+  description: |
+        S'ennuyant fermement alors que sa grande soeur lisait un livre sans image ni dialogue, Alice aperçut soudain passer auprès d'elle Opentelemetry criant qu'il allait unir traces, metrics et logs.
+        En entrant derrière lui dans son terrier, elle fit une chute presque interminable qui l'emmèna dans un monde aux antipodes du sien. Elle y rencontra une galerie de personnages retors et se trouva confrontée au paradoxe, à l'absurde et au bizarre…
+
+        C'est une image très conforme à l'impression que j'ai eu en voulant mettre en place Opentelemetry sur un projet. J'étais revenu très enthousiaste d'une conférence qui me laissait présager que tout était merveilleux, mais ce ne fût pas si simple.
+
+        Je vous propose donc de suivre le cas réel de la mise en place d'Opentelemtry sur une application en service développée avec Quarkus et déployée dans un cluster K8S.
+  slides: https://jtama.github.io/alice-au-pays-d-opentelemetry/#/
+  conferences:
+    - name: BDX/IO 2023
+      video: https://youtu.be/ArjNjrsnW6A?si=TWCDg05zzdKsOr0z
+    - name: DevoxxFR 2024
+      video: https://youtu.be/0xSCUgHxZu0?si=7vJDTfZ_kBAqS3Kn
+    - name: Devfest Lille 2023
+      video: https://youtu.be/Y-13iEwlqV0?si=2UuLhH6LLQ4PEHcJ
+- title: Vous allez finir par les aimer les `Optionals`???
+  description: |
+        "Les `optional` ont débarqué en java 1.8 il y a 8 ans. Quand ils sont apparus je me souviens m'être dit :
+        
+        "Génial ! Avant on faisait _if (object != null)_, maintenant on fait _if (optional.isPresent())_ Quelle avancée 🙄 !"
+
+        Depuis j'ai eu l'occasion de les cotoyer, d'apprendre à les aimer et à les utiliser à bon escient.
+
+        Sur les projets auxquels je participe je m'aperçois qu'ils sont encore souvent mal utilisés, ou pas utiliseés quand il le faudrait.
+
+        Ensemble redécouvrons leur élégance, apprenons à maîtriser leur API et pourquoi ils sont bien mieux qu'un simple *null check* !"
+  slides: https://jtama.github.io/alice-au-pays-d-opentelemetry/#/
+  conferences:
+    - name: Touraine Tech 2023
+      video: https://youtu.be/0LVkoF5D1eE?si=9qXUQwH5mG6UQyHN

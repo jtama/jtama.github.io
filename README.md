@@ -1,10 +1,5 @@
 # roq-with-blog
 
-## Before you start !
-
-Before you start poking around, run the `setup.sh` script to customize you experience, and then remove this `README` section.
-
-
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
