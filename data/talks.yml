@@ -1,3 +1,25 @@
+- title: "OpenRewrite: Refactoring as code"
+  description: |
+    Vous êtes dans la team __Doc as code, Infrastructure as code, Ci as code__ ? La réponse à ces questions vous semble évidente.
+  
+    Les bienfaits de l'approche _"as code"_ ne sont plus à démontrer et pourtant il reste un domaine laissé pour compte.
+
+    Oui parce que si je vous pose ces questions pour vos refactorings et vos migrations, ça sera plutôt :
+  
+    Vous êtes plutôt team __chercher/remplacer__ ? __regexp__ ? __IDE click droit *rename method*__ ?
+  
+    Eh oui, les cordonniers sont toujours les plus mal chaussés, et nous continuons a écrire des guides de migrations longs comme un dimanche de pluie. Fatigué de mener des migrations JUnit4 -> JUnit 5? Spring-boot 2 -> Spring-boot 3?
+    
+    Est-ce qu’il ne serait pas temps d’entrer dans la team ___refactoring as code___?
+    
+    OpenRewrite est la boîte à outils parfaite pour écrire, versionner et partager vos refactoring. L'Ansible du refactoring.
+    
+    Ne repartez pas sans une nouvelle as corde à votre arc, ne faite plus jamais vos migrations à la main.
+  slides: https://jtama.github.io/openrewrite-refactoring-as-code/#/
+  code: https://github.com/jtama/openrewrite-refactoring-as-code
+  conferences:
+    - name: SnowCamp 2025
+    - name: Touraine Tech 2025
 - title: "Quarkus : Greener, Better, Faster, stronger!"
   description: |
     Quarkus n'est maintenant plus un nouveau venu dans l'écosystème java, et de plus en plus de projets l'adoptent comme base de travail,  mais peu de développeurs comprennent vraiment à quel point la magie se cache dans ses extensions.
@@ -55,7 +77,7 @@
       video: https://youtu.be/Y-13iEwlqV0?si=2UuLhH6LLQ4PEHcJ
 - title: Vous allez finir par les aimer les `Optionals`???
   description: |
-        "Les `optional` ont débarqué en java 1.8 il y a 8 ans. Quand ils sont apparus je me souviens m'être dit :
+        Les `optional` ont débarqué en java 1.8 il y a 8 ans. Quand ils sont apparus je me souviens m'être dit :
         
         "Génial ! Avant on faisait _if (object != null)_, maintenant on fait _if (optional.isPresent())_ Quelle avancée 🙄 !"
 
@@ -63,7 +85,7 @@
 
         Sur les projets auxquels je participe je m'aperçois qu'ils sont encore souvent mal utilisés, ou pas utiliseés quand il le faudrait.
 
-        Ensemble redécouvrons leur élégance, apprenons à maîtriser leur API et pourquoi ils sont bien mieux qu'un simple *null check* !"
+        Ensemble redécouvrons leur élégance, apprenons à maîtriser leur API et pourquoi ils sont bien mieux qu'un simple *null check* !
   slides: https://jtama.github.io/alice-au-pays-d-opentelemetry/#/
   conferences:
     - name: Touraine Tech 2023
