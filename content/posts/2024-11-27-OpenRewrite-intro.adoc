@@ -10,10 +10,9 @@ draft: true
 
 image::{site.imagesDirUrl.resolve('openrewrite/logo.svg')}[Logo d'openrewrite]
 
-[%collapsible]
-====
+icon:fa-lightbulb[]
 _Mieux vaut prévenir que guérir_, je n'utiliserai pas le mot _reusiner_, et certainement pas non plus le mot _refactoriser_. Cette note sera donc pleine d'anglicismes. La vie.
-====
+
 
 Alors comme ça vous voulez _refactor_ code ? Voici les différentes options qui s'offrent habituellement à vous (je sais, il y en a d'autres) :
 
@@ -26,19 +25,19 @@ Si vous êtes dans le cas d'un refactoring qui nécessite plus d'une étape et/o
 
 Disons que vous vouliez par exemple migrer de `JUnit 4` à `JUnit 5`, ou bien de `Spring Boot 2` à `Spring Boot 4`, ou  d'`Hibernate 4` à `Hibernate 6`, ou encore de `Java 8` à `Java 21`. Il vous faudrait pour cela :
 
-* Faire les monter de versions dans vos fichiers de configuration `Maven` ou `Gradle`
-* Changer vos imports
-* Changer vos annotations
-* Changer vos invocations de méthodes
-* Peut-être changer vous signature de méthodes
-* Changer les noms de propriété
-* Je ne sais quoi encore
+. Faire les monter de versions dans vos fichiers de configuration `Maven` ou `Gradle`
+. Changer vos imports
+. Changer vos annotations
+. Changer vos invocations de méthodes
+. Peut-être changer vous signature de méthodes
+. Changer les noms de propriété
+. Je ne sais quoi encore
 
 C'est chronophage, lourd, sujet aux erreurs et aux oublis.
 
 Mais il y a un petit nouveau dans le monde du refactoring : *OpenRewrite*.
 
-== The big picture
+== The big picture icon:fa-camera[]
 
 OpenRewrite est un outil de refactoring qui a été créé par https://www.moderne.ai[Moderne].
 
@@ -46,41 +45,229 @@ C'est un projet open source sous licence Apache 2.0, et il fait maintenant parti
 
 Il a commencé avec un fort accent sur Java (et ses fichiers de configuration : properties et yaml), mais il s'étend maintenant à d'autres langages et formats de fichiers :
 
-* Langages de programmation :
-** Java
-** Kotlin
-** Groovy
-* Formats de données :
-** XML
-** Properties
-** YAML
-** JSON
-** Protobuf
-* Outils de build :
-** Maven
-** Gradle
+* Langages de programmation : Java, Kotlin, Groovy
+* Formats de données : XML, Properties, YAML, JSON, Protobuf
+* Outils de build : Maven, Gradle
 
 Je me concentrerai uniquement sur l'écosystème Java dans cet article.
 
-== Concepts
+== Les concepts
 
 Les principaux concepts d'OpenRewrite que vous devez garder à l'esprit sont les suivants.
 
-=== _**L**ossless **S**yntax **T**ree_
+=== _Lossless Syntax Tree_
 
-Le code source que vous souhaitez consulter et transformer est rendu accessible via un *_LST_*. C'est un arbre de syntax abstrait (*AST*) contenant en plus des information de formatage. Une représentation asbtraite du code source pour le rendre plus facile  à manipuler.
+Le code source que vous souhaitez consulter et transformer est rendu accessible via un *_LST_*. C'est un arbre de syntax abstrait (*AST*) contenant en plus des information de formatage. Une représentation asbtraite du code source pour le rendre plus facile à comprendre, à interroger ou à manipuler.
 
-L'élément atomique pour effectuer le refactoring est appelé une _recette_. Elle peut avoir des pré-vérifications et une ou plusieurs transformations associées.
+=== Recette icon:fa-utensils[]
 
-Mais elle peut aussi avoir une liste de recettes qui s'appliqueront séquentiellement, et donc la façon d'implémenter un refactoring complexe est de composer des _recettes_, et à la fin, cela s'appelle aussi une recette.
+Ou _recipe_ dans la langue de Shakespear est l'élément atomique pour travailler sur le code. Elle peut contenir chacun des éléments suivants (tous étant optionnels):
+
+* Un/des paramètre(s) pour personnaliser le comportement de la recette.
+* Une liste de pré-conditions, lui permettant de savoir si elle doit traiter un fichier source.
+* Un _visitor_ qui permet d'effectuer ou non des modifications sur le code source.
+* Une liste de recettes
+
+Ce dernier point signifie que la façon d'implémenter un refactoring complexe est de composer des _recettes_, et à la fin, cela s'appelle aussi une recette.
 
 ¯\\_(ツ)_/¯ Ne blâmez pas le messager.
 
+=== Le pattern visitor icon:fa-spaghetti-monster-flying[]
 
-== Que propose-t-il ?
+Je l'ai mentionné juste au dessus, mais letraitement d'un recette passe par le pattern visitor. Chaque rencontre d'un élément du _lst_ va généré un __événement__ qui sera transmis à tous les visiteurs déclarés. Pour vous donner une idée, il y a actuellement 73 type d'événements différent associé à la _visite_ pour de code java, chacun associé à des méthodes avec des signatures différentes.
 
-OpenRewrite n'est en fait pas une seule chose, c'est un ensemble d'outils qui fonctionnent ensemble.
 
-. Le module principal, bien sûr, qui contient toute la représentation générique des langages et la logique de refactoring commune.
-. Un module pour chaque langage, avec des API et SDK dédiés pour une cible spécifique (Java, XML, Yaml, etc).
-. De nombreux modules contenant des recettes pour un sous-ensemble d'intérêt spécifique, telles que les recettes de frameworks de test, les recettes de Spring, les recettes de Quarkus, l'identification et la correction des problèmes d'analyse statique, etc.
+== Qu'y a-t-il dans la boîte icon:fa-gift[] ?
+
+OpenRewrite est plus qu'un framework monolithique. Ces différents composants sont :
+
+* Un module _core_, qui contient toute la représentation générique d'un LST et la logique de refactoring commune.
+* Un module pour chaque langage, avec des API et SDK dédiés pour une cible spécifique (Java, XML, Yaml, etc).
+* De nombreux modules contenant des recettes pour un sous-ensemble d'intérêt spécifique, telles que les recettes de frameworks de test, les recettes de Spring, les recettes de Quarkus, l'identification et la correction des problèmes d'analyse statique, etc.
+
+== Le catalogue icon:fa-book-open[]
+
+La grande puissance d'Openrewrite est la mise à disposition recette déjà disponible pour traiter un très grand nombre de cas sans que l'on ait à produire la moindre ligne de code.
+Il y a actuellement plus de 500 recettes disponibles pour Java, et il y en a probablement plus pour les autres langages et formats de fichiers.
+
+Le catalogue est disponible en ligne à l'adresse suivante : https://docs.openrewrite.org/recipes
+
+Il contient toutes les recettes produites par l'équipe de Moderne, triées par catégories, documentées et avec des exemples d'utilisation. Mais il contient également d'autres sestions intéressantes. On y trouve par exemple une liste des recettes https://docs.openrewrite.org/popular-recipe-guides[les plus populaires], comme un accélérateur de recherche, mais aussi une page dédiée https://docs.openrewrite.org/reference/community-recipes[aux recettes écrites par d'autre], comme _Apache Camel_, _AWS_, _Quarkus_, _Morphia_ et bien d'autres.
+
+== Execution d'une recette icon:fa-cogs[]
+
+Attaquons-nous à la partie la plus simple de cette article : l'exécution d'une recette. Petit prérequis: vous devez avoir `Maven` ou `Gradle` installé sur votre machine. Que vous voulier exécuter une recette qui concerne _Java_ ou _Kubernetes_, la procédure est la même. Désolé.
+
+Pour exécuter une recette, vous avez deux options.
+
+=== En modifiant vos descripteurs de build
+
+Je vais prendre l'exemple d'un projet _Maven_, mais les étapes à suivre sont les mêmes pour un projet _Gradle_.
+
+Pour commencer, vous devez ajouter le plugin `rewrite-maven-plugin` à votre fichier `pom.xml` :
+
+[source,xml]
+----
+<build>
+  <plugins>
+    <plugin><1>
+      <groupId>org.openrewrite.maven</groupId>
+      <artifactId>rewrite-maven-plugin</artifactId>
+      <version>5.46.1</version><2>
+    </plugin>
+  </plugins>
+</build>
+----
+<1> Déclaration du plugin
+<2> Adapter le numéro pour utiliser la version la plus à jour
+
+Ensuite, vous devez déclarer la recette que vous voulez exécuter. Ici par exemple la suppression de _Cobertura_ qui n'est plus compatible avec un projet _Java_ dont la version est supérieure à _Java 11_ :
+
+[source,xml]
+----
+<build>
+  <plugins>
+    <plugin>
+      <groupId>org.openrewrite.maven</groupId>
+      <artifactId>rewrite-maven-plugin</artifactId>
+      <version>5.46.1</version>
+      <configuration> <1>
+          <activeRecipes>
+            <recipe>org.openrewrite.java.migrate.cobertura.RemoveCoberturaMavenPlugin</recipe> <2>
+          </activeRecipes>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
+----
+<1> Configuration du plugin
+<2> Activation de la recette
+
+Ajout de la dépendance dans laquelle se trouve la recette (si elle n'est pas dans le module core), ce qui donne la configuration complète suivante :
+
+[source,xml]
+----
+<build>
+  <plugins>
+    <plugin>
+      <groupId>org.openrewrite.maven</groupId>
+      <artifactId>rewrite-maven-plugin</artifactId>
+      <version>5.46.1</version>
+      <configuration>
+        <activeRecipes>
+          <recipe>org.openrewrite.java.migrate.cobertura.RemoveCoberturaMavenPlugin</recipe>
+        </activeRecipes>
+      </configuration>
+      <dependencies>
+        <dependency>
+          <groupId>org.openrewrite.recipe</groupId>
+          <artifactId>rewrite-migrate-java</artifactId>
+          <version>2.30.1</version>
+        </dependency>
+      </dependencies>
+    </plugin>
+  </plugins>
+</build>
+----
+
+Pour exécuter la recette, il suffit de lancer la commande suivante :
+
+[source,console]
+----
+$ mvn rewrite:run
+----
+
+Mais on ne veut pas modifier nos fichiers de build, n'est-ce pas ? Et on ne se trouve peut-être même pas dans un projet _Maven_ ou _Gradle_.
+
+=== Sans modifier vos descripteurs de build
+
+Dans ce cas il est possible de préciser directement tout dans la ligne de commande, mais celle-ci deviendra forcément plus complexe :
+
+[source,console]
+----
+$ mvn -U org.openrewrite.maven:rewrite-maven-plugin:run	\<1>
+   -Drewrite.recipeArtifactCoordinates=org.openrewrite.recipe:rewrite-java:2.30.1 \<2>
+   -Drewrite.activeRecipes=org.openrewrite.java.migrate.cobertura.RemoveCoberturaMavenPlugin <3>
+----
+<1> Déclaration du plugin
+<2> Ajout de la dépendance de la recette
+<3> Activation de la recette
+
+== Concevoir ses propres recettes
+
+Les façons de faire décrites ci-dessus ne sont valables que si les recettes ne prennent pas de paramètres. Si telle n'est pas le cas il va falloir passer à l'étape suivante : la conception de recettes.
+
+Pour concevoir ses propres recettes, le guide de bonne pratique d'Openrewrite nous dit que tout ce qui peut être faît de manière déclarative doit l'être. Oui, je sais, c'est dur. Vous êtes des développeurs, vous voulez écrire du code. Mais c'est comme ça.
+
+Openrewrite nous offre pour cela un format de déclaration de recette en _YAML_. Oh oui youpiiiii 💃 icon:fa-dancer[].
+
+== Recette déclarative (_Declarative recipe_)
+
+Le format proposé par Openrewrite pour recette déclarative permet d'assigner une sous partie de ce qui est possible en Java. Il n'est notamment pas possible d'ajouter des paramètres, ni de renvoyer un visiteur dans une recette déclarative.
+
+Voici un exemple de recette déclarative qui supprime la dépendance `com.github.jtama:toxic` d'un projet _Maven_. La recette doit-être écrite dans un fichier s'appelant `rewrite.yml` et se trouvant soit à la racine du projet, soit dans le répertoire `META-INF/rewrite` :
+
+[source,yaml,highlight="3|4..10|11..13|14..17|23..24|26..34"]
+----
+---
+type: specs.openrewrite.org/v1beta/recipe <1>
+name: com.github.jtama.openrewrite.RemovesThatToxicDependency <2>
+displayName: Removes that toxic dependency <3>
+description: |
+  Migrate from AcmeToxic ☠️ to AcmeHealthy 😇,
+  removes dependencies and migrates code.  <4>
+tags: <5>
+  - acme
+  - toxic
+recipeList: <6>
+  - org.openrewrite.java.ChangeMethodTargetToStatic: <7>
+      methodPattern: com.github.jtama.toxic.toxic.BigDecimalUtils valueOf(..)
+      fullyQualifiedTargetTypeName: java.math.BigDecimal
+  - org.openrewrite.maven.RemoveUnusedProperties:
+      properties: .*toxic\.version
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: com.github.jtama
+      artifactId: toxic-library
+  - com.github.jtama.openrewrite.VousAllezVoirCeQueVousAllezVoir
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.github.jtama.openrewrite.VousAllezVoirCeQueVousAllezVoir
+displayName: Ça va vous épater
+description: |
+  Rech. proj. pr proj. priv. Self Dem. Brt. Poss. S’adr. à l’hô. Mart
+tags:
+  - acme
+preconditions:
+  - org.openrewrite.text.Find: <8>
+      find: com.github.jtama
+recipeList:
+  - com.github.jtama.openrewrite.RemoveFooBarUtilsIsEmpty
+  - com.github.jtama.openrewrite.RemoveFooBarUtilsStringFormatted
+  - com.github.jtama.openrewrite.UseObjectsCompare
+----
+<1> Déclaration du type de recette
+<2> Nom de la recette
+<3> Nom affiché lors de l'exécution de la recette
+<4> Description de la recette
+<5> Tags pour faciliter la recherche
+<6> Liste des recettes à exécuter
+<7> Passage de paramètre à une recette
+<8> Un exemple de précondition. icon:fa-warning[] Attention cette précondition va s'exécuter pour toutes les recettes de la liste.
+
+Comme nous l'avons vu dans l'exemple précédent, permet de construire des recettes complexes en les composant les unes avec les autres.
+
+Deux points d'attention sont à noter :
+
+. Le fichier doit s'appeler `rewrite.yml`, pas `rewrite.yaml`. 🙄
+. Pour que cette recette puisse s'exécuter, les 3 recettes filles doivent être accessibles dans le _classpath_
+
+[source, console]
+----
+$ mvn -U org.openrewrite.maven:rewrite-maven-plugin:run	\
+   -Drewrite.recipeArtifactCoordinates=com.github.jtama:toxic-library-remover:1.0.0 \
+   -Drewrite.activeRecipes=com.github.jtama.openrewrite.RemovesThatToxicDependency
+----
+
+=== Distribution
+
+Vous êtes heureux de ce que vous avez fait, vous voulez partager votre recette avec le monde entier. Pour cela, il vous suffit de créer un module _Maven_ ou _Gradle_ et de le publier. Chacun pourra dès lors utilisez à loisir votre recette.
