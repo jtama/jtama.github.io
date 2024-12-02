@@ -10,9 +10,7 @@ layout: :theme/page
 <article class="event">
     <div class="event-content">
         <h2 class="event-title">{talk.title}</h2>
-        {#asciidoc}
-            {talk.description}
-        {/asciidoc}
+        {talk.description.asciidocToHtml.raw}
         {#if talk.slides}<a href="{talk.slides}" target="_blank"><i class="fa-solid fa-film"></i> Les slides</a>{/if}
         {#if talk.code}<a href="{talk.code}" target="_blank"><i class="fa-brands fa-square-github"></i> Le dépôt git</a>{/if}
         <h3>Donné dans les conférences suivantes :</h3>
