@@ -1,10 +1,9 @@
-roqqy:
-  name: "Roqqy Balboa"
-  job: Roq Boxer
-  nickname: roqqy
-  profile: "https://github.com/quarkiverse/quarkus-roq"
-  avatar: "https://raw.githubusercontent.com/quarkiverse/quarkus-roq/refs/heads/main/blog/static/assets/images/iamroq.png"
+jtama:
+  name: Jérôme Tama
+  job: Techlead/Architecte/Compagnon du devoir
+  nickname: jtama
+  profile: https://github.com/jtama
+  avatar: https://gravatar.com/userimage/15652496/892b07cd8a843f40f4ce8b20abea25d8.jpeg?size=256
   bio: |
-    Quarkus is my go-to framework for making Java development not only faster but more fun. 
-    I’m driven by the mission to create high-performance, lightweight microservices that scale effortlessly in the cloud. 
-    With Quarkus, I can push Java to its limits, and nothing excites me more than exploring new ways to optimize and streamline applications with this amazing toolkit.
+    Passionate about Java, Quarkus, containers, and documentation as code. 
+    I mainly develop, train, and sometimes contribute to OSS projects
