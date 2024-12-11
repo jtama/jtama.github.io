@@ -1,78 +1,86 @@
 ---
 layout: :theme/post
 title: "OpenRewrite: Refactoring as code"
-description: Introduction to OpenRewrite
+description: Introduction à OpenRewrite
 image: https://images.unsplash.com/photo-1589152144820-692b189e0b34?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3
 tags: java, tools
 author: jtama
 draft: true
 ---
 
-image::{site.url('/static/assets/images/openrewrite/logo.svg')}[Logo d'openrewrite]
+image::{site.imagesDirUrl.resolve('openrewrite/logo.svg')}[Logo d'openrewrite]
 
-So you want to refactor your code ? You have a several options that you usually use:
+[%collapsible]
+====
+_Mieux vaut prévenir que guérir_, je n'utiliserai pas le mot _reusiner_, et certainement pas non plus le mot _refactoriser_. Cette note sera donc pleine d'anglicismes. La vie.
+====
 
-* To begin with, the *_in_*famous *Search and Replace*, better known as `Ctrl+F/Ctrl+R`
-* The slightly more advanced _Regular Expressions_ technic
-* But most probably, you will use your IDE's _Right Click_ menu
+Alors comme ça vous voulez _refactor_ code ? Voici les différentes options qui s'offrent habituellement à vous (je sais, il y en a d'autres) :
 
-If you're refactoring takes more than one step and/or touches many files, you are most likely to fall back to a migration guide as sad as a rainy sunday.
+* Pour commencer le fameux (ou l'infâme) *Chercher/Remplacer*, plus connu sous le nom de `Ctrl+F/Ctrl+R`.
+* La technique un peu plus avancée de l'expression régulière, aussi connue sour le nom de _Les regexps c'est illisible 15 jours après les avoir écrites_.
+* Mais de façon plus probable, vous utiliserez le menu _click droit_ de votre IDE, ou un bon paquet de raccourcis clavier, technique également connue sous le nom de _tu peux toujours courir, jamais tu reproduiras ce que j'ai fait_.
 
-Let's say you want to migrate from JUnit 4 to Junit 5, or from Spring Boot 2.3 to 2.4, or from Hibernate 4 to 5, or from Java 8 to 11, or from Guava to Java 8.
-You will have to:
+Si vous êtes dans le cas d'un refactoring qui nécessite plus d'une étape et/ou qui touche à de nombreux fichiers, vous êtes très probablement condamné à suivre un guide de migration, aussi triste qu'un long dimanche de pluie.
 
-* Bump pom or maven dependencies
-* Change imports
-* Change annotations
-* Change method signatures
-* Maybe change method invocations
-* ...
 
-This is time-consuming, cumbersome and error-prone.
+Disons que vous vouliez par exemple migrer de `JUnit 4` à `JUnit 5`, ou bien de `Spring Boot 2` à `Spring Boot 4`, ou  d'`Hibernate 4` à `Hibernate 6`, ou encore de `Java 8` à `Java 21`. Il vous faudrait pour cela :
 
-But there is a newcomer in the refactoring world: *OpenRewrite*.
+* Faire les monter de versions dans vos fichiers de configuration `Maven` ou `Gradle`
+* Changer vos imports
+* Changer vos annotations
+* Changer vos invocations de méthodes
+* Peut-être changer vous signature de méthodes
+* Changer les noms de propriété
+* Je ne sais quoi encore
+
+C'est chronophage, lourd, sujet aux erreurs et aux oublis.
+
+Mais il y a un petit nouveau dans le monde du refactoring : *OpenRewrite*.
 
 == The big picture
 
-OpenRewrite is a refactoring tool that was created by https://www.moderne.ai[Moderne].
+OpenRewrite est un outil de refactoring qui a été créé par https://www.moderne.ai[Moderne].
 
-It's an open source project licenced under the Apache 2.0 licence, and it's now part of the https://www.commonhaus.org/[Commonhaus Fondation].
+C'est un projet open source sous licence Apache 2.0, et il fait maintenant partie de la https://www.commonhaus.org/[Fondation Commonhaus] pour une gouvernance plus ouverte.
 
-It started with a strong focus on Java(and it's configuration files: properties and yaml), but it's now expanding to other languages, and file formats:
+Il a commencé avec un fort accent sur Java (et ses fichiers de configuration : properties et yaml), mais il s'étend maintenant à d'autres langages et formats de fichiers :
 
-* Programming languages:
+* Langages de programmation :
 ** Java
 ** Kotlin
 ** Groovy
-* Data formats
+* Formats de données :
 ** XML
 ** Properties
 ** YAML
 ** JSON
 ** Protobuf
-* Build tools
+* Outils de build :
 ** Maven
 ** Gradle
 
-I will only focus on the Java ecosystem in this article.
+Je me concentrerai uniquement sur l'écosystème Java dans cet article.
 
 == Concepts
 
-The main OpenRewrite concepts you have to have in mind are the following.
+Les principaux concepts d'OpenRewrite que vous devez garder à l'esprit sont les suivants.
 
-The source code you want to lookup at and transform is made accessible to you through what they call an *_LST_*. A Lossless Syntax Tree is a representation of the source code that is as close as possible to the original source code, but with a few tweaks to make it easier to manipulate
+=== _**L**ossless **S**yntax **T**ree_
 
-The atomic piece to perform refactoring is called a _recipe_. it can have prechecks and one or more related transformations.
+Le code source que vous souhaitez consulter et transformer est rendu accessible via un *_LST_*. C'est un arbre de syntax abstrait (*AST*) contenant en plus des information de formatage. Une représentation asbtraite du code source pour le rendre plus facile  à manipuler.
 
-But it can also have a list of recipes which will apply sequentially, and thus the way to implement complex refactoring, is to compose _recipes_, and in the end is also called a recipe.
+L'élément atomique pour effectuer le refactoring est appelé une _recette_. Elle peut avoir des pré-vérifications et une ou plusieurs transformations associées.
 
-¯\\_(ツ)_/¯ Don't blame the messenger.
+Mais elle peut aussi avoir une liste de recettes qui s'appliqueront séquentiellement, et donc la façon d'implémenter un refactoring complexe est de composer des _recettes_, et à la fin, cela s'appelle aussi une recette.
+
+¯\\_(ツ)_/¯ Ne blâmez pas le messager.
 
 
-== What does it offer ?
+== Que propose-t-il ?
 
-OpenRewrite isn't just one thing actually, it's a set of tools that work together.
+OpenRewrite n'est en fait pas une seule chose, c'est un ensemble d'outils qui fonctionnent ensemble.
 
-. The core module, of course, that contains all the generic language representation and common refactoring logic.
-. One module for each language, with dedicated apis and sdk for a specific target (Java, XML, Yaml, etc)
-. Many modules containing recipes for a specific subset of interest, such as testing frameworks recipes, spring recipes, quarkus recipes, static analysis issue identification and fixing, etc.
+. Le module principal, bien sûr, qui contient toute la représentation générique des langages et la logique de refactoring commune.
+. Un module pour chaque langage, avec des API et SDK dédiés pour une cible spécifique (Java, XML, Yaml, etc).
+. De nombreux modules contenant des recettes pour un sous-ensemble d'intérêt spécifique, telles que les recettes de frameworks de test, les recettes de Spring, les recettes de Quarkus, l'identification et la correction des problèmes d'analyse statique, etc.
