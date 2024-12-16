@@ -92,7 +92,7 @@ Il y a actuellement plus de 500 recettes disponibles pour Java, et il y en a pro
 
 Le catalogue est disponible en ligne à l'adresse suivante : https://docs.openrewrite.org/recipes
 
-Il contient toutes les recettes produites par l'équipe de Moderne, triées par catégories, documentées et avec des exemples d'utilisation. Mais il contient également d'autres sestions intéressantes. On y trouve par exemple une liste des recettes https://docs.openrewrite.org/popular-recipe-guides[les plus populaires], comme un accélérateur de recherche, mais aussi une page dédiée https://docs.openrewrite.org/reference/community-recipes[aux recettes écrites par d'autre], comme _Apache Camel_, _AWS_, _Quarkus_, _Morphia_ et bien d'autres.
+Il contient toutes les recettes produites par l'équipe de Moderne, triées par catégories, documentées et avec des exemples d'utilisation. Mais il contient également d'autres sections intéressantes. On y trouve par exemple une liste des recettes https://docs.openrewrite.org/popular-recipe-guides[les plus populaires], comme un accélérateur de recherche, mais aussi une page dédiée https://docs.openrewrite.org/reference/community-recipes[aux recettes écrites par d'autre], comme _Apache Camel_, _AWS_, _Quarkus_, _Morphia_ et bien d'autres.
 
 == Execution d'une recette icon:fa-cogs[]
 
@@ -271,3 +271,234 @@ $ mvn -U org.openrewrite.maven:rewrite-maven-plugin:run	\
 === Distribution
 
 Vous êtes heureux de ce que vous avez fait, vous voulez partager votre recette avec le monde entier. Pour cela, il vous suffit de créer un module _Maven_ ou _Gradle_ et de le publier. Chacun pourra dès lors utilisez à loisir votre recette.
+
+Le projet devra comprendre le fichier `rewrite.yml` et les dépendances nécessaires pour que la recette puisse s'exécuter.
+
+== On code nos recettes icon:fa-pencil[]
+
+Pour les chapitres suivants, nous partons du principe que vous voulez vous débarasser d'une dépendance toxique (com.github.jtama:toxic-library:19.666.45-RC18-FINAL) qui comprend les classes suivantes :
+
+[source,java]
+----
+package com.github.jtama.toxic;
+
+import java.util.Comparator;
+import java.util.List;
+
+public class FooBarUtils {
+
+    public String stringFormatted(String template, Object... args) {
+        return String.format(template, args);
+    }
+
+    public static boolean isEmpty(String value) {
+        if (value == null) return true;
+        return value.isEmpty();
+    }
+
+    public static <T> boolean isEmpty(List<T> value) {
+        if (value == null) return true;
+        return value.isEmpty();
+    }
+
+    public <T> int compare(T o1, T o2, Comparator<T> comparator) {
+        return comparator.compare(o1, o2);
+    }
+}
+----
+
+[source,java]
+----
+package com.github.jtama.toxic;
+
+import java.math.BigDecimal;
+
+public class BigDecimalUtils {
+
+    public static BigDecimal valueOf(Long value) {
+        return new BigDecimal(value);
+    }
+}
+----
+
+On ne se pose pas de question le code en lui même, dîtes-vous c'est axiome.
+
+Nous allons mettre en oeuvre 2 types de recettes :
+
+* `Refaster template recipes`, ou recettes _refaster_. Simples, mais limitées.
+* Full custom java recipes (Bam ! Pas un seul mot français).
+
+
+=== Refaster template recipes icon:fa-bolt[]
+
+Ces patrons de recettes utilisent https://errorprone.info/docs/refaster[_refaster_].
+
+Elles permettent de décrire simplement des templates recettes via du code. L'outillage _OpenRewrite_ génère ensuite les recettes complètes à partir de ces templates.
+
+Pour les utiliser il vous faut ajouter les dépendances suivantes à votre projet. Le code suivant est un copier/coller https://docs.openrewrite.org/authoring-recipes/refaster-recipes#update-your-dependencies[de la documentation officielle] :
+
+[%collapsible]
+[source,xml]
+----
+<dependencies>
+    <!-- Refaster style recipes need the rewrite-templating annotation processor and dependency for generated recipes -->
+    <dependency>
+        <groupId>org.openrewrite</groupId>
+        <artifactId>rewrite-templating</artifactId>
+    </dependency>
+
+    <!-- If you are developing recipes in Java, you'll need to bring in rewrite-java -->
+    <dependency>
+        <groupId>org.openrewrite</groupId>
+        <artifactId>rewrite-java</artifactId>
+    </dependency>
+
+    <!-- The `@BeforeTemplate` and `@AfterTemplate` annotations are needed for refaster style recipes -->
+    <dependency>
+        <groupId>com.google.errorprone</groupId>
+        <artifactId>error_prone_core</artifactId>
+        <version>2.19.1</version>
+        <scope>provided</scope>
+        <exclusions>
+            <exclusion>
+                <groupId>com.google.auto.service</groupId>
+                <artifactId>auto-service-annotations</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+</dependencies>
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.12.1</version>
+            <configuration>
+                <source>17</source>
+                <target>17</target>
+                <compilerArgs>
+                    <arg>-parameters</arg>
+                </compilerArgs>
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok</artifactId>
+                        <version>1.18.32</version>
+                    </path>
+                    <path>
+                        <groupId>org.openrewrite</groupId>
+                        <artifactId>rewrite-templating</artifactId>
+                        <version>1.19.1</version>
+                    </path>
+                </annotationProcessorPaths>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+----
+
+Nous pouvons maintenant créer une classe qui va supprimer les invocations des méthodes `FooBarUtils.isEmpty` :
+
+[source,java]
+----
+@RecipeDescriptor(
+            name = "Replace `FooBarUtils.isEmptyString(String)` with standard equivalent",
+            description = "Replace `FooBarUtils.isEmptyString(String)` with ternary 'value == null || value.isEmpty()'."
+    ) <1>
+    public static class RemoveStringIsEmpty {
+
+        @BeforeTemplate
+        boolean before(String value) {
+            return FooBarUtils.isEmpty(value);
+        }
+
+        @AfterTemplate
+        boolean after(String value) {
+            return value == null || value.isEmpty();
+        }
+
+    }
+----
+<1> Le nom et la description de la recette
+
+Les annotations @BeforeTemplate et @AfterTemplate permettent de marquer les méthodes qui seront utilisées pour générer respectivement le template permettant de trouver les invocations à modifier et le template permettant de générer le code de remplacement.
+
+Le deux méthodes doivent avoir le même nombre de paramètres avec les mêmes types et noms.
+
+Il est possible de grouper les templates de recettes refaster comme suit.
+
+[source,java]
+----
+package com.github.jtama.openrewrite;
+
+import com.github.jtama.toxic.FooBarUtils;
+import com.google.errorprone.refaster.annotation.AfterTemplate;
+import com.google.errorprone.refaster.annotation.BeforeTemplate;
+import org.openrewrite.java.template.RecipeDescriptor;
+
+import java.util.List;
+
+@RecipeDescriptor(
+        name = "Remove `FooBarUtils.isEmpty` methodes usages",
+        description = "Replace any usage of `FooBarUtils.isEMpty` method by standards equivalent.")
+public class RemoveFooBarUtilsIsEmpty {
+
+    @RecipeDescriptor(
+            name = "Replace `FooBarUtils.isEmptyString(String)` with standard equivalent",
+            description = "Replace `FooBarUtils.isEmptyString(String)` with ternary 'value == null || value.isEmpty()'."
+    )
+    public static class RemoveStringIsEmpty {
+
+        @BeforeTemplate
+        boolean before(String value) {
+            return FooBarUtils.isEmpty(value);
+        }
+
+        @AfterTemplate
+        boolean after(String value) {
+            return value == null || value.isEmpty();
+        }
+    }
+
+
+    @RecipeDescriptor(
+            name = "Replace `FooBarUtils.isEmptyList(List)` with standard equivalent",
+            description = "Replace `FooBarUtils.isEmptyList(List)` with ternary 'value == null || value.isEmpty()'."
+    )
+    public static class RemoveListIsEmpty {
+
+        @BeforeTemplate
+        public boolean before(List value) {
+            return FooBarUtils.isEmpty(value);
+        }
+
+        @AfterTemplate
+        public boolean after(List value) {
+            return value == null || value.isEmpty();
+        }
+    }
+}
+----
+
+Dans ce cas, la recette `RemoveFooBarUtilsIsEmptyRecipes` générée contiendra une liste de recette comprenant les recettes `RemoveStringIsEmptyRecipe` et `RemoveListIsEmptyRecipe`.
+
+
+Dans les faits ce type de recette est relativement restreint. Le code ciblé doit pouvoir s'exprimer dans le bloc d'une méthode, et il sera toujours relativement simple et non paramètrable. Il ne pourra pas non plus retenir le style de formatage du code source d'origine.
+
+
+=== Full custom java recipes icon:fa-code[]
+
+_Toujours pas de français_
+
+La recette suivante va remplacer les invocations de `FooBarUtils.stringFormatted` par des invocations de `String.format`. Celle-ci ne peut pas être réalisée avec un template, parce que le nombre de paramètres de ces méthodes ne peut être connu à l'avance.
+
+Nous allons donc devoir passer à l'étape supérieure.
+
+
+
+
+
+
+
+
