@@ -1,3 +1,19 @@
+- title: "To Gather, or not to Gather, that is the question."
+  description: |
+    Depuis l'arrivée de l'api java.util.Stream en Java 8, on entend une complainte monter de la communauté :
+    
+     _Ô rage ! Ô désespoir ! Ô vieillesse ennemie ! Les opérations finales sont ouvertes, mais pas les opérations intermédaires... N'ai-je donc tant vécu que pour cette infamie ? 😱_
+
+    Amis, réjouissez vous, car votre complainte a été entendue ! Nous voici donc tous réunis pour nous jeter corps et âmes dans cet ajout : les 🔥 java.util.stream.Gatherer 🔥.
+
+    Comment fonctionnent-ils ? Est-il simple d'en implémenter ? Et d'ailleurs pourquoi je voudrais même le faire ?
+
+    N'avez-vous jamais eu envie d'avoir un index dans vos streams, de les zipper ou de les fusionner ? C'est ce que je vous propose de mettre en oeuvre avec quelques Gatherers, du plus simple au plus complexe (tout est relatif).
+
+    Et cadeau bonux, vous repartirez avec le dépôt git contenant les sources explorées !
+  code: https://github.com/jtama/to-gather-or-not-to-gather
+  conferences:
+    - name: Touraine Tech 2025
 - title: "OpenRewrite: Refactoring as code"
   description: |
     Vous êtes dans la team __Doc as code, Infrastructure as code, Ci as code__ ? La réponse à ces questions vous semble évidente.
