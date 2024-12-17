@@ -6,7 +6,7 @@ import java.util.List;
 @DataMapping(value = "talks", parentArray = true)
 public record Talks(List<Talk> list) {
 
-    public record Talk(String title, String description, URL slides, URL code, List<Conference> conferences) {
+    public record Talk(String title, String description, URL slides, URL code, URL article, List<Conference> conferences) {
 
         @Override
         public String description() {
