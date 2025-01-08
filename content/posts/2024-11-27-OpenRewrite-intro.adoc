@@ -10,10 +10,11 @@ draft: true
 
 image::{site.imagesDirUrl.resolve('openrewrite/logo.svg')}[Logo d'openrewrite]
 
-____
-icon:fa-lightbulb[] *Mieux vaut prévenir que guérir*, je n'utiliserai pas le mot *reusiner*, et certainement pas non plus le mot *refactoriser*. Cette note sera donc pleine d'anglicismes. La vie.
+[NOTE]
+====
+*Mieux vaut prévenir que guérir*, je n'utiliserai pas le mot *reusiner*, et certainement pas non plus le mot *refactoriser*. Cette note sera donc pleine d'anglicismes. La vie.
 Il y aura aussi du code tronqué, mais pas d'inquiétude, il y a un lien à la fin de l'article vers le dépôt qui contient le code complet.
-____
+====
 
 
 Alors comme ça vous voulez _refactor_ code ? Voici les différentes options qui s'offrent habituellement à vous (je sais, il y en a d'autres) :
