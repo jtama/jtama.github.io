@@ -1,5 +1,5 @@
 ## Deploy to GH-Pages for your Quarkus Roq blog.
-name: Roq Site Deploy
+name: Deploy main to GitHub Pages
 
 on:
   push:
