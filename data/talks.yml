@@ -11,6 +11,7 @@
     N'avez-vous jamais eu envie d'avoir un index dans vos streams, de les zipper ou de les fusionner ? C'est ce que je vous propose de mettre en oeuvre avec quelques Gatherers, du plus simple au plus complexe (tout est relatif).
 
     Et cadeau bonux, vous repartirez avec le dépôt git contenant les sources explorées !
+  slides: https://jtama.github.io/to-gather-or-not-to-gather/#/
   code: https://github.com/jtama/to-gather-or-not-to-gather
   conferences:
     - name: Touraine Tech 2025
