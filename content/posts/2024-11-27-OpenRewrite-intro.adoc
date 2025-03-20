@@ -5,7 +5,6 @@ description: Introduction à OpenRewrite
 image: https://images.unsplash.com/photo-1589152144820-692b189e0b34?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3
 tags: java, tools
 author: jtama
-draft: true
 ---
 
 image::{site.imagesDirUrl.resolve('openrewrite/logo.svg')}[Logo d'openrewrite]
