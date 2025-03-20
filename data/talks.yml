@@ -13,8 +13,10 @@
     Et cadeau bonux, vous repartirez avec le dépôt git contenant les sources explorées !
   slides: https://jtama.github.io/to-gather-or-not-to-gather/#/
   code: https://github.com/jtama/to-gather-or-not-to-gather
+  post: ../posts/to-gather-or-not-to-gather-that-is-the-question/
   conferences:
     - name: Touraine Tech 2025
+      video: https://youtu.be/FsL8BPgKKPM?si=Bq53NbCjSpRlXSHn
 - title: "OpenRewrite: Refactoring as code"
   description: |
     Vous êtes dans la team __Doc as code, Infrastructure as code, Ci as code__ ? La réponse à ces questions vous semble évidente.
@@ -34,9 +36,12 @@
     Ne repartez pas sans une nouvelle as corde à votre arc, ne faite plus jamais vos migrations à la main.
   slides: https://jtama.github.io/openrewrite-refactoring-as-code/#/
   code: https://github.com/jtama/openrewrite-refactoring-as-code
+  post: https://dev.to/onepoint/openrewrite-refactoring-as-code-2p48
   conferences:
     - name: SnowCamp 2025
     - name: Touraine Tech 2025
+      video: https://youtu.be/FsL8BPgKKPM?si=Df9vknCZCh5BM4Tm
+    - name: DevoxxFR 2025
 - title: "Quarkus : Greener, Better, Faster, stronger!"
   description: |
     Quarkus n'est maintenant plus un nouveau venu dans l'écosystème java, et de plus en plus de projets l'adoptent comme base de travail,  mais peu de développeurs comprennent vraiment à quel point la magie se cache dans ses extensions.
@@ -48,6 +53,7 @@
     Vous pourriez peut être aussi aimer ça et repartir avec quelques idées !
   slides: https://jtama.github.io/quarkus-greener-better-faster-stronger/rivieraDev/#/
   code: https://github.com/jtama/quarkus-extension-demo
+  post: https://dev.to/onepoint/quarkus-greener-better-faster-stronger-55ea
   conferences:
     - name: SnowCamp 2024
     - name: Touraine Tech 2024
@@ -70,12 +76,10 @@
   slides: https://jtama.github.io/les-super-pouvoirs-du-package-java.util.function/#/
   code: https://github.com/jtama/les-super-pouvoirs-du-package-java.util.function
   conferences:
+    - name: Devfest Toulouse 2023
     - name: SnowCamp 2024
     - name: Touraine Tech 2024
     - name: RivieraDev 2024
-    - name: Bordeaux JUG
-      video: https://youtu.be/2rKAtA1u7iY?si=PrjlDAwaRTKwgznw
-    - name: Devfest Toulouse 2024
 - title: Alice au pays d'Opentelemetry
   description: |
         S'ennuyant fermement alors que sa grande soeur lisait un livre sans image ni dialogue, Alice aperçut soudain passer auprès d'elle Opentelemetry criant qu'il allait unir traces, metrics et logs.
@@ -103,7 +107,8 @@
         Sur les projets auxquels je participe je m'aperçois qu'ils sont encore souvent mal utilisés, ou pas utiliseés quand il le faudrait.
 
         Ensemble redécouvrons leur élégance, apprenons à maîtriser leur API et pourquoi ils sont bien mieux qu'un simple *null check* !
-  slides: https://jtama.github.io/alice-au-pays-d-opentelemetry/#/
+  slides: https://jtama.github.io/vous-allez-finir-par-les-aimer-les-optional/#/
+  post: https://dev.to/onepoint/vous-allez-finir-par-les-aimer-les-optionals--25pb
   conferences:
     - name: Touraine Tech 2023
       video: https://youtu.be/0LVkoF5D1eE?si=9qXUQwH5mG6UQyHN

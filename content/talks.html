@@ -13,6 +13,7 @@ layout: :theme/page
         {talk.description.asciidocToHtml.raw}
         {#if talk.slides}<a href="{talk.slides}" target="_blank"><i class="fa-solid fa-film"></i> Les slides</a>{/if}
         {#if talk.code}<a href="{talk.code}" target="_blank"><i class="fa-brands fa-square-github"></i> Le dépôt git</a>{/if}
+        {#if talk.post}<a href="{talk.post}" target="_blank"><i class="fa-solid fa-pen-fancy"></i> L'article</a>{/if}
         <h3>Donné dans les conférences suivantes :</h3>
         <ul>
         {#for conference in talk.conferences}
