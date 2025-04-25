@@ -9,7 +9,7 @@ author: jtama
 
 image::{site.imagesDirUrl.resolve('openrewrite/logo.svg')}[Logo d'openrewrite]
 
-icon:fa-lightbulb[]
+icon:lightbulb[]
 _Mieux vaut prévenir que guérir_, je n'utiliserai pas le mot _reusiner_, et certainement pas non plus le mot _refactoriser_. Cette note sera donc pleine d'anglicismes. La vie.
 
 
@@ -36,7 +36,7 @@ C'est chronophage, lourd, sujet aux erreurs et aux oublis.
 
 Mais il y a un petit nouveau dans le monde du refactoring : *OpenRewrite*.
 
-== The big picture icon:fa-camera[]
+== The big picture icon:camera[]
 
 OpenRewrite est un outil de refactoring qui a été créé par https://www.moderne.ai[Moderne].
 
@@ -58,7 +58,7 @@ Les principaux concepts d'OpenRewrite que vous devez garder à l'esprit sont les
 
 Le code source que vous souhaitez consulter et transformer est rendu accessible via un *_LST_*. C'est un arbre de syntax abstrait (*AST*) contenant en plus des information de formatage. Une représentation asbtraite du code source pour le rendre plus facile à comprendre, à interroger ou à manipuler.
 
-=== Recette icon:fa-utensils[]
+=== Recette icon:utensils[]
 
 Ou _recipe_ dans la langue de Shakespear est l'élément atomique pour travailler sur le code. Elle peut contenir chacun des éléments suivants (tous étant optionnels):
 
@@ -71,12 +71,12 @@ Ce dernier point signifie que la façon d'implémenter un refactoring complexe e
 
 ¯\\_(ツ)_/¯ Ne blâmez pas le messager.
 
-=== Le pattern visitor icon:fa-spaghetti-monster-flying[]
+=== Le pattern visitor icon:spaghetti-monster-flying[]
 
 Je l'ai mentionné juste au dessus, mais letraitement d'un recette passe par le pattern visitor. Chaque rencontre d'un élément du _lst_ va généré un __événement__ qui sera transmis à tous les visiteurs déclarés. Pour vous donner une idée, il y a actuellement 73 type d'événements différent associé à la _visite_ pour de code java, chacun associé à des méthodes avec des signatures différentes.
 
 
-== Qu'y a-t-il dans la boîte icon:fa-gift[] ?
+== Qu'y a-t-il dans la boîte icon:gift[] ?
 
 OpenRewrite est plus qu'un framework monolithique. Ces différents composants sont :
 
@@ -84,7 +84,7 @@ OpenRewrite est plus qu'un framework monolithique. Ces différents composants so
 * Un module pour chaque langage, avec des API et SDK dédiés pour une cible spécifique (Java, XML, Yaml, etc).
 * De nombreux modules contenant des recettes pour un sous-ensemble d'intérêt spécifique, telles que les recettes de frameworks de test, les recettes de Spring, les recettes de Quarkus, l'identification et la correction des problèmes d'analyse statique, etc.
 
-== Le catalogue icon:fa-book-open[]
+== Le catalogue icon:book-open[]
 
 La grande puissance d'Openrewrite est la mise à disposition recette déjà disponible pour traiter un très grand nombre de cas sans que l'on ait à produire la moindre ligne de code.
 Il y a actuellement plus de 500 recettes disponibles pour Java, et il y en a probablement plus pour les autres langages et formats de fichiers.
@@ -93,7 +93,7 @@ Le catalogue est disponible en ligne à l'adresse suivante : https://docs.openre
 
 Il contient toutes les recettes produites par l'équipe de Moderne, triées par catégories, documentées et avec des exemples d'utilisation. Mais il contient également d'autres sections intéressantes. On y trouve par exemple une liste des recettes https://docs.openrewrite.org/popular-recipe-guides[les plus populaires], comme un accélérateur de recherche, mais aussi une page dédiée https://docs.openrewrite.org/reference/community-recipes[aux recettes écrites par d'autre], comme _Apache Camel_, _AWS_, _Quarkus_, _Morphia_ et bien d'autres.
 
-== Execution d'une recette icon:fa-cogs[]
+== Execution d'une recette icon:cogs[]
 
 Attaquons-nous à la partie la plus simple de cette article : l'exécution d'une recette. Petit prérequis: vous devez avoir `Maven` ou `Gradle` installé sur votre machine. Que vous voulier exécuter une recette qui concerne _Java_ ou _Kubernetes_, la procédure est la même. Désolé.
 
@@ -198,7 +198,7 @@ Les façons de faire décrites ci-dessus ne sont valables que si les recettes ne
 
 Pour concevoir ses propres recettes, le guide de bonne pratique d'Openrewrite nous dit que tout ce qui peut être faît de manière déclarative doit l'être. Oui, je sais, c'est dur. Vous êtes des développeurs, vous voulez écrire du code. Mais c'est comme ça.
 
-Openrewrite nous offre pour cela un format de déclaration de recette en _YAML_. Oh oui youpiiiii 💃 icon:fa-dancer[].
+Openrewrite nous offre pour cela un format de déclaration de recette en _YAML_. Oh oui youpiiiii 💃 icon:dancer[].
 
 == Recette déclarative (_Declarative recipe_)
 
@@ -251,7 +251,7 @@ recipeList:
 <5> Tags pour faciliter la recherche
 <6> Liste des recettes à exécuter
 <7> Passage de paramètre à une recette
-<8> Un exemple de précondition. icon:fa-warning[] Attention cette précondition va s'exécuter pour toutes les recettes de la liste.
+<8> Un exemple de précondition. icon:warning[] Attention cette précondition va s'exécuter pour toutes les recettes de la liste.
 
 Comme nous l'avons vu dans l'exemple précédent, permet de construire des recettes complexes en les composant les unes avec les autres.
 
@@ -273,7 +273,7 @@ Vous êtes heureux de ce que vous avez fait, vous voulez partager votre recette 
 
 Le projet devra comprendre le fichier `rewrite.yml` et les dépendances nécessaires pour que la recette puisse s'exécuter.
 
-== On code nos recettes icon:fa-pencil[]
+== On code nos recettes icon:pencil[]
 
 Pour les chapitres suivants, nous partons du principe que vous voulez vous débarasser d'une dépendance toxique (com.github.jtama:toxic-library:19.666.45-RC18-FINAL) qui comprend les classes suivantes :
 
@@ -328,7 +328,7 @@ Nous allons mettre en oeuvre 2 types de recettes :
 * Full custom java recipes (Bam ! Pas un seul mot français).
 
 
-=== Refaster template recipes icon:fa-bolt[]
+=== Refaster template recipes icon:bolt[]
 
 Ces patrons de recettes utilisent https://errorprone.info/docs/refaster[_refaster_].
 
@@ -486,7 +486,7 @@ Dans ce cas, la recette `RemoveFooBarUtilsIsEmptyRecipes` générée contiendra 
 Dans les faits ce type de recette est relativement restreint. Le code ciblé doit pouvoir s'exprimer dans le bloc d'une méthode, et il sera toujours relativement simple et non paramètrable. Il ne pourra pas non plus retenir le style de formatage du code source d'origine.
 
 
-=== Full custom java recipes icon:fa-code[]
+=== Full custom java recipes icon:code[]
 
 _Toujours pas de français_
 
