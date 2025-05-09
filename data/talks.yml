@@ -72,7 +72,7 @@
     Fonctions anonymes, d'ordre supérieur ou encore la composition de fonctions, toutes ces notions n'auront désormais plus de secret pour vous et trouveront une place de choix dans votre boîte à outils de refactoring.
     
     Vous repartirez avec un dépôt git avant/après en prime !
-    Avec le merveilleux https://github.com/dlucasd[Damien Lucas,] image:https://github.com/dlucasd.png[Damien Lucas,role=avatar]
+    Avec le merveilleux https://github.com/dlucasd[Damien Lucas] image:https://github.com/dlucasd.png[Damien Lucas,role="co-author"]
   slides: https://jtama.github.io/les-super-pouvoirs-du-package-java.util.function/#/
   code: https://github.com/jtama/les-super-pouvoirs-du-package-java.util.function
   conferences:

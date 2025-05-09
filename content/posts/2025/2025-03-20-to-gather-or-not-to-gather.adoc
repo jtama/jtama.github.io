@@ -4,6 +4,7 @@ published: false
 description: "Et si on codait des Gatherer ?"
 tags: java,gatherer,preview
 image: https://images.unsplash.com/photo-1530210124550-912dc1381cb8?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3
+author: jtama
 ---
 :toc:
 :toc-title: Table des matières
@@ -224,9 +225,11 @@ public record Oeuvre(
 
 == L'interface `Gatherer`
 
-> 💡
-> Le code que nous allons regarder n'est pas le vrai code, mais une version épurée de l'interface.
-> Si vous voulez voir le vrai code, je rappelle que [tout ceci est libre d'accès](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/stream/Gatherer.java)
+[NOTE]
+====
+Le code que nous allons regarder n'est pas le vrai code, mais une version épurée de l'interface.
+Si vous voulez voir le vrai code, je rappelle que link:https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/stream/Gatherer.java[tout ceci est libre d'accès]
+====
 
 [source,java]
 ----
@@ -254,15 +257,15 @@ Le type `T` représente le type de l'objet entrant, ici `Oeuvre`. Le type `A` re
 
 Elle permet d'initialiser l'état, si besoin. Elle possède une implémentation par défaut et renvoie un `Supplier` d'état.
 
-> ⚠️
-> Attention, elle ne renvoie pas un nouvel état, mais un `Supplier` d'état.
+[CAUTION]
+Attention, elle ne renvoie pas un nouvel état, mais un `Supplier` d'état.
 
 === ② La méthode `integrator`
 
 Son rôle est de retourner un `Integrator`. C'est l'objet qui va intervenir sur le stream, et sur lequel nous allons revenir tout au long des exemples.
 
-> ⚠️
-> Attention, encore une fois, elle n'implémente pas la méthode qui agit. C'est une _factory_.
+[CAUTION]
+Attention, encore une fois, elle n'implémente pas la méthode qui agit. C'est une _factory_.
 
 === ③ La méthode `combiner`
 

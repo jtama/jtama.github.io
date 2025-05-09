@@ -1,0 +1,236 @@
+---
+title: Vous allez finir par les aimer les `Optionals` ?
+tags: java,optional
+image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/5f560xqwbgrev920b346.jpg
+series: Java
+author: jtama
+date: 2023-03-23
+---
+
+[IMPORTANT]
+Ceci est une retranscription par l'excellent link:https://dev.to/eplumas[Emmanuel Plumas] de link:https://youtu.be/0LVkoF5D1eE[la conférence que j'ai donné TouraineTech 2023], un très grand merci à lui icon:heart[role=red].
+
+D'après la documentation officielle d' _Oracle_, un optional est un conteneur d’objet qui peut (ou pas) être null.
+
+Une fois qu'on a dit ça, on n'est pas bien avancé !
+
+Si les `optionals` existent c'est avant tout pour donner une vision à un tiers, pour lui indiquer une intention, certainement pas pour éviter des `NullPointerException`.
+
+
+== Quand les utiliser ?
+
+
+On peut par exemple les utiliser quand on représente le monde extérieur. Il ne nous est en effet pas possible de le contrôler, en tout cas, nous n'en avons pas encore trouver le moyen.
+
+Ici par exemple pour représenter une configuration externe :
+
+
+[source,java]
+----
+public class LeMondeExterieurConfig {
+	private Optional<String> login;
+	private Optional<String> password;
+	private Optional<Boolean> skiplogin;
+}
+----
+
+Cela veut dire que je sais que ce qui arrive de l’extérieur peut être `null`.
+Remarquez que ces propriétés sont `private`, ce qui signifie qu'il est fort probable que je ne les laisserai pas sortir de ma classe en l'état.
+
+On verra plus tard ce que je fais de ces données.
+
+
+
+On peut également les utiliser quand on accède soi-même au monde extérieur, par exemple dans un _repository_.
+
+
+[source,java]
+----
+public interface LeMondeExterieurAcces {
+	Optional<Person> findById(UUID id);
+	List<Person> findByName(String name);
+	Person findByNir(String nir) throws NotFoundException;
+}
+----
+
+
+
+Ces trois signatures indiquent trois intentions différentes :
+
+. `findById` peut renvoyer la valeur `null` et selon les cas les traitements pourraient être différents. Si je veux en effet accéder à l'utilisateur, alors il y a un problème. Mais si je veux juste valider qu'il n'existe pas avant de l'insérer, alors la nullité n'est pas un problème.
+. `findbyName` renvoie un type `list`, aucun bonne raison de renvoyer `null`, un liste vide fera largement l'affaire.
+. `findByNir` renvoie directement un type `Person`, ici on indique clairement que le nullité  n'est pas possible, ça sera une donnée ou une exception.
+
+
+
+
+== Qu’est-ce que j'en fais et comment j’utilise les `Optionals`
+
+
+Nous allons illustrer plusieurs cas de traitement d'`optional` au travers de l'exemple d'une liste de course pour notre prochaine raclette.
+
+image::raclette_simple.png[]
+
+=== Des patates Bintjes, sinon des Amandines: `orElse()`
+
+
+[source,java]
+----
+private Optional<Patate> getBintje() { ...}
+Patate patate = getBintje().orElse(amandine);
+----
+
+
+On n'écrit surtout pas :
+
+
+[source,java]
+----
+Patate patate;
+Optional<Patate> maybePatate = getBintje()
+if (maybePatate.isPresent()){
+	patate = maybePatate.get();
+} else {
+	patate = amandine
+}
+----
+
+
+Dans le cas de la représentation de la configuration externe, il est très probable que cette méthode `orElse()` soit celle que nous aurions utilisée pour assigner des valeurs par défaut.
+
+
+
+=== Si le boucher du centre a de la charcuterie prends-en, sinon va chez le boucher beaucoup plus loin : `orElseGet()`
+
+
+[source,java]
+----
+private Optional<Charcuterie> getCharcuterieDuCentre () {....}
+private Charcuterie getCharcuteriePlusloin() {....}
+Charcuterie = getCharcuterieDuCentre().orElse(getCharcuteriePlusLoin());
+----
+
+Cela peut marcher avec un appel de méthode mais _Java_ est ainsi fait que les paramètres d'une méthode sont évalués avant d'invoquer les méthodes !
+
+On invoquera donc `getCharcuteriePlusLoin()` coûteuse en mémoire/en temps/ce qu'on veut, alors qu'on ne sait même pas si on en a besoin.
+
+La méthode `orElseGet()` qui prend en paramètre un `Supplier` nous permet de n'invoquer la méthode coûteuse qu'une fois qu'on est certain que c'est nécessaire.
+
+
+[source,java]
+----
+private Optional<Charcuterie> getCharcuterieDuCentre () {....}
+private Charcuterie getCharcuteriePlusloin() {....}
+Charcuterie = getCharcuterieDuCentre()
+		.orElseGet(() -> getCharcuteriePlusLoin());
+----
+
+Le `supplier` ne sera exécuté que s’il y en a besoin !
+
+
+=== Fromage à raclette (ou panic) : `orElseThrow*`
+
+
+
+[source,java]
+----
+Fromage morbier = maybeFromage
+    .orElseThrow(() -> new ThreadDeath());
+----
+
+
+On peut remarquer que la méthode `orElseThrow()` prend également un `supplier`.
+
+On aurait pu faire un `orElseThrow()` qui prend directement en paramètre une instance d'exception, mais leur instanciation étant coûteuse (notamment à cause du mécanisme de création de _stack trace_), les développeurs de l'API Java, ont là aussi choisi le pattern du `Supplier` pour retarder son instanciation.
+
+
+
+== D'autres utilisations avancées
+
+Désolé, je n'ai pas trouvé d'exemple dans ma liste de course..
+
+image::todolist.png[Todolist]
+
+=== Si on trouve le prix du cadeau on donne le prix, sinon on donne 20€ : `.map().orElse()`
+
+Ici, en réalité nous ne sommes pas intéressés directement par le cadeaux mais uniquement par son prix, on ne veut pas traiter un `Optional<Cadeau>`, on aimerait un Òptional<Long>...
+
+On peut utiliser la méthode `map()` afin d'effectuer cette transformation et ensuite lui appliquer un `orElse()`.
+
+
+[source,java]
+----
+Long participation = cadeau
+	.map(cadeau -> cadeau.getPrix)
+	.orElse(20L);
+----
+
+
+=== Si le caviste a du Touraine, on en prend : `ifPresent()`
+
+[source,java]
+----
+caviste.getTouraine().ifPresent(bouteille -> onEnPrend(bouteille));
+----
+
+La méthode `ifPresent()` prend en paramètre un `Consumer` !
+
+La méthode `onEnPrend()` n’a plus à se poser la question de la nullité de bouteille : on fait un appel conditionnel à la méthode !
+
+=== Si le caviste a du Touraine ET qu’il n’est pas trop cher, on en prend: `filter().ifPresent()`
+
+[source,java]
+----
+caviste.getTouraine()
+	.filter(bouteille -> pasTropCher(bouteille)
+	.ifPresent(bouteille -> onEnPrend(bouteille));
+----
+
+La méthode `filter()` prend un `Predicate`.
+
+Les plus attentif d'entre vous auront remarqué que l'API des `Optional` rappelle beaucoup celle des `Stream`
+
+=== Si le primeur est ouvert ET qu’il a de la mangue, on prend, sinon, on prend de l’ananas: `flatmap().orElse()`
+
+[source,java]
+----
+maybePrimeur /* Optional<Primeur> */
+	.map(primeur -> primeur.getMangue()); /* Optional<Optional<Fruit>> */
+
+maybePrimeur /* Optional<Primeur> */
+	.flatmap(primeur -> primeur.getMangue()) /* Optional<Fruit> */
+	.orElse(new Ananas());
+----
+
+Comme sur un stream, ces opérations ne sont pas terminales mais seront executées au moment où on fait un `get()` ou un `orElse()`.  En fait, on programme un _pipeline_ de traitement.
+
+=== Si je trouve les clefs dans mon sac je les utilise, sinon je passe par la fenêtre: `ifPresentOrElse()`
+
+[source,java]
+----
+maybeClef
+	.ifPresentOrElse(
+			clef -> utilise(cle),
+			() -> passeParLaFenetre());
+
+----
+
+Malheureusement la méthode `ifAbsent()` n’existe pas sur les `Optionals` → On est obligé de faire du `isEmpty()`ce qui sera toujours mieux que `!isPresent()`.
+
+== Ce qu'on ne veut plus jamais voir icon:skull[]...
+
+[source,java]
+----
+if(optional.isPresent()) {
+  var value = optional.get();
+}
+----
+
+[source,java]
+----
+String code = Optional.ofNullable(app.getCodeImputationDefaut())
+	.orElse("");
+----
+
+Non et non, c'est au service de fournir  la valeur par défaut...
+

@@ -1,0 +1,66 @@
+---
+title: So you wanna know where your maven dependency version comes from ?
+description: How to quickly find where your dependencied version comes from.
+tags: java,maven,dependencies
+image: https://images.unsplash.com/photo-1621294465978-6b4198a5f2f7?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3
+author: jtama
+---
+
+You work with a complex maven project. That's a fact, otherwise you wouldn't be here, searching to uncover a way out of its dependencies maze.
+
+Your project probably has a `parent`, as your `parent` might also have one.
+
+You may have `boms` in your dependency management, but your `parent` certainly has one too.
+
+You defined `properties`, and guess what, so have at least a dozen direct or transitive dependencies.
+
+So after having done your research, not relying on some gibberish from whatever AI assistant you usually use, you found out about :
+
+[source,console]
+----
+mvn dependency:tree
+----
+
+
+While that does give you a nice console output, chances are it's not enough. Again, you wouldn't be here if it was.
+
+It does tell you the dependency version used, where they were pulled out from, but why that specific version was used can still be unclear.
+
+Let's say you have a dependency somewhere in you project hierarchy defined as followed:
+
+[source,xml]
+----
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-web</artifactId>
+  <version>$\{spring.boot.version}</version>
+</dependency>
+----
+
+The property value is defined to be `3.4.4` in your parent, but the the `dependency:tree` plugin output tells you the value is `2.7.9`, and so you rightfully ask yourself, why the f... is that.
+
+Well it just happens that this can be easily solved using the `help` plugin:
+
+[source,console]
+----
+mvn help:effective-pom -Dverbose=true
+----
+
+It will spit out your pom as seen by the great `maven` itself. The only issue is that chances are great that your console buffer will be  overflowed. But we are smarter than that.
+
+[source,console]
+----
+mvn help:effective-pom -Dverbose=true | grep spring.boot.version
+----
+
+It will give you something like :
+
+[source,console]
+----
+ <spring.boot.version>2.7.9</spring.boot.version>  \
+    <!-- com.acme:your.exotic.dependency:17.0.18-RC3-FINAL-GA, line 253 -->
+
+----
+
+There! You have it! Of course your exotic dependency is the culprit. Now that you know it, it will be much easier to fix. Don't you think ?
+

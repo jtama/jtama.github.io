@@ -6,9 +6,12 @@ image: https://images.unsplash.com/photo-1589152144820-692b189e0b34?q=80&w=3474&
 tags: java, tools
 author: jtama
 ---
+:toc:
+:toc-title: Table des matières
 
-image::{site.imagesDirUrl.resolve('openrewrite/logo.svg')}[Logo d'openrewrite]
+image::{page.file('logo.svg')}[Logo d'openrewrite]
 
+\{empty} +
 icon:lightbulb[]
 _Mieux vaut prévenir que guérir_, je n'utiliserai pas le mot _reusiner_, et certainement pas non plus le mot _refactoriser_. Cette note sera donc pleine d'anglicismes. La vie.
 
@@ -184,8 +187,8 @@ Dans ce cas il est possible de préciser directement tout dans la ligne de comma
 
 [source,console]
 ----
-$ mvn -U org.openrewrite.maven:rewrite-maven-plugin:run	\<1>
-   -Drewrite.recipeArtifactCoordinates=org.openrewrite.recipe:rewrite-java:2.30.1 \<2>
+$ mvn -U org.openrewrite.maven:rewrite-maven-plugin:run	\ <1>
+   -Drewrite.recipeArtifactCoordinates=org.openrewrite.recipe:rewrite-java:2.30.1 \ <2>
    -Drewrite.activeRecipes=org.openrewrite.java.migrate.cobertura.RemoveCoberturaMavenPlugin <3>
 ----
 <1> Déclaration du plugin
