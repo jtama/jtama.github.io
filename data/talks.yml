@@ -42,6 +42,7 @@
     - name: Touraine Tech 2025
       video: https://youtu.be/FsL8BPgKKPM?si=Df9vknCZCh5BM4Tm
     - name: DevoxxFR 2025
+      video: https://youtu.be/aYHb7sLhsoQ?si=8qyI-LAf1nTnMOzp
 - title: "Quarkus : Greener, Better, Faster, stronger!"
   description: |
     Quarkus n'est maintenant plus un nouveau venu dans l'écosystème java, et de plus en plus de projets l'adoptent comme base de travail,  mais peu de développeurs comprennent vraiment à quel point la magie se cache dans ses extensions.

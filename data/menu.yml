@@ -5,6 +5,3 @@ items:
   - title: "Talks"
     path: "/talks"
     icon: "fa-solid fa-microphone"
-  - title: "About"
-    path: "/about"
-    icon: "fa fa-thumbs-up"

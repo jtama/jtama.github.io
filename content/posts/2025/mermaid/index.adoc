@@ -1,0 +1,144 @@
+---
+title: Adding mermaid to your Roq powered blog
+description: "How-to add Mermaid diagram to your Roq powered blog"
+tags: roq,swagger,qute
+image: ningyo-no-zu-bunka.jpg
+author: jtama
+---
+:toc:
+
+== Having wunderbar diagrams in your blog
+
+
+++++
+{#mermaid}
+{|
+---
+theme: base
+config:
+    sankey:
+        showValues: false
+---
+sankey-beta
+Explorer, Not read till the end, 33
+Explorer, Diagonal reading, 17
+Explorer, Will read till the end and share, 27
+Your mum, Will not read till the end and share, 10
+Your co-workers, Will not read till the end and share, 50
+Your co-workers, Not read till the end, 25
+Your co-workers, Will read till the end and share, 25
+
+Isn't this Beautiful?, Absolutely !, 100
+|}
+{/}
+
+++++
+_What will readers do about this post._
+
+
+So you have a Roq powered blog, and you want to add Mermaid to it. More generally, you want to add content to your blog that is not handled by Roq, but rather uses a third party js library.
+
+I will focus on adding Mermaid, but the same approach can be used for any other library.
+
+Simply use your imagination.
+
+[WARNING]
+====
+Roq philosophy is to generate as much as possible at build time and to do as little as possible at runtime. Alas, this is not always possible or suitable for you need. So once you have considered AND excluded build time generation, here is a workaround.
+====
+
+To add js lib to your Roq blog, you have two ways.
+
+== Adding the third party library dependency using https://mvnpm.org/[mvnpm]
+
+If the third party library you're looking for is available on https://mvnpm.org/[mvnpm], you can simply add it to your `pom.xml` file as a dependency.
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.mvnpm</groupId>
+    <artifactId>mermaid</artifactId>
+    <version>11.6.0</version>
+    <scope>provided</scope>
+    <exclusions> <1>
+        <exclusion>
+            <groupId>*</groupId>
+            <artifactId>*</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+----
+<1> We don't want any transitive dependencies, you might not have to add exlusions for other libraries
+
+== Bootstrapping the lib
+
+We need to import the lib and bootstrap it in our project, so that the web bundler can do its black magic.
+
+[source,js]
+----
+import mermaid from 'mermaid/dist/mermaid.esm.min.mjs';
+
+mermaid.initialize({ startOnLoad: true });
+----
+
+== Adding a custom tag to our blog
+
+To prevent the blog's writer from having to repeat the needed steps to generate the diagram, we will create a custom tag.
+
+In the `<root>/template/tags` folder, create a new file called `mermaid.html` and add the following code:
+
+[source,html]
+----
+<pre class="mermaid">
+    \{nested-content}
+</pre>
+----
+
+== Using the newly created tag
+
+In your blog post you can now use the new tag like this:
+
+[source,html]
+----
+\{#mermaid}
+\{|
+---
+theme: base
+config:
+    sankey:
+        showValues: false
+---
+sankey-beta
+Explorer, Not reading till the end, 33
+Explorer, Diagonaly reading, 17
+Explorer, Will read till the end and share, 27
+Your mum, Will not read till the end and share, 10
+Your co-workers, Will not read till the end and share, 50
+Your co-workers, Not reading till the end, 25
+Your co-workers, Will read till the end and share, 25
+
+Isn't this Beautiful?, Absolutely !, 100
+|}
+\{/}
+----
+
+You already saw the rendered result at the beginning of this post, but I grant you it was marvelous, so let's look <<Having wunderbar diagrams in your blog, at it again>>.
+
+== What about the other way ?
+
+You can always skip the first two steps and amend your custom tag as follows:
+
+[source,html]
+----
+<pre class="mermaid">
+    \{nested-content}
+</pre>
+<script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+</script>
+----
+
+Hope you've learned something new, and maybe given you ideas ;).
+
+More content on https://iamroq.com/[Roq's web site] and you can always follow/give a star on https://github.com/quarkiverse/quarkus-roq[the github repo].

@@ -68,6 +68,18 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.mvnpm</groupId>
+            <artifactId>mermaid</artifactId>
+            <version>11.6.0</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5</artifactId>
             <scope>test</scope>
