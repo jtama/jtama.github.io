@@ -1,0 +1,13 @@
+{@io.quarkiverse.roq.frontmatter.runtime.model.Site site}
+{@java.util.List<io.vertx.core.json.JsonObject> menu}
+
+<section class="menu">
+    <ul>
+        {#for item in menu}
+        <li>
+            <a href="{site.url(item.path)}" {#if item.target??}target="{item.target}"{/if}><h2><i class="{item.icon}"></i> {item.title}</h2></a>
+        </li>
+        {/for}
+        <li><h2 id="search-button"><i class="fa-solid fa-magnifying-glass"></i> Search</h2></li>
+    </ul>
+</section>
