@@ -1,9 +1,10 @@
 ---
-title: Adding mermaid to your Roq powered blog
+title: ROQ - Adding mermaid to your blog
 description: "How-to add Mermaid diagram to your Roq powered blog"
-tags: roq,swagger,qute
+tags: roq,*-as-code,qute
 image: ningyo-no-zu-bunka.jpg
 author: jtama
+date: 2025-05-14
 ---
 :toc:
 
