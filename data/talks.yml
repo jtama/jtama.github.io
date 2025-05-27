@@ -91,7 +91,7 @@
         Je vous propose donc de suivre le cas réel de la mise en place d'Opentelemtry sur une application en service développée avec Quarkus et déployée dans un cluster K8S.
   slides: https://jtama.github.io/alice-au-pays-d-opentelemetry/#/
   conferences:
-    - name: BDX/IO 2023
+    - name: BDX/IO 2022
       video: https://youtu.be/ArjNjrsnW6A?si=TWCDg05zzdKsOr0z
     - name: DevoxxFR 2024
       video: https://youtu.be/0xSCUgHxZu0?si=7vJDTfZ_kBAqS3Kn
