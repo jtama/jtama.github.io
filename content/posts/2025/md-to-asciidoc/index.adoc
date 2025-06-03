@@ -1,0 +1,57 @@
+---
+title: Even if you don't like MD, sometimes you don't have a choice
+description: How-to convert Markdown document to asciidoc
+tags: markdown, asciidoc, HowTos
+image: pexels-charlotte-may-5946786.jpg
+author: jtama
+---
+
+== TL;DR;
+
+[source,shell]
+----
+downdoc -o out.md README.adoc
+----
+
+
+
+icon:skull[*4] _Opinions are my own. I may have to exagerate them for obvious narrative reasons._
+
+Yes, you hate *Markdown*, and yet it seems to spread like a disease.
+
+Yet, textual format documentation is an absolute necessity for us developers, and I am sure you already have found your challenger. I am talking, of course, about *ASCIIDOC*
+
+Guess you would not be here if you hadn't.
+
+But there are some cases where you just don't have a choice and have to produce *Markdown*. 😢
+
+image::saaad.jpg[Saaad keanu crying about markdown flavours]
+
+== You are not doomed.
+
+It seems that https://github.com/mojavelinux[Dan Allen], father of https://asciidoctor.org/[Asciidoctor], agrees with you 100%.
+
+Strange, isn't it?
+
+Anyway, he also fathered https://github.com/opendevise/downdoc[Downdoc]... That name is absolutely marvelous, and here is its headline:
+
+> Rapidly down-converts AsciiDoc to Markdown.
+
+You can either use _npmx_ to use it :
+
+[source,shell]
+----
+npx downdoc -o out.md README.adoc
+----
+
+Or install it using https://mise.jdx.dev/[mise]:
+
+[source,shell]
+----
+mise use npm:downdoc@latest
+downdoc -v
+----
+
+=== All hail to _ASCIIDOC_
+
+All images are free to use.footnote:[https://www.pexels.com/photo/crop-person-squeezing-orange-in-bowl-5946786/[Charlotte May]]
