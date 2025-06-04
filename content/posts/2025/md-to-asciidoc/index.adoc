@@ -37,7 +37,7 @@ Anyway, he also fathered https://github.com/opendevise/downdoc[Downdoc]... That 
 
 > Rapidly down-converts AsciiDoc to Markdown.
 
-You can either use _npmx_ to use it :
+You can either use _npx_ to use it :
 
 [source,shell]
 ----
