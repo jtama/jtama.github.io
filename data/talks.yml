@@ -78,9 +78,14 @@
   code: https://github.com/jtama/les-super-pouvoirs-du-package-java.util.function
   conferences:
     - name: Devfest Toulouse 2023
+      video: https://www.youtube.com/watch?v=ZSXqUFvDqUg
     - name: SnowCamp 2024
     - name: Touraine Tech 2024
+      video: https://www.youtube.com/watch?v=yf6AIRfH3vs
     - name: RivieraDev 2024
+      video: https://www.youtube.com/watch?v=ka0AEKlHg9Q
+    - name: Bordeaux Jug
+      video: https://www.youtube.com/watch?v=NFGPxGpovXo
 - title: Alice au pays d'Opentelemetry
   description: |
         S'ennuyant fermement alors que sa grande soeur lisait un livre sans image ni dialogue, Alice aperçut soudain passer auprès d'elle Opentelemetry criant qu'il allait unir traces, metrics et logs.

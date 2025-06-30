@@ -16,7 +16,7 @@
         <quarkus.platform.version>3.23.0</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.3</surefire-plugin.version>
-        <quarkus-roq.version>1.5.5</quarkus-roq.version>
+        <quarkus-roq.version>1.6.2</quarkus-roq.version>
     </properties>
 
     <dependencyManagement>
@@ -59,6 +59,11 @@
         <dependency>
             <groupId>io.quarkiverse.roq</groupId>
             <artifactId>quarkus-roq-plugin-lunr</artifactId>
+            <version>${quarkus-roq.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.roq</groupId>
+            <artifactId>quarkus-roq-plugin-diagram</artifactId>
             <version>${quarkus-roq.version}</version>
         </dependency>
         <dependency>
