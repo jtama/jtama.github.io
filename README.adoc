@@ -1,0 +1,40 @@
+= roq with blog
+
+This project uses Quarkus, the Supersonic Subatomic Java Framework.
+
+If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+
+But mostly take a look at https://github.com/quarkiverse/quarkus-roq[quarkus-roq]
+
+== Running the application in dev mode
+
+You can run your application in dev mode that enables live coding using:
+
+[source,bash]
+----
+quarkus dev
+----
+
+
+[NOTE]
+====
+Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+====
+
+== Packaging and running the application
+
+The application can be packaged using:
+
+[source, bash]
+----
+QUARKUS_ROQ_GENERATOR_BATCH=true ./mvnw package quarkus:run -Dsite.future=true -Dsite.draft=true
+----
+
+=== Publishing to dev.to
+
+[source, bash]
+----
+downdoc -o post.md <link-to-blog-post>.adoc
+sed -i 's/^image:\(.*\)$/cover_image:\1 \npublished: false\nhttps://jtama.github.io/posts/TODO /' post.md
+----
+

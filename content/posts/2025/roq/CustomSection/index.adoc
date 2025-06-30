@@ -1,0 +1,224 @@
+---
+title: ROQ - Creating a custom section helper
+description: "How-to Create a custom helper to simplify repetitive or complex tasks"
+tags: roq,*-as-code,qute,HowTos
+author: jtama
+date: 2025-06-30
+image: https://images.unsplash.com/photo-1581116536636-deb9983bc943?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3
+---
+:toc:
+
+== But why?
+
+Why a car? Because it’s a custom one.
+
+Now that we have answered this crucial question, let’s push it aside and move on. icon:tractor[]
+
+== No I meant why a custom section helper?
+
+Ohhhhh. Ok.
+Sometimes you need to execute code to generate content, not just compose templating bits.
+
+To do this _Qute_ lets you define custom section helper that allows java code execution, to transform content. Here are some existing section helpers :
+
+[HORIZONTAL]
+Mardown/Asciidoc:: They will generate HTML content from doc-as-code content
+QRCode:: That will generate an image based on a given _URL_
+
+== What will we do?
+
+In this blog post, we will implement a custom section helper that allows to invoke a https://kroki.io[**Kroki.io**] server to generate images from almost every possible diagram as code language.
+
+What I'd like to have is a simple and common way for the user to let us know that he is writing a diagram would like us to generate the rendering for him.
+
+Something like :
+
+[source, asciidoc]
+....
+----
+title: A blog post with a diagram
+tags: qute,diagram
+----
+
+Here's my blog post:
+
+++++ <1>
+\{#diagram language="dbml" outputFormat="svg" alt="Blog tables diagram" width=400 height=500}
+@startuml
+!theme hacker
+
+left to right direction
+
+object users {
+id : integer
+username : varchar
+role : varchar
+created_at : timestamp
+}
+
+object posts {
+id : integer [primary key]
+title : varchar
+body : text
+user_id : integer
+status : post_status
+created_at : timestamp
+}
+
+note left: **body** => Content of the post
+
+enum post_status {
+draft
+published
+private
+}
+
+note right of post_status: **private** => visible via URL only
+
+posts::user_id --> users::id
+posts::post_status --> post_status
+
+@enduml
+\{/}
+
+++++
+....
+<1> Just to tell the asciidoc engine it's a passthrough
+
+And I would like to be automatically converted to :
+
+++++
+{#diagram language="plantuml" diagramOutputFormat="svg" alt="Blog tables diagram" width=600 height=400}
+
+@startuml
+!theme hacker
+
+left to right direction
+
+object users {
+     id : integer
+     username : varchar
+     role : varchar
+     created_at : timestamp
+}
+
+object posts {
+     id : integer [primary key]
+     title : varchar
+     body : text
+     user_id : integer
+     status : post_status
+     created_at : timestamp
+}
+
+note left: **body** => Content of the post
+
+enum post_status {
+    draft
+    published
+    private
+}
+
+note right of post_status: **private** => visible via URL only
+
+posts::user_id --> users::id
+posts::post_status --> post_status
+
+@enduml
+{/}
+
+++++
+
+== Let's implement this
+
+If you try the above code right now, Roq will bark that no section helper is available to process this section.
+
+Let's fix this. We will just create a new `SectionHelper` and its corresponding `factory`, usually declared in a single source file
+
+[source,java]
+----
+import io.quarkus.qute.EngineConfiguration;
+import io.quarkus.qute.ResultNode;
+import io.quarkus.qute.SectionHelper;
+import io.quarkus.qute.SectionHelperFactory;
+
+import java.util.List;
+import java.util.concurrent.CompletionStage;
+
+@EngineConfiguration <1>
+public class DiagramsSectionHelperFactory implements SectionHelperFactory<DiagramsSectionHelperFactory.DiagramSectionHelper> {
+
+    @Override
+    public List<String> getDefaultAliases() {
+        return List.of("diagrams"); <2>
+    }
+
+    @Override
+    public DiagramSectionHelper initialize(SectionInitContext context) { <3>
+        new DiagramSectionHelper(context);
+    }
+
+    public class DiagramSectionHelper implements SectionHelper {
+        @Override
+        public CompletionStage<ResultNode> resolve(SectionResolutionContext context) {
+            return context.execute(); <4>
+        }
+    }
+}
+
+----
+<1> This annotation tells the _**Qute**_ engine that this instance is here for him. Namely that he must register a new section helper.
+<2> Here is our new section alias
+<3> Where we can initialize an helper for this specific resolution context
+<4> Returns exactly what was given in.
+
+
+For the moment, that's not much better, the content of the section is rendered untouched, but at least, it doesn't bark at us anymore.
+
+I will spare you the **Kroki.io** client implementation details, but let's just say we have the following interface:
+
+[source,java]
+----
+public interface DiagramConverter {
+
+    String encode(String diagramSource, DiagramParams params); <1>
+
+    record DiagramParams(String diagramLanguage, String alt, Integer width, Integer height, DiagramConverter.DiagramOutputFormat diagramOutputFormat) {
+
+        }
+}
+----
+<1> Generates the needed `HTML` code to display the diagram using https://en.wikipedia.org/wiki/Data_URI_scheme[the data uri scheme]
+
+=== Let's dive a bit more
+
+They are a few more methods available in the `DiagramsSectionHelperFactory`. Let's take a closer look at the `initialize` one.
+For the sake of brevity, the code pretends there is only the single _language_ parameter to deal with  :
+
+[source,java]
+----
+public class DiagramsSectionHelperFactory implements SectionHelperFactory<DiagramsSectionHelperFactory.DiagramSectionHelper> {
+
+    private DiagramConverter converter;
+
+    //more code here
+
+    @Override
+    public DiagramSectionHelper initialize(SectionInitContext context) {
+        String diagramLanguage = context.getParameter("language"); <1>
+        new DiagramSectionHelper(language, converter);
+    }
+
+    //and more here
+}
+----
+<1> Gets the language param value. Be aware that it will always be a `String`, so you may have to do conversions if needed
+
+[IMPORTANT]
+====
+Should you need to use expressions instead of literals as value, you would need a more convoluted path. That would not bite you though. Let me know if you are interested.
+====
+
+== That's it we are done!
+
+Adding a new `SectionHelper` is not hard. Of course this sample is naïve, and the complexity hidden in the converter. But I am sure you can foresee useful use cases for them.
