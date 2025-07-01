@@ -5,6 +5,7 @@ tags: roq,*-as-code,qute,HowTos
 author: jtama
 date: 2025-06-30
 image: https://images.unsplash.com/photo-1581116536636-deb9983bc943?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3
+serie: ROQ
 ---
 :toc:
 
@@ -29,7 +30,7 @@ QRCode:: That will generate an image based on a given _URL_
 
 In this blog post, we will implement a custom section helper that allows to invoke a https://kroki.io[**Kroki.io**] server to generate images from almost every possible diagram as code language.
 
-What I'd like to have is a simple and common way for the user to let us know that he is writing a diagram would like us to generate the rendering for him.
+What I'd like to have is a simple and common way for the user to let us know that he is writing a diagram and would like us to generate the rendering for him.
 
 Something like :
 
@@ -221,4 +222,8 @@ Should you need to use expressions instead of literals as value, you would need 
 
 == That's it we are done!
 
-Adding a new `SectionHelper` is not hard. Of course this sample is naïve, and the complexity hidden in the converter. But I am sure you can foresee useful use cases for them.
+Adding a new `SectionHelper` is not hard. Of course this sample is naive, and the complexity hidden in the converter. But I am sure you can foresee useful use cases for them. Everything I've just shown is available with https://quarkus.io[_Quarkus_] and https://quarkus.io/guides/qute[_Qute_] only.
+
+== Want to dig a bit more ?
+
+You can first check https://iamroq.com/[I am Roq] which is already full of insights or even take a look at the https://github.com/quarkiverse/quarkus-roq[QRCode plugin] in the github repository
