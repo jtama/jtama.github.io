@@ -5,6 +5,7 @@ tags: roq,*-as-code,qute, HowTos
 image: ningyo-no-zu-bunka.jpg
 author: jtama
 date: 2025-05-14
+serie: ROQ
 ---
 :toc:
 
