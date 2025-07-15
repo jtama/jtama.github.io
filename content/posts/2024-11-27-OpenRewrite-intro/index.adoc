@@ -493,9 +493,204 @@ Dans les faits ce type de recette est relativement restreint. Le code ciblé doi
 
 _Toujours pas de français_
 
-La recette suivante va remplacer les invocations de `FooBarUtils.stringFormatted` par des invocations de `String.format`. Celle-ci ne peut pas être réalisée avec un template, parce que le nombre de paramètres de ces méthodes ne peut être connu à l'avance.
+La recette suivante va remplacer les invocations de `FooBarUtils.stringFormatted(String, Object varargs)` par des invocations de `String.format(Object varargs)`. Celle-ci ne peut pas être réalisée avec un template, parce que le nombre de paramètres de ces méthodes ne peut être connu à l’avance.
 
-Nous allons donc devoir passer à l'étape supérieure.
+Nous allons donc devoir passer à l’étape supérieure.
+
+Toute recette doit étendre la classe `org.openrewrite.Recipe`. Nous allons la construire petit à petit.
+
+[source,java]
+----
+import ... <1>
+
+public class RemoveFooBarUtilsStringFormatted extends Recipe {
+
+    @Override
+    public String getDisplayName() { <2>
+        return "Remove `FooBarUtils.stringFormatted`";
+    }
+
+    @Override
+    public String getDescription() { <3>
+        return "Replace any usage of `FooBarUtils.stringFormatted` with `String.formatted` method.";
+    }
+}
+----
+<1> Il y a évidemment beaucoup d’imports...
+<2> Le nom affiché lors de l’exécution de la recette
+<3> La description de la recette. Celle-ci DOIT finir par un point
+
+Ajoutons maintenant la méthode qui retourne le visiteur.
+
+[source,java,linenums]
+----
+import ...
+
+public class RemoveFooBarUtilsStringFormatted extends Recipe {
+
+    @Override
+    public String getDisplayName() { ... }
+
+    @Override
+    public String getDescription() { ...}
+
+    @Override
+    public TreeVisitor<?, ExecutionContext> getVisitor() {
+        return new Preconditions.Check(
+                new UsesType<>("com.github.jtama.toxic.FooBarUtils", true),<1>
+                new ToStringFormattedVisitor());<2>
+    }
+}
+----
+<1> La classe `Preconditions.Check` étend la classe `TreeVisitor` et permet de vérifier si une condition est remplie avant de lancer le visiteur. Ici, je valide que le type `com.github.jtama.toxic.FooBarUtils` est utilisé par une classe avant même de la _visiter_
+<2> La classe `ToStringFormattedVisitor` que nous allons créer pour effectuer les modifications sur le code source.
+
+Il est maintenant temps de créer la classe `ToStringFormattedVisitor` qui va effectuer les modifications sur le code source.
+
+[source,java]
+----
+private static class ToStringFormattedVisitor extends JavaIsoVisitor<ExecutionContext> { <1>
+
+        private final MethodMatcher toxicStringFormatted = new MethodMatcher("com.github.jtama.toxic.FooBarUtils stringFormatted(String,..)"); <2>
+        private final JavaTemplate stringFormatted = JavaTemplate.builder("#\{any(java.lang.String)}.formatted()").build(); <3>
+}
+----
+<1> Ce visiteur va étendre la classe `JavaIsoVisitor` qui va nous fournir tous les points d’extension pour du code `java`, c’est une bonne base pour tout refactoring java.
+<2> Le `MethodMatcher` va permettre de matcher les invocations de la méthode `FooBarUtils#stringFormatted`. Ici, il ne s’agit pas d’une simple expression régulière. Le framework va faire des comparaisons au niveau sémantique.
+<3> Le `JavaTemplate` va permettre de générer l’invocation attendue.
+
+Il est en effet possible de créer des éléments de source programmatiquement, mais créer de l'**AST** à la main est long et sujet à erreur, c’est possible, mais à vos risques et périls. Il est donc fortement déconseillé de le faire. Dans notre cas, je crée le template d’invocation minimal d’une méthode pour pouvoir le modifier ensuite.
+
+Comme je veux remplacer une invocation de méthode par une autre, je vais surcharger la méthode `JavaIsoVisitor#visitMethodInvocation`.
+
+Commençons petit.
+
+[source,java]
+----
+private static class ToStringFormattedVisitor extends JavaIsoVisitor<ExecutionContext> {
+
+    @Override
+    public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
+        J.MethodInvocation methodInvocation = super.visitMethodInvocation(method, ctx);
+        if (!toxicStringFormatted.matches(methodInvocation)) {
+            return methodInvocation;
+        }
+        maybeRemoveImport("com.github.jtama.toxic.FooBarUtils");
+        return methodInvocation;
+    }
+}
+----
+
+Le premier paramètre représente l’invocation de méthode courante. Nous commençons par laisser le `JavaIsoVisitor` faire son travail. Si l’invocation en cours ne correspond pas à ce que nous voulons modifier, nous la retournons sans faire de modification aucune.
+
+Sinon, c’est le début de l’action. Tout d’abord, nous utilisons une méthode utilitaire fournie par la classe `JavaVisitor` qui nous permet de dire que si l’import `com.github.jtama.toxic.FooBarUtils` n’est plus utile, il peut être supprimé.
+
+Et maintenant, nous allons générer le code  voulu.
+
+[source,java]
+----
+private static class ToStringFormattedVisitor extends JavaIsoVisitor<ExecutionContext> {
+
+    @Override
+    public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
+
+        List<Expression> arguments = methodInvocation.getArguments();
+        J.MethodInvocation mi = stringFormatted.apply(
+                getCursor(),
+                methodInvocation.getCoordinates().replace(),
+                arguments.get(0));
+        mi = mi.withArguments(ListUtils.mapFirst(
+                arguments.subList(1, arguments.size()),
+                expression -> expression.withPrefix(Space.EMPTY)));
+        return mi;
+    }
+}
+----
+
+Je commence par capter la liste des arguments de l’invocation de la méthode `FooBarUtils#stringFormatted`. Je vais ensuite appliquer le template java avec le premier argument: c’est l’instance de `String` qui contient le template de formattage.
+
+Le premier argument, le _curseur_, peut-être vu comme un pointeur vers le code en cours de traitement dans l’arbre. Le deuxième argument, les _coordonnées_ permettent d’indiquer si on veut remplacer le code, en ajouter avant ou après.
+
+Enfin, je complète l’invocation de méthode en lui passant la liste des arguments restants. J’apporte néanmoins une petite modification, j’enlève tout espace au premier argument (c’est plus joli 😇).
+
+== Tester ses recettes 🧪
+
+Le framework Openrewrite nous offre tout le nécessaire pour tester nos recettes. Parmi les bonnes pratiques d’écriture que je n’ai pas suivies dans cet article, il est d’ailleurs précisé qu’une fois le squelette de la recette écrit, il est préférable de commencer par écrire le test. Oui, on parle bien **Test Driven Development Refactoring As Code - TDDRAC**.
+
+Les classes de tests doivent implémenter l’interface `RewriteTest`. Et c’est tout. Il existe une méthode `default` que l’on peut surcharger et qui est l’équivalent d’un `beforeEach`.
+
+[source,java]
+----
+class RemoveFooBarUtilsStringFormattedTest implements RewriteTest {
+
+    @Override
+    public void defaults(RecipeSpec spec) {
+        spec.recipe(new RemoveFooBarUtilsStringFormatted()) <1>
+          .parser(JavaParser.fromJavaVersion() <2>
+              .logCompilationWarningsAndErrors(true)
+              .classpath("toxic-library") <3>
+           );
+    }
+}
+----
+<1> La recette que je veux exécuter
+<2> La version de Java inférée à partir de la configuration du projet
+<3> J’ajoute la dépendance `toxic-library` au classpath du parser du test.
+
+Et le code du test en lui-même est si clair, qu’il peut servir à documenter l’intention de la recette.
+
+[source,java]
+----
+@Test
+void removeStringFormattedInvocation() {
+    rewriteRun(
+      //language=java <1>
+      java(
+            """
+          import com.github.jtama.toxic.FooBarUtils;
+
+          public class FullDriftCar {
+
+              public String foo() {
+                  return new FooBarUtils().stringFormatted("Hello %s %s %s", 2L,
+                     "tutu" +
+                     "tata",
+                     this.getClass()
+                          .getName());
+              }
+          }
+          """,
+        """
+          public class FullDriftCar {
+
+              public String foo() {
+                  return "Hello %s %s %s".formatted(2L,
+                     "tutu" +
+                     "tata",
+                     this.getClass()
+                          .getName());
+              }
+          }
+          """));
+}
+----
+<1> Pour aider votre IDE avec la coloration syntaxique
+
+La méthode `java` prend deux paramètres, le code sur lequel on va exécuter la recette, et celui qui doit être produit.
+
+Comme vous le voyez, rédiger les tests ne pose aucune complexité. Et si certain cas sont un peu plus complexes, avec de la persévérance on y arrive.
+
+== Conclusion
+
+Il est temps de s’arrêter, et même si je n’ai fait que gratter la surface, j’espère vous avoir donné l’envie de prendre votre pelle pour aller plus loin.
+
+Comme toujours en informatique, OpenRewrite n’est pas la solution à tous les refactorings, et il serait très certainement exagéré de l’utiliser pour renommer une méthode d’une classe non distribuée à des tiers...
+
+Mais pour des migrations, du code framework, ou n’importe quel code distribué, il sera certainement votre meilleur ami, et surtout celui de vos consommateurs.
+
+== Le dépôt
+
+Vous pouvez retrouver le code complet de cet article sur le dépôt https://github.com/jtama/openrewrite-refactoring-as-code[Openrewrite: Refactoring as Code]
 
 
 
