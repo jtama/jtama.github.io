@@ -1,0 +1,636 @@
+---
+title: De la Programmation Orientée Objet vers la Programmation Orientée Données - Un Guide Pratique
+description: Fatiguée de la POO ? Passez à la DOP !
+tags: java, data-oriented-programming, records, sealed-interfaces, pattern-matching
+image: https://images.unsplash.com/photo-1470342495351-a5f90c5011cd?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3
+author: jtama
+date: 2025-07-24
+---
+:toc:
+:toc-title: Table des matières
+
+== Introduction
+
+La programmation orientée données (Data-Oriented Programming) représente un paradigme émergent qui privilégie la manipulation des données plutôt que l'encapsulation des comportements. Ce guide pratique explore les étapes clés pour transformer du code Java traditionnel orienté objet vers une approche orientée données, en s'appuyant sur l'exemple concret du dépôt https://github.com/jtama/crazy-data-oriented-programming.
+
+
+Le dépôt `crazy-data-oriented-programming` illustre cette transformation à travers l'exemple d'un système de cartes à jouer. La branche `main` présente une implémentation orientée objet classique, tandis que la branche `expected` montre l'évolution vers une approche orientée données utilisant les fonctionnalités modernes de Java.
+
+Il a été pensé pour être utilisé comme kata, donc si vous vous sentez de l'animer en équipe, ne vous privez pas.
+
+Il va sans dire que les exemples sont triviaux, et que pour ce cas précis un autre design aurait certainement été plus simple. C'est un exercice de style.
+
+== Présentation
+
+Oui, parce qu'avant de tout retaper, on va peut-être apprendre à se connaître non ?
+
+=== Les classes
+
+Un petit diagramme pour commencer :
+
+{#diagram asciidoc=true language="plantuml" alt="Diagramme de classes" width=500 height=500 diagramOutputFormat="svg"}
+@startuml
+
+interface PlayingCard {
++ index() : Integer
++ equals(Object) : boolean
++ hashCode() : int
++ toString() : String
+}
+
+class SuitCard {
+- color : Color
+- index : Integer
+- face : Face
+--
++ face() : Face
++ color() : Color
++ index() : Integer
+}
+
+class TrumpCard {
+- index : Integer
+--
++ index() : Integer
+}
+
+enum Face {
+JACK
+KNIGHT
+QUEEN
+KING
+--
+- displayName : String
+--
++ displayName() : String
+}
+
+enum Color {
+SPADES
+HEARTS
+DIAMONDS
+CLUBS
+--
+- symbol : String
+--
++ getSymbol() : String
++ name() : String
+}
+
+class AdviceGiver {
++ \{static} advices(List<PlayingCard>) : String
++ \{static} advice(PlayingCard) : String
+- \{static} getOrdinal(int) : String
+}
+
+PlayingCard <|.. SuitCard : implements
+PlayingCard <|.. TrumpCard : implements
+SuitCard --> Color : has
+SuitCard --> Face : has (optional)
+AdviceGiver ..> PlayingCard : uses
+AdviceGiver ..> SuitCard : uses
+
+note right of SuitCard : Classe avec validation\ndans le constructeur\nFace optionnelle selon index
+
+note right of PlayingCard : Interface définissant\nle contrat pour\ntoutes les cartes
+
+@enduml
+{/diagram}
+
+Nous avons donc une hiérarchie d'objets pour représenter le jeu de carte, c'est un jeu de tarot au cas où ne l'auriez pas deviné, et une classe `AdviceGiver` qui vous donne son avis sur vos cartes.
+
+Pas de troll ici, un atout se dit bien _trump_ en anglais. ¯\\_(ツ)_/¯
+
+=== Le code, le code, le code
+
+Ici, ne regardons que le code intéressant (hum) de la class `AdviceGiver`
+
+[source,java]
+----
+public static String advice(PlayingCard playingCard) {
+    if (playingCard instanceof SuitCard) { <1>
+        SuitCard suitCard = (SuitCard) playingCard; <2>
+        if (null != suitCard.face()) { <3>
+            return "The" + suitCard.face().displayName() +
+                    " of " +
+                    suitCard.color().name().toLowerCase() + "(" + suitCard.color().getSymbol() + ")" +
+                    " is strong";
+        }
+
+        switch (playingCard.index()) { <4>
+            case 1:
+                return "The first of " + suitCard.color().name().toLowerCase() + "(" + suitCard.color().getSymbol() + ") is very weak";
+            case 2:
+                return "The second of " + suitCard.color().name().toLowerCase() + "(" + suitCard.color().getSymbol() + ") is very weak";
+            case 3:
+                return "The third of " + suitCard.color().name().toLowerCase() + "(" + suitCard.color().getSymbol() + ") is very weak";
+            case 4:
+            case 5:
+            case 6:
+                return "The " + suitCard.index() + "th of " + suitCard.color().name().toLowerCase() + "(" + suitCard.color().getSymbol() + ") is still weak";
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+                return "The" + suitCard.index() + "th of " + suitCard.color().name().toLowerCase() + "(" + suitCard.color().getSymbol() + ") may win you a hand";
+            default:
+                throw new IllegalStateException("Unexpected value: " + playingCard);
+        }
+    }
+    return "The trump n°" + playingCard.index() + " is strong"; <5>
+}
+----
+<1> Si la carte est de type classique
+<2> Alors on la _cast_
+<3> Si ce n'est pas une figure
+<4> Sinon, en fonction de son idex
+<4> Sinon, c'est forcément que c'est un atout. Non ?
+
+"Ah, mais attention, ici on joue à la galloise, avec des Jokers ! Tout de suite, c'est un peu plus drôle."
+-- Perceval
+
+\{empty} +
+
+*_"Ahh mais bien sûr, on va ajouter ça."_* vous dîtes vous. Vous devez donc ajouter un nouveau type de carte, et surtout, bien faire attention, parce que votre méthode `advice` est maintenant toute pétée...
+
+_Ça serait teeeeellement bien si le compilateur pouvait nous guider..._
+
+== Étape 1 : Les classes scellées
+
+Depuis Java 17, tels les dieux qui scellèrent Excalibur dans la roche, nous pouvons figer nos hierarchies de classes. On espère juste qu'aucun hacker répondant au doux nom d'Arthur viendra faire son malin. Mais bon, je m'égare.
+
+Les classes et interfaces scellées, _sealed_ en bon anglais, permette de limiter les implémentations possibles à un ensemble fini de classes. Cet ensemble est renforcé à la compilation.
+
+=== Avant : Interface Simple
+
+[source,java]
+----
+public interface PlayingCard {
+    Integer index();
+}
+----
+
+=== Après : Interface Scellée (Sealed Interface)
+
+[source,java]
+----
+public sealed interface PlayingCard permits SuitCard, TrumpCard {
+    Integer index();
+}
+----
+
+2 nouveaux mots réservés introduits ici, `sealed`, bon voilà, on a compris, et `permits` qui permet de lister les implémentations autorisées.
+
+On peut permettre 3 types d'enfants d'une classe/interface scellée :
+
+* Une classe/interface scellée
+* Une classe `final`
+* Un record, qui est par construction `final`
+
+Pour résumer, la hiérarchie d'objets d'une classe/interface scellée est finie et connue à la compilation.
+
+== Étape 2 : Restructuration de la Hiérarchie
+
+=== Avant : Classe Concrète Complexe
+
+[source,java]
+----
+public class SuitCard implements PlayingCard {
+    private final Color color;
+    private final Integer index;
+    private final Face face;
+
+    public SuitCard(Color color, Integer index, Face face) {
+        // Validation complexe avec logique conditionnelle
+        if (color == null)
+            throw new IllegalArgumentException("Color must not be null.");
+        if (index == null)
+            throw new IllegalArgumentException("Index must not be null.");
+        if (index < 1)
+            throw new IndexOutOfBoundsException("Index must be positive.");
+        if (index > 15)
+            throw new IndexOutOfBoundsException("Index must be lesser than 15.");
+        if (index > 10 && face == null)
+            throw new IllegalArgumentException("Face must not be null for index greater than 10.");
+        if (index < 11 && face != null)
+            throw new IllegalArgumentException("Face must be null for index lesser than 11.");
+
+        this.color = color;
+        this.index = index;
+        this.face = face;
+    }
+
+    // Getters, equals, hashCode...
+}
+----
+
+Dans cet exemple, il n'y a qu'une classe pour représenter une carte de couleur, et l'énumération des figures, trop simpliste, nous impose des contrôles complexes. Vous remarquerez que ces contrôles ne sont même pas exhaustif, puisque nous ne validons pas la correspondance entre les figures et les index.
+
+=== Évolution de l'Enum Face
+
+Une énumération n'est pas limité à une liste idiote de constante. Elle peut avoir des attributs et des méthodes. Ici, nous allons juste ajouter un index à l'énumération des figures, ce qui va nous permettre de simplifier le constructeur des cartes ET augmenter le contrôle.
+
+[source,java]
+----
+public enum Face {
+    JACK("Jack", 11),
+    KNIGTH("Knight", 12),
+    QUEEN("Queen", 13),
+    KING("King", 14);
+
+    private final String displayName;
+    private final int index;
+
+    Face(String displayName, int index) {
+        this.displayName = displayName;
+        this.index = index;
+    }
+
+    public String displayName() {
+        return displayName;
+    }
+
+    public int index() {
+        return index;
+    }
+}
+----
+
+=== Spécialisation
+
+Ici, nous séparons les cartes de couleur avec et sans figure. Encore une fois pour permettre au compilateur de jouer son rôle de garde-fou, plutôt que de devoir l'implémenter nous même.
+
+En effet, chaque type encapsule ici sa propre logique et les contraintes sont exprimées par la hiérarchie de types.
+
+[source,java]
+----
+public sealed interface SuitCard extends PlayingCard permits NumberSuitCard, RoyalSuitCard {
+    Color color();
+}
+----
+
+{#diagram asciidoc=true language="plantuml" alt="Diagramme de classes" width=500 height=500 diagramOutputFormat="svg"}
+@startuml
+
+interface PlayingCard {
++ index() : Integer
++ equals(Object) : boolean
++ hashCode() : int
++ toString() : String
+}
+
+interface SuitCard {
+--
++ color() : Color
+}
+
+class TrumpCard {
+- index : Integer
+--
++ index() : Integer
+}
+
+class NumberSuitCard {
+- color : Color
+- index : Integer
+--
++ index() : Integer
++ color() : Color
+}
+
+class RoyalSuitCard {
+- color : Color
+- face : Face
+--
++ index() : Integer
++ color() : Color
++ face() : Face
+}
+
+
+enum Face {
+JACK(11)
+KNIGTH(12)
+QUEEN(13)
+KING(14)
+--
+- displayName : String
+- index: Integer
+--
++ displayName() : String
++ index()
+}
+
+PlayingCard <|.. SuitCard : extends
+SuitCard <|.. RoyalSuitCard : implements
+SuitCard <|.. NumberSuitCard : implements
+PlayingCard <|.. TrumpCard : implements
+SuitCard --> Color : has
+RoyalSuitCard --> Face : has
+
+note left of RoyalSuitCard : La méthode index est déléguée à l'énumération `Face`
+
+@enduml
+{/diagram}
+
+== Étape 3 : Utilisation de `Records`
+
+Les `record` ont été ajouté à Java dans la version 14. Ils ont les caractéristiques suivantes :
+
+* Leurs propriétés sont immutables, elles ne peuvent en tout cas pas être réaffectées.
+* Ils sont `final` par constructions.
+* Leurs méthodes `toString`, `equals` et `hashCode` sont automatiquements générées à partir de leurs propriétés.
+
+=== Cartes Numériques
+
+[source,java]
+----
+public record NumberSuitCard(Color color, Integer index) implements SuitCard {
+    public NumberSuitCard {
+        Objects.requireNonNull(color, "Color cannot be null");
+        Objects.requireNonNull(index, "Index cannot be null");
+        if(index < 1 || index > 10){
+            throw new IllegalArgumentException("Index must be between 1 and 10 included");
+        }
+    }
+}
+----
+
+Les méthodes `color()` et `index()` sont générés par java directement.
+
+=== Cartes Royales
+
+[source,java]
+----
+public record RoyalSuitCard(Color color, Face face) implements SuitCard {
+    public RoyalSuitCard {
+        Objects.requireNonNull(color, "Color cannot be null");
+        Objects.requireNonNull(face, "Face cannot be null");
+    }
+
+    @Override
+    public Integer index() {
+        return face.index();
+    }
+}
+----
+
+Les méthodes `color()` et `face()` sont générés par java directement, et il ne nous reste plus qu'à implémenter la méthode `index`
+
+=== Cartes Trump
+
+[source,java]
+----
+public record TrumpCard(Integer index) implements PlayingCard {
+    public TrumpCard {
+        if (index == null || index < 0 || index > 22)
+            throw new IndexOutOfBoundsException("Index must be positive and lesser than 22.");
+    }
+}
+----
+
+
+=== Concepts clés :
+
+* **Records** : Réduisent drastiquement le code boilerplate (environ une trentaine de ligne par classe dans notre cas)
+* **Constructeur compact** : Validation des données à la construction
+* **Immutabilité** : Les données sont immuables par défaut, ou pour être plus précis, les attributs sont `final`.
+
+
+== Étape 4 : Simplification du traitement avec Pattern Matching
+
+Maintenant que nous avons un arbre hiérarchique satisfaisant, penchons-nous sur le traitement.
+
+=== Avant : Logique Procédurale Complexe
+
+Pour rappel :
+
+[%collapsible]
+====
+[source,java]
+----
+public class PrettyPrinter {
+    public static String advice(PlayingCard playingCard) {
+        if (playingCard instanceof TrumpCard) {
+            TrumpCard trump = (TrumpCard) playingCard;
+            return "The trump n°%s is strong".formatted(trump.index());
+        } else if (playingCard instanceof SuitCard) {
+            SuitCard suit = (SuitCard) playingCard;
+            if (suit.face() == null) {
+                // Logique pour cartes numériques
+                if (suit.index() == 1) {
+                    return "The first of %s(%s) is very weak".formatted(
+                        suit.color().name().toLowerCase(),
+                        suit.color().getSymbol());
+                }
+                // ... autres conditions
+            } else {
+                // Logique pour cartes royales
+                return "The %s of %s(%s) is strong".formatted(
+                    suit.face().displayName(),
+                    suit.color().name().toLowerCase(),
+                    suit.color().getSymbol());
+            }
+        }
+        return "";
+    }
+}
+----
+====
+
+=== Pattern Matching - Step by step
+
+==== Better `instanceof`
+
+Depuis Java 16, on a le droit de simplifier nos `if's` à base de `instanceof`. On peut ainsi passer de ça :
+
+[source,java]
+.before.java
+----
+if (playingCard instanceof TrumpCard) {
+    TrumpCard trump = (TrumpCard) playingCard;
+    return "The trump n°%s is strong".formatted(trump.index());
+}
+----
+
+À ça :
+
+[source,java]
+.after.java
+----
+if (playingCard instanceof TrumpCard trump) {
+    return "The trump n°%s is strong".formatted(trump.index());
+}
+----
+
+C'est pas dingue, mais au moins c'est à l'épreuve des erreurs.
+
+==== `Switch expression`
+
+Depuis Java 14, le `switch` est une expression à par entière, qui peut donc retourner une valeur directement.
+
+On passe de ça :
+
+[source,java]
+.before.java
+----
+switch (playingCard.index()) {
+    case 1:
+        return "The first of " + suitCard.color().name().toLowerCase() + "(" + suitCard.color().getSymbol() + ") is very weak";
+    case 2:
+        return "The second of " + suitCard.color().name().toLowerCase() + "(" + suitCard.color().getSymbol() + ") is very weak";
+    // More logic
+    default:
+        throw new IllegalStateException("Unexpected value: " + playingCard);
+}
+----
+
+À ça :
+
+[source,java]
+.after.java
+----
+String value = switch (playingCard.index()) {
+    case 1 -> "The first of " + suitCard.color().name().toLowerCase() + "(" + suitCard.color().getSymbol() + ") is very weak";
+    case 2 ->"The second of " + suitCard.color().name().toLowerCase() + "(" + suitCard.color().getSymbol() + ") is very weak";
+    // More logic
+    default:
+        throw new IllegalStateException("Unexpected value: " + playingCard);
+}
+----
+
+==== `Switch` sur le type
+
+Depuis Java 20, on peut _switcher_ sur les types ce qui va encore nous permettre d'améliorer les choses.
+
+On passe de ça :
+
+[source,java]
+.before.java
+----
+if (playingCard instanceof TrumpCard) {
+    // Do something
+} else if (playingCard instanceof RoyalSuitCard){
+    // Do something
+}  else if (playingCard instanceof NumberSuitCard){
+    // Do something
+} else {
+    //Panick
+}
+----
+
+À ça :
+
+[source,java]
+.after.java
+----
+switch (playingCard) {
+    case TrumpCard trump -> // Do something
+    case NumberSuitCard suitCard -> // Do something
+    case RoyalSuitCard royalCard -> // Do something
+};
+----
+
+Ce qui est tout à fait merveilleux ici, c'est que grâce à notre hiérarchie d'objet finie, il n'y a plus besoin de paniquer. C'est le compilateur qui vérifie la complétude de notre `switch`
+
+
+==== Destructuration des records
+
+Disponible dans les boucles `for`, et dans les cas de _pattern matching_, la destructuration nous permet d'accéder directement à ce qui nous intéresse.
+
+On passe de ça :
+
+[source,java]
+.before.java
+----
+case RoyalSuitCard card -> "The %s of %s(%s) is strong"
+    .formatted(
+            card.face().displayName(),
+            card.color().name().toLowerCase(),
+            card.color().getSymbol());
+----
+
+À ça :
+
+[source,java]
+.after.java
+----
+case RoyalSuitCard(Color color, Face face) -> "The %s of %s(%s) is strong"
+    .formatted(
+            face.displayName(),
+            color.name().toLowerCase(),
+            color.getSymbol());
+----
+
+Et on pourrait également n'exposer qu'une partie des attributs.
+
+==== `Switch` avec des _guards_
+
+Promis, après, j'arrête.
+
+On peut maintenant combiner tout ce que l'on a déjà avec le dernier apport : les gardes. Ils nous permettent d'ajouter des conditions plus fines dans nos _case_ :
+
+[source,java]
+.after.java
+----
+return switch (playingCard) {
+    case TrumpCard(Integer idx) -> "The trump n°%s is strong".formatted(idx);
+    case NumberSuitCard suitCard when suitCard.index() == 1 -> "The first of %s(%s) is very weak".formatted(suitCard.color().name().toLowerCase(), suitCard.color().getSymbol());
+    case NumberSuitCard suitCard when suitCard.index() == 2 -> "The second of %s(%s) is very weak".formatted(suitCard.color().name().toLowerCase(), suitCard.color().getSymbol());
+    case NumberSuitCard suitCard when suitCard.index() == 3 -> "The third of %s(%s) is very weak".formatted(suitCard.color().name().toLowerCase(), suitCard.color().getSymbol());
+    case NumberSuitCard suitCard when suitCard.index() < 7 -> "The %sth of %s(%s) is still weak".formatted(suitCard.index(),suitCard.color().name().toLowerCase(), suitCard.color().getSymbol());
+    case NumberSuitCard(Color color, Integer index) -> "The %sth of %s(%s) may win you a hand".formatted(index, color.name().toLowerCase(), color.getSymbol());
+    case RoyalSuitCard(Color color, Face face) -> "The %s of %s(%s) is strong".formatted(face.displayName(), color.name().toLowerCase(), color.getSymbol());
+};
+----
+
+Ici on combine :
+
+* un _switch expression_
+* sur le type
+* avec du pattern matching
+* de la deconstruction
+* et des _guards_ matérialisé par le mot clef `when` qui nous permettent un contrôle plus fin.
+
+[CAUTION]
+====
+L'ordre de vos case compte toujours autant qu'avant. On va du plus spécifique au plus générique, sinon, c'est le drame.
+====
+
+== Bénéfices de la transformation
+
+=== Réduction du Code
+
+* **Moins de boilerplate** : Les records éliminent getters, equals, hashCode, toString
+* **Validation centralisée** : Constructeurs compacts pour la validation
+* **Hiérarchie simplifiée** : Élimination des classes intermédiaires
+
+=== Amélioration de la Sécurité
+
+* **Exhaustivité** : Le compilateur garantit la couverture de tous les cas
+* **Immutabilité** : Données finales par défaut
+* **Typage fort** : Séparation claire des responsabilités par type
+
+=== Lisibilité et Maintenabilité
+
+* **Intentions révélées** : Le code exprime clairement l'intention
+* **Pattern matching** : Logique métier plus lisible
+* **Séparation des préoccupations** : Chaque type gère sa propre logique
+
+
+L'analyse des statistiques Git révèle l'impact de cette transformation :
+
+* **Réduction nette de 212 lignes** (60% de réduction), et ça c'est bon ! \o/
+
+== Conclusion
+
+Comme d'habitude, ne réécrivez pas toutes vos applications tête baissée. Mais il est important de savoir quelle palette de possibilité vous offre votre langage.
+
+Gardez en tête toutes les cartes de votre main (je l'accorde, elle était facile), et restez curieux !
+
+== Ressources
+
+* https://github.com/jtama/crazy-data-oriented-programming[Repository GitHub] Dans la branche `main` le code initial, dans la branche `expected` le code final, avec un guide pour l'animer comme un kata
+* https://docs.oracle.com/en/java/javase/24/language/pattern-matching.html[Documentation officielle sur les concepts de l'article]
+
+Spécial kassdédi à https://www.linkedin.com/in/lucile-thienot/[Lucile Thiénot] et https://www.linkedin.com/in/floriangomas/[Florian Gomas] ❤️!
