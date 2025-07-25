@@ -186,6 +186,12 @@ On peut permettre 3 types d'enfants d'une classe/interface scellée :
 * Une classe/interface scellée
 * Une classe `final`
 * Un record, qui est par construction `final`
+* \{empty}
++
+[.small]
+--
+On peut aussi utiliser une classe `non-sealed` pour réouvrir la hiérarchie. Il y a des cas qui le justifient, mais là vous êtes à nouveau sans filet.
+--
 
 Pour résumer, la hiérarchie d'objets d'une classe/interface scellée est finie et connue à la compilation.
 
@@ -226,7 +232,7 @@ public class SuitCard implements PlayingCard {
 
 Dans cet exemple, il n'y a qu'une classe pour représenter une carte de couleur, et l'énumération des figures, trop simpliste, nous impose des contrôles complexes. Vous remarquerez que ces contrôles ne sont même pas exhaustif, puisque nous ne validons pas la correspondance entre les figures et les index.
 
-=== Évolution de l'Enum Face
+=== Évolution de l'enum `Face`
 
 Une énumération n'est pas limité à une liste idiote de constante. Elle peut avoir des attributs et des méthodes. Ici, nous allons juste ajouter un index à l'énumération des figures, ce qui va nous permettre de simplifier le constructeur des cartes ET augmenter le contrôle.
 
