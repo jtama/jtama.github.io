@@ -17,7 +17,7 @@
 }
 
 .wrapper {
-  max-width: 1250px;
+  max-width: 100vw;
   position: relative;
 }
 
@@ -521,4 +521,13 @@ b.conum * {
       font-size: 0.95rem;
     }
   }
+}
+
+.content-box {
+  flex-direction: column;
+  align-items: center;
+}
+
+.menu, .article-page, .post, .page-content {
+  max-width: 990px;
 }
