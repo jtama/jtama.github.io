@@ -237,13 +237,13 @@ package java.util.stream;
 
 public interface Gatherer<T, A, R> {
 
-    default Supplier<A> initializer(); <1>
+    default Supplier<A> initializer(); ①
 
-    Integrator<A, T, R> integrator(); <2>
+    Integrator<A, T, R> integrator(); ②
 
-    default BinaryOperator<A> combiner(); <3>
+    default BinaryOperator<A> combiner(); ③
 
-    default BiConsumer<A, Downstream<? super R>> finisher(); <4>
+    default BiConsumer<A, Downstream<? super R>> finisher(); ④
 }
 ----
 
