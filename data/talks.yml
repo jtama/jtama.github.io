@@ -34,7 +34,7 @@
     OpenRewrite est la boîte à outils parfaite pour écrire, versionner et partager vos refactoring. L'Ansible du refactoring.
     
     Ne repartez pas sans une nouvelle as corde à votre arc, ne faite plus jamais vos migrations à la main.
-  slides: https://jtama.github.io/openrewrite-refactoring-as-code/#/
+  slides: https://jtama.github.io/openrewrite-refactoring-as-code/main/#
   code: https://github.com/jtama/openrewrite-refactoring-as-code
   post: https://dev.to/onepoint/openrewrite-refactoring-as-code-2p48
   conferences:
