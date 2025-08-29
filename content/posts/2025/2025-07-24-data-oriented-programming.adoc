@@ -1,11 +1,11 @@
----
-title: De la Programmation Orientée Objet vers la Programmation Orientée Données - Un Guide Pratique
-description: Fatiguée de la POO ? Passez à la DOP !
-tags: java, data-oriented-programming, records, sealed-interfaces, pattern-matching
-image: https://images.unsplash.com/photo-1470342495351-a5f90c5011cd?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3
-author: jtama
-date: 2025-07-24
----
+= De la Programmation Orientée Objet vers la Programmation Orientée Données - Un Guide Pratique
+include::../../../includes/attributes.adoc[]
+:description: Fatiguée de la POO ? Passez à la DOP !
+:page-tags: java, data-oriented-programming, records, sealed-interfaces, pattern-matching
+:page-image: https://images.unsplash.com/photo-1470342495351-a5f90c5011cd?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3
+:page-author: jtama
+:page-date: 2025-07-24
+:qute:
 :toc:
 :toc-title: Table des matières
 
@@ -143,8 +143,8 @@ public static String advice(PlayingCard playingCard) {
 <1> Si la carte est de type classique
 <2> Alors on la _cast_
 <3> Si ce n'est pas une figure
-<4> Sinon, en fonction de son idex
-<4> Sinon, c'est forcément que c'est un atout. Non ?
+<4> Sinon, en fonction de son index
+<5> Sinon, c'est forcément que c'est un atout. Non ?
 
 "Ah, mais attention, ici on joue à la galloise, avec des Jokers ! Tout de suite, c'est un peu plus drôle."
 -- Perceval

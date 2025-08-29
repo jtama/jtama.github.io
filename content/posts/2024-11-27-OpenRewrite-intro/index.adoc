@@ -1,15 +1,13 @@
----
-layout: :theme/post
-title: "OpenRewrite: Refactoring as code"
-description: Introduction à OpenRewrite
-image: https://images.unsplash.com/photo-1589152144820-692b189e0b34?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3
-tags: java, tools, *-as-code
-author: jtama
----
+= OpenRewrite: Refactoring as code
+include::../../../includes/attributes.adoc[]
+:description: Introduction à OpenRewrite
+:page-image: https://images.unsplash.com/photo-1589152144820-692b189e0b34?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3
+:page-tags: java, tools, *-as-code
+:page-author: jtama
 :toc:
 :toc-title: Table des matières
 
-image::{page.file('logo.svg')}[Logo d'openrewrite]
+image::logo.svg[Logo d'openrewrite]
 
 \{empty} +
 icon:lightbulb[]

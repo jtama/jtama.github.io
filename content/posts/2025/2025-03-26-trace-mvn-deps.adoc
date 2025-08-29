@@ -1,9 +1,9 @@
----
-title: So you wanna know where your maven dependency version comes from ?
-description: How to quickly find where your dependencied version comes from.
-tags: java,maven,dependencies
-image: https://images.unsplash.com/photo-1621294465978-6b4198a5f2f7?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3
-author: jtama
+= So you wanna know where your maven dependency version comes from ?
+include::../../../includes/attributes.adoc[]
+:description: How to quickly find where your dependencied version comes from.
+:page-tags: java,maven,dependencies
+:page-image: https://images.unsplash.com/photo-1621294465978-6b4198a5f2f7?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3
+:page-author: jtama
 ---
 
 You work with a complex maven project. That's a fact, otherwise you wouldn't be here, searching to uncover a way out of its dependencies maze.

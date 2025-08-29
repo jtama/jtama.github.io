@@ -1,11 +1,10 @@
----
-title: Even if you don't like MD, sometimes you don't have a choice
-description: How-to convert Markdown document to asciidoc
-tags: markdown, asciidoc, HowTos
-image: pexels-charlotte-may-5946786.jpg
-author: jtama
-date: 2025-06-04
----
+= Even if you don't like MD, sometimes you don't have a choice
+include::../../../../includes/attributes.adoc[]
+:description: How-to convert Markdown document to asciidoc
+:page-tags: markdown, asciidoc, HowTos
+:page-image: pexels-charlotte-may-5946786.jpg
+:page-author: jtama
+:page-date: 2025-06-04
 
 == TL;DR;
 

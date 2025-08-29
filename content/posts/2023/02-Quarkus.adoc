@@ -1,11 +1,10 @@
----
-title: "Quarkus: Greener, Better, Faster, Stronger"
-description: "Deep diving into Quarkus extension development"
-tags: java,quarkus,extension
-author: jtama
-date: 2023-12-22
-image: https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fycr8bv7n9lvj1b2mloq2.png
----
+= Quarkus: Greener, Better, Faster, Stronger
+include::../../../includes/attributes.adoc[]
+:description: Deep diving into Quarkus extension development
+:page-tags: java,quarkus,extension
+:page-author: jtama
+:page-date: 2023-12-22
+:page-image: https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fycr8bv7n9lvj1b2mloq2.png
 :toc:
 :toc-title: Table des matières
 
