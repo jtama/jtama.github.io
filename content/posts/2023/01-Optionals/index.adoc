@@ -1,11 +1,10 @@
----
-title: Vous allez finir par les aimer les `Optionals` ?
-tags: java,optional
-image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/5f560xqwbgrev920b346.jpg
-series: Java
-author: jtama
-date: 2023-03-23
----
+= Vous allez finir par les aimer les `Optionals` ?
+include::../../../../includes/attributes.adoc[]
+:page-tags: java,optional
+:page-image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/5f560xqwbgrev920b346.jpg
+:page-series: Java
+:page-author: jtama
+:page-date: 2023-03-23
 
 [IMPORTANT]
 Ceci est une retranscription par l'excellent link:https://dev.to/eplumas[Emmanuel Plumas] de link:https://youtu.be/0LVkoF5D1eE[la conférence que j'ai donné TouraineTech 2023], un très grand merci à lui icon:heart[role=red].

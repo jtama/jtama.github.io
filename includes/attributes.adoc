@@ -1,0 +1,5 @@
+:sectanchors: true
+:toclevels: 2
+:idprefix:
+:idseparator: -
+:page-layout: :theme/post
