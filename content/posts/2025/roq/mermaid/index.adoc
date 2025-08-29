@@ -11,8 +11,6 @@ include::../../../../../includes/attributes.adoc
 
 == Having wunderbar diagrams in your blog
 
-link:../index2.adoc[]
-
 ++++
 {#mermaid}
 {|

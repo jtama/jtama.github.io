@@ -5,19 +5,7 @@ layout: theme-layouts/roq-default/post
 
 {#include partials/roq-series /}
 
-<div class="asciidoc">
-    {#let attributes = page.data.attributes}
-
-    {#if attributes.containsKey('tocnav')}
-    <aside class="toc sidebar" data-title="{attributes.toctitle ?: 'Contents'}" data-levels="{attributes.toclevels ?: 2}">
-        <div class="toc-menu"></div>
-    </aside>
-    {/if}
-    {/}
-    <div class="asciidoc-content">
-    {#insert /}
-    </div>
-</div>
+{#insert /}
 
 {#article-end}
 <div class="giscus"></div>
