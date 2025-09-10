@@ -5,6 +5,7 @@ include::../../../includes/attributes.adoc[]
 :page-tags: java, tools, *-as-code
 :page-author: jtama
 :page-slug: openrewrite-refactoring-as-code
+:page-series: openrewrite
 :toc:
 :toc-title: Table des matières
 
