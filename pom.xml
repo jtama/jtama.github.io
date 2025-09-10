@@ -78,6 +78,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.mvnpm.at.catppuccin</groupId>
+            <artifactId>palette</artifactId>
+            <version>1.7.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mvnpm</groupId>
             <artifactId>mermaid</artifactId>
             <version>11.6.0</version>

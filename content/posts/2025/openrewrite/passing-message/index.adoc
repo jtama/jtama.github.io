@@ -1,0 +1,187 @@
+= Technique Avancée d'OpenRewrite : Utiliser les messages pour implémenter des logiques complexes
+include::../../../../../includes/attributes.adoc[]
+:description: Comment mettre en place des actions coordonnées sur plusieurs niveaux d'AST...
+:page-tags: openrewrite
+:page-image: pexels-pixabay-260551.jpg
+:page-author: jtama
+:page-date: 2025-09-05
+:icon-set:far
+:page-series: openrewrite
+:qute: true
+
+__Photo par Pixabay.footnote:[https://www.pexels.com/photo/water-drops-on-blue-background-260551/[Pixabay]]
+__
+
+Je vous avais déjà parlé d'Openrewrite dans link:../openrewrite-refactoring-as-code[un article précédent]. Si vous ne l'avez pas lu et que vous avez besoin d'un petit rafraichissement, je vous invite à mettre la lecture de ce post en icon:pause[] et à y revenir plus tard. C'est bon ? Allez go.
+
+Tous les cas d'usage dont il a été question dans l'article précédent font intervenir une recette qui n'a besoin que des informations trouvées à un et seul niveau du https://docs.openrewrite.org/concepts-and-explanations/lossless-semantic-trees[LST]. Puisqu'une image vaut mieux qu'un long discours, et que je sens bien que je ne me suis pas très bien fait comprendre, voici un exemple crédible d'AST:
+\{empty} +
+
+
+{#diagram asciidoc=true language="plantuml" alt="Exemple d'AST simplifié" width=800 height=300 diagramOutputFormat="svg"}
+@startmindmap
+top to bottom direction
+*[#f2d5cf] Classe
+**[#ca9ee6] Déclaration de méthode
+***[#ea999c] Bloc
+****[#a6d189] Assignation de variable 1
+****[#a6d189] Invocation de méthode 1
+****[#a6d189] for
+*****[#85c1dc] Assignation de variable 2
+*****[#85c1dc] Invocation de méthode 2
+*****[#85c1dc] Retour de méthode
+@endmindmap
+{/}
+
+\{empty} +
+Jusqu'à présent les exemples opéraient des modifications sur [.bg-green]#des invocations de méthodes#, ou par exemple un renommage de [.bg-rosewater]#classe#.
+
+Dans le diagramme précédent, chaque nœud correspond à un élément d'AST (les choses sont évidemments simplifiées ici). Comme nous l'avons déjà vu, https://docs.openrewrite.org/[OpenRewrite] utilise le _pattern_ visiteur pour parcourir l'arbre. Plus précisément les recettes implémentent des visiteurs dont les interfaces correspondent au langage manipulé. +
+En l'occurence, les manipulations sont effectuées sur du https://dev.java/[Java], et le visiteur utilisé sera donc un `https://github.com/openrewrite/rewrite/blob/main/rewrite-java/src/main/java/org/openrewrite/java/JavaIsoVisitor.java[JavaIsoVisitor]`.
+
+[quote, Lecteur attentif et curieux]
+Oui, mais si mon cas d'usage nécessite d'identifier [.bg-green]#une invocation de méthode# pour agir sur [.bg-mauve]#la déclaration de la méthode# qui la contient dans [.bg-rosewater]#une classe#?
+
+Oui, je te comprends, et cette question m'a moi aussi empecher de dormir pendant quelques jours. Seulement vois-tu, les gens derrières Openrewrite aussi.
+Ils nous ont donc mis à disposition un système de message très convaincant et plutôt sûr.
+
+image::philipides_running_message.png[]
+
+== Cas d'usage
+
+Imaginons que quelqu'un de mal avisé, non, n'insistez pas, je ne vous dirai pas qui. D'accooooord c'est moi. Imaginons donc, disais-je, que quelqu'un de mal avisé ait développé dans une librarie un moyen d'enregistrer le traitement d'une méthode :
+
+[source, java]
+----
+import static com.github.jtama.toxic.timer.logStart;
+import static com.github.jtama.toxic.timer.logEnd;
+import static com.github.jtama.acme.Process.longRunningMethod;
+
+public class ManualGearCar {
+
+    @Deprecated<4>
+    public void drift(String param) {
+        logStart();<1>
+        longRunningMethod(param);<2>
+        logEnd();<3>
+    }
+}
+----
+<1> Enregistre le début d'exécution de la méthode
+<2> Exécute un traitement
+<3> Enregistre la fin d'exécution de la méthode
+<4> _Random annotation_ qui aura son intérêt plus tard
+
+Arpès d'intense recherche nous avons découvert l'existence de https://micrometer.io/[_**micrometer**_] et de son annotation `io.micrometer.core.annotation.Timed`.
+
+En tant que développeur, je vais donc identifier l'invocation de la méthode `Timer#logStart()` et si je la trouve :
+
+- La supprimer
+- Supprimer l'invocation de la méthode `Timer#logEnd()` si elle existe
+- Ajouter l'annotation `@Timed` sur la déclaration de la méthode `drift`
+
+Et c'est exactement la logique que nous allons mettre en œuvre dans la recette.
+
+== Implémentation
+
+Dans cet exemple, nous ne regardons que l'implémentation du visiteur, pas la recette complète. Mais comme d'habitude, tout est disponible dans https://github.com/jtama/openrewrite-refactoring-as-code/blob/main/toxic-library-remover/src/main/java/com/github/jtama/openrewrite/RemoveLogStartInvocations.java[le dépôt github]
+
+[source, java]
+----
+private static class ReplaceCompareVisitor extends JavaIsoVisitor<ExecutionContext> {
+
+        private final MethodMatcher logStartInvocaMatcher = new MethodMatcher("com.github.jtama.toxic.Timer logStart()");<1>
+        private final MethodMatcher logEndInvocaMatcher = new MethodMatcher("com.github.jtama.toxic.Timer logEnd()");
+        private final AnnotationMatcher logStartMatcher = new AnnotationMatcher("@io.micrometer.core.annotation.Timed");
+        private final JavaTemplate annotationTemplate = JavaTemplate.builder("@Timed")
+                .imports("io.micrometer.core.annotation.Timed")
+                .javaParser(
+                        JavaParser.fromJavaVersion()
+                            .classpath(JavaParser.runtimeClasspath()))
+                .build();
+
+        public ReplaceCompareVisitor() {
+            maybeRemoveImport("com.github.jtama.toxic.Timer");
+        }
+
+        @Override
+        public J.MethodDeclaration visitMethodDeclaration(J.MethodDeclaration method, ExecutionContext ctx) {<3>
+            J.MethodDeclaration md = super.visitMethodDeclaration(method, ctx);
+            Cursor cursor = getCursor();
+            if (cursor.getMessage("appendAnnotation", false)) {
+                if (md.getLeadingAnnotations().stream()
+                        .noneMatch(logStartMatcher::matches)) {
+                    maybeAddImport("io.micrometer.core.annotation.Timed");
+                    md = annotationTemplate.apply(cursor, method.getCoordinates().addAnnotation(Comparator.comparing(J.Annotation::getSimpleName)));
+                }
+            }
+            return md;
+        }
+
+        @Override
+        public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {<2>
+            J.MethodInvocation mi = super.visitMethodInvocation(method, ctx);
+            if (logStartInvocaMatcher.matches(mi) || logEndInvocaMatcher.matches(mi)) {
+                getCursor().putMessageOnFirstEnclosing(J.MethodDeclaration.class, "appendAnnotation", true);
+                return null;
+            }
+            return mi;
+        }
+    }
+----
+<1> <<Les utilitaires>>
+<2> <<Le visiteur d'invocation de méthode (`visitMethodInvocation`),Le visiteur d'invocation de méthode>>
+<3> <<Le visiteur de déclaration de méthode(`visitMethodDeclaration`),Le visiteur de déclaration de méthode>>
+
+=== Les utilitaires
+
+Dans cette section, deux outils d'OpenRewrite sont utilisés. Le `MethodMatcher` permet d’identifier précisément les invocations de méthodes ciblées, telles que `logStart()` et `logEnd()`. \{empty}+
+L' `AnnotationMatcher` sert à vérifier la présence de l’annotation `@Timed` sur une méthode. \{empty}+
+Enfin, le `JavaTemplate` facilite l’insertion de l’annotation dans le code source et gère l’import nécessaire. \{empty}+
+Ces utilitaires simplifient la manipulation de l’AST et préparent les modifications à appliquer dans les visiteurs.
+
+=== Le visiteur d'invocation de méthode (`visitMethodInvocation`)
+
+Ce visiteur parcourt chaque appel de méthode dans le code source. \{empty}+
+Lorsqu’il rencontre une invocation de `logStart()` ou `logEnd()`, il ajoute un message pour signaler qu’une annotation devra être ajoutée ultérieurement.
+
+Un message n'est en réalité qu'un tuple `<clef;valeur>`, mais ce qui est intéressant ici, c'est que l'on précise le scope d'accessibilité du message pour éviter de polluer tout le contexte.
+
+En occurrence, seul la méthode contenant l'invocation en question pourra accéder au message(`putMessageOnFirstEnclosing(J.MethodDeclaration.class...`).
+
+La valeur `null` renvoyée dans ce cas à pour effet la suppression du nœud en cours de visite, c'est-à-dire, l'invocation de la méthode.
+
+=== Le visiteur de déclaration de méthode(`visitMethodDeclaration`)
+
+Celui-là est vraiment plus simple.
+
+Si on m'a passé un message ET que la méthode n'est pas déjà annoté (si le développeur voulait mettre ceinture et bretelle... ¯\\_(ツ)_/¯ ), j'ajoute l'annotation `@Timed`.
+
+=== En image
+
+Puisqu'une image vaut mieux qu'un long discours.
+
+{#diagram asciidoc=true language="plantuml" alt="Diagramme d'activité" width=442 height=718 diagramOutputFormat="svg"}
+@startuml
+!theme bluegray
+start
+
+:Parcourir chaque méthode du fichier source;
+if (La méthode contient logStart() ou logEnd()) then (oui)
+  :Marquer la méthode pour annotation (définir un message);
+  :Supprimer les appels à logStart() et logEnd();
+endif
+
+:Vérifier si la méthode est marquée pour annotation;
+if (Marquée et pas déjà annotée avec @Timed) then (oui)
+  :Ajouter l'annotation @Timed;
+  :Importer la classe d'annotation;
+endif
+
+stop
+@enduml
+{/}
+
+== Et après ?
+
+D'autres exemples complexes suivront et n'oubliez pas que tout le code est disponible dans https://github.com/jtama/openrewrite-refactoring-as-code[le dépôt *Openrewrite refactoring as code*].

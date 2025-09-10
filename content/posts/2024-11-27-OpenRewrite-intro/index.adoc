@@ -4,12 +4,15 @@ include::../../../includes/attributes.adoc[]
 :page-image: https://images.unsplash.com/photo-1589152144820-692b189e0b34?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3
 :page-tags: java, tools, *-as-code
 :page-author: jtama
+:page-slug: openrewrite-refactoring-as-code
+:page-series: openrewrite
 :toc:
 :toc-title: Table des matières
 
 image::logo.svg[Logo d'openrewrite]
 
-\{empty} +
+{empty} +
+{empty} +
 icon:lightbulb[]
 _Mieux vaut prévenir que guérir_, je n'utiliserai pas le mot _reusiner_, et certainement pas non plus le mot _refactoriser_. Cette note sera donc pleine d'anglicismes. La vie.
 
@@ -276,7 +279,7 @@ Le projet devra comprendre le fichier `rewrite.yml` et les dépendances nécessa
 
 == On code nos recettes icon:pencil[]
 
-Pour les chapitres suivants, nous partons du principe que vous voulez vous débarasser d'une dépendance toxique (com.github.jtama:toxic-library:19.666.45-RC18-FINAL) qui comprend les classes suivantes :
+Pour les chapitres suivants, nous partons du principe que vous voulez vous débarasser d'une dépendance toxique (`com.github.jtama:toxic-library:19.666.45-RC18-FINAL`) qui comprend les classes suivantes :
 
 [source,java]
 ----
