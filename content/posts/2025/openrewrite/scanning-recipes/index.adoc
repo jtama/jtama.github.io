@@ -1,0 +1,199 @@
+= Technique Avancée d'OpenRewrite : Orchestrer des refactorings complexes avec les `ScanningRecipe`
+include::../../../../../includes/attributes.adoc[]
+:description: Quand un simple visiteur ne suffit plus, il faut sortir l'artillerie lourde. Analyser plusieurs fichiers, générer du code ? Place aux _scanning recipes_ !
+:page-tags: openrewrite
+:page-image: panoramic-dental-xray.jpg
+:page-author: jtama
+:page-date: 2025-10-19
+:icon-set:far
+:page-series: openrewrite
+
+[WARNING]
+====
+Le sujet qui va être traité est avancé. En cas de doute, je vous conseille d'aller lire les articles précédents de cette série.
+====
+
+Mais que se passe-t-il si notre besoin dépasse les frontières d'un seul fichier ?
+
+[quote, Lecteur attentif et curieux]
+Oui, mais si ma recette a besoin d'[.bg-green]#*analyser* le contenu de la classe `A`# pour décider de [.bg-rosewater]#*modifier* la classe `B`# **et** de [.bg-mauve]#*générer* une toute nouvelle classe `C`# ?
+
+C'est précisément le cas d'usage où les recettes classiques, qui traitent les fichiers de manière isolée, ne suffisent plus. Pour ces scénarios, OpenRewrite fournit un outil spécifique : la `ScanningRecipe`.
+
+Une `ScanningRecipe` découpe le refactoring en trois phases distinctes :
+
+.  **Une phase d'analyse (`scan`)** : Un premier visiteur parcourt **tous** les fichiers sources pour collecter des informations, sans rien modifier.
+.  **Une phase de génération (`generate`)** : À partir des informations collectées, cette étape peut créer de nouveaux fichiers sources.
+.  **Une phase de modification (`visit`)** : Un second visiteur parcourt à nouveau les fichiers pour appliquer les modifications, en s'aidant des données de la phase d'analyse.
+
+== Cas d'usage : Extraire une interface
+
+Pour illustrer ce processus, nous allons implémenter une recette qui extrait une interface de toutes les classes annotées avec `@LearnToFly`.
+
+Pour une classe comme celle-ci :
+
+[source,java]
+----
+package com.foo.fighter;
+
+//imports
+
+@LearnToFly
+public class RocketController {
+
+    @Operation(summary = "Launches a rocket to a given destination", description = "Check availability and other constraints before doing anything.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully launched"),
+        @ApiResponse(responseCode = "404", description = "Not found - The destination isn't in the solar system")
+    })
+    @GetMapping("/rocket/{destination}")<1>
+    public String launch(String destination) {
+        // ...
+    }
+}
+----
+<1> Beaucoup, beaucoup trop d'annotations qui nuisent à la lisibilité du code
+
+La recette doit :
+
+.  **Trouver** la classe `RocketController` grâce à son annotation.
+.  **Générer** une nouvelle interface `IRocketController` dans un module différent.
+.  **Modifier** `RocketController` pour qu'elle implémente `IRocketController`, et supprimer l'annotation `@LearnToFly`.
+
+Analysons l'implémentation (disponible sur https://github.com/jtama/openrewrite-refactoring-as-code[le dépôt d'exemples]).
+
+== Phase 1 : La collecte d'informations
+
+La première étape est une mission de reconnaissance. Le `Scanner` parcourt le code source pour identifier les classes cibles et stocke les informations dans un `Accumulator`, un conteneur de données partagé entre les phases.
+
+[source,java]
+----
+public class ExtractInterface extends ScanningRecipe<ExtractInterface.Accumulator> {
+
+    public static class Accumulator { <1>
+        Map<String, ToExtract> toBeExtracted = new HashMap<>();
+    }
+
+    @Override
+    public Accumulator getInitialValue(ExecutionContext ctx) {
+        return new Accumulator();
+    }
+
+    @Override
+    public TreeVisitor<?, ExecutionContext> getScanner(Accumulator acc) {
+        return new JavaIsoVisitor<ExecutionContext>() {
+            @Override
+            public J.ClassDeclaration visitClassDeclaration(J.ClassDeclaration classDecl, ExecutionContext ctx) {
+                if (isClass.test(classDecl) && !alreadyImplementsInterface.test(classDecl)) { <2>
+                    acc.toBeExtracted.put(classDecl.getType().getFullyQualifiedName(),
+                            new ToExtract(classDecl.getSourcePath(), ...)); <3>
+                }
+                return classDecl;
+            }
+        };
+    }
+    //...
+}
+----
+<1> L'`Accumulator` est une simple classe statique interne qui sert de conteneur pour les données que nous collectons.
+<2> On vérifie que la classe est bien celle ciblée par l'annotation `@LearnToFly` et qu'elle n'implémente pas déjà l'interface.
+<3> Si la classe correspond, on stocke les informations nécessaires (comme son `sourcePath`) dans l'`Accumulator`. Le _FQDN_ de la classe sert de clé.
+
+À la fin de cette phase, aucune modification n'a été faite, mais notre `Accumulator` contient une "liste de tâches" de toutes les classes à traiter.
+
+== Phase 2 : La génération de l'interface
+
+Cette méthode est exécutée après le `Scanner`. Elle utilise les données de l'`Accumulator` pour construire de nouveaux `SourceFile`.
+
+[source,java]
+----
+@Override
+public Collection<SourceFile> generate(Accumulator acc, ExecutionContext ctx) {
+    return acc.toBeExtracted.values().stream()
+        .map(toExtract -> {
+            // ... logique pour déterminer le chemin de la nouvelle interface ...
+            return (SourceFile) getExtractedInterface(toExtract) <1>
+                .withSourcePath(newInterfacePath)
+                .withMarkers(Tree.randomId());
+        })
+        .collect(Collectors.toList());
+}
+
+private J.CompilationUnit getExtractedInterface(ToExtract toExtract) {
+    JavaTemplate interfaceTemplate = JavaTemplate.builder("public interface #{any(String)} {}")
+            .build();
+    // ...
+    J.CompilationUnit anInterface = (J.CompilationUnit) new JavaIsoVisitor<Integer>() {
+        @Override
+        public J.MethodDeclaration visitMethodDeclaration(J.MethodDeclaration method, Integer p) {
+            return method.withBody(null); <2>
+        }
+
+        @Override
+        public J.VariableDeclarations visitVariableDeclarations(J.VariableDeclarations multiVariable, Integer p) {
+            return null; <3>
+        }
+    }.visit(toExtract.getOriginalTree(), 0);
+    // ...
+    return anInterface;
+}
+----
+<1> Pour chaque classe à traiter, on appelle une méthode qui va fabriquer la structure de notre nouvelle interface.
+<2> La transformation principale se fait via un petit visiteur interne. Pour chaque méthode, on supprime son corps avec `withBody(null)`.
+<3> On supprime également toutes les déclarations de variables en retournant `null`.
+
+Le résultat est une collection de `J.CompilationUnit` qui représentent nos nouvelles interfaces, prêtes à être ajoutées au projet.
+
+== Phase 3 : La modification des classes existantes
+
+Dernière étape : modifier les classes originales. Pour cela, on réutilise la technique des messages. On parcourt les `ClassDeclaration` et si l'une d'elles correspond à une entrée de notre `Accumulator`, on lui attache un message.
+
+=== La déclaration de la classe
+
+[source,java]
+----
+@Override
+public TreeVisitor<?, ExecutionContext> getVisitor(Accumulator acc) {
+    return new JavaIsoVisitor<ExecutionContext>() {
+        @Override
+        public J.ClassDeclaration visitClassDeclaration(J.ClassDeclaration cd, ExecutionContext ctx) {
+            ToExtract toExtract = acc.toBeExtracted.get(cd.getType().getFullyQualifiedName());
+            if (toExtract != null) {
+                getCursor().putMessage(TARGET_CLASS, toExtract); <1>
+                var annotations = cd.getLeadingAnnotations();
+                annotations.removeIf(ann -> targetAnnotationMatcher.matches(ann));
+                maybeRemoveImport(targetAnnotation); <2>
+                cd = cd.withLeadingAnnotations(annotations)
+                        .withImplements(List.of(TypeTree.build(target.extractedInterfaceName()))); <3>
+                cd = super.visitClassDeclaration(cd, executionContext);
+                return cd;
+            }
+            return super.visitCompilationUnit(cu, ctx);
+        }
+    };
+}
+----
+<1> Si la `ClassDeclaration` en cours de visite est l'une de nos cibles, on attache les données la concernant (`toExtract`) comme message sur le curseur.
+<2> Dans `visitClassDeclaration`, on vérifie si un message est présent. Si oui, on sait qu'on doit modifier cette classe.
+<3> On ajoute la clause `implements` et on supprime l'annotation `@LearnToFly`. Un autre visiteur (non montré ici) s'occupe d'ajouter `@Override` aux méthodes.
+
+=== Les déclarations de méthodes
+
+
+[source,java]
+----
+    @Override
+    public J.MethodDeclaration visitMethodDeclaration(J.MethodDeclaration method, ExecutionContext executionContext) {
+        if (getCursor().getNearestMessage(TARGET_CLASS) != null) { <1>
+            return JavaTemplate.builder("@Override").build().apply(getCursor(), method.getCoordinates().replaceAnnotations());
+        }
+        return super.visitMethodDeclaration(method, executionContext);
+    }
+----
+<1> Si la classe a été marquée de sceau rouge de l'extraction, on ajoute l'annotation `@Override` à toutes les déclarations de méthodes.
+
+== C'est dans la boîte
+
+J'espère vous avoir convaincu qu'il n'y a encore une fois rien de sorcier. Des concepts séparément simples qui une fois réunis nous permettent des réécritures relativement complexes.
+
+Encore une fois, vos cas d'usages sont la limite !
