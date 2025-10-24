@@ -168,7 +168,7 @@ public TreeVisitor<?, ExecutionContext> getVisitor(Accumulator acc) {
                 cd = super.visitClassDeclaration(cd, executionContext);
                 return cd;
             }
-            return super.visitCompilationUnit(cu, ctx);
+            return super.visitClassDeclaration(cd, ctx);
         }
     };
 }
@@ -196,4 +196,4 @@ public TreeVisitor<?, ExecutionContext> getVisitor(Accumulator acc) {
 
 J'espère vous avoir convaincu qu'il n'y a encore une fois rien de sorcier. Des concepts séparément simples qui une fois réunis nous permettent des réécritures relativement complexes.
 
-Encore une fois, vos cas d'usages sont la limite !
+Encore une fois, vos cas d'usages sont la limite ! Je vous ferai bientôt part d'un nouveau joujou pour visualiser vos projets d'une nouvelle manières.
