@@ -71,6 +71,12 @@
             <artifactId>quarkus-roq-plugin-series</artifactId>
             <version>${quarkus-roq.version}</version>
         </dependency>
+        <!-- force version waiting for roq release -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.19.2</version>
+        </dependency>
         <dependency>
             <groupId>org.mvnpm</groupId>
             <artifactId>highlight.js</artifactId>
