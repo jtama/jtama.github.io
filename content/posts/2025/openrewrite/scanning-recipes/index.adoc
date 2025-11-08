@@ -13,7 +13,7 @@ include::../../../../../includes/attributes.adoc[]
 Le sujet qui va être traité est avancé. En cas de doute, je vous conseille d'aller lire les articles précédents de cette série.
 ====
 
-Mais que se passe-t-il si notre besoin dépasse les frontières d'un seul fichier ?
+Nous avons déjà vu dans les articles précédents pas mal d'exemples. Mais chacun d'eux concerne peuvent-être traités en ne prenant en compte qu'un fichier source, une _compilation unit_ en bon _Openrewrite_. Alors qu'allons-nous devenir si notre besoin dépasse les frontières d'un seul fichier ?
 
 [quote, Lecteur attentif et curieux]
 Oui, mais si ma recette a besoin d'[.bg-green]#*analyser* le contenu de la classe `A`# pour décider de [.bg-rosewater]#*modifier* la classe `B`# **et** de [.bg-mauve]#*générer* une toute nouvelle classe `C`# ?
@@ -191,6 +191,156 @@ public TreeVisitor<?, ExecutionContext> getVisitor(Accumulator acc) {
     }
 ----
 <1> Si la classe a été marquée de sceau rouge de l'extraction, on ajoute l'annotation `@Override` à toutes les déclarations de méthodes.
+
+== Comparaison Avant vs Après
+
+Voici par exemple une classe avant extraction :
+
+.HostelController avant
+[%collapsible]
+====
+[source, java]
+----
+import com.github.jtama.app.reservation.Reservation;
+import com.github.jtama.toxic.BigDecimalUtils;
+import com.github.jtama.toxic.LearnToFly;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.SecurityContext;
+
+import java.util.List;
+
+@Path("/api/hostels")
+@Produces(MediaType.APPLICATION_JSON)
+@LearnToFly
+public class HostelController {
+
+    @Inject
+    HostelReservationService hostelReservationService;
+
+    @GET
+    public List<Hostel> getAll() {
+        return Hostel.listAll();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @RolesAllowed("ADMIN")
+    @Transactional
+    public Hostel create(Hostel hostel) {
+        return Hostel.persistIfNotExists(hostel);
+    }
+
+    @POST
+    @Path("/{name}/book")
+    @RolesAllowed("USER")
+    public Reservation book(@PathParam("name")String name, @QueryParam("month") Integer month, @Context SecurityContext security) {
+        BigDecimalUtils.valueOf(month.longValue());// Because I can !
+        return hostelReservationService.book(name, month, security.getUserPrincipal().getName());
+    }
+
+}
+----
+====
+
+
+L'interface extraite :
+
+.IHostelController
+[%collapsible]
+====
+[source, java]
+----
+import com.github.jtama.app.reservation.Reservation;
+import com.github.jtama.toxic.LearnToFly;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.SecurityContext;
+
+import java.util.List;
+
+@Path("/api/hostels")
+@Produces(MediaType.APPLICATION_JSON)
+@LearnToFly
+public interface IHostelController {
+
+    @GET List<Hostel> getAll();
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @RolesAllowed("ADMIN")
+    @Transactional Hostel create(Hostel hostel);
+
+    @POST
+    @Path("/{name}/book")
+    @RolesAllowed("USER") Reservation book(@PathParam("name")String name, @QueryParam("month") Integer month, @Context SecurityContext security);
+
+}
+----
+====
+
+Et la classe après extraction :
+
+.HostelController avant
+[%collapsible]
+====
+[source, java]
+----
+import com.github.jtama.app.reservation.Reservation;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.SecurityContext;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+public class HostelController implements IHostelController {
+
+    @Inject
+    HostelReservationService hostelReservationService;
+
+    @Override
+    public List<Hostel> getAll() {
+        return Hostel.listAll();
+    }
+
+    @Override
+    public Hostel create(Hostel hostel) {
+        return Hostel.persistIfNotExists(hostel);
+    }
+
+    @Override
+    public Reservation book(@PathParam("name")String name, @QueryParam("month") Integer month, @Context SecurityContext security) {
+        BigDecimal.valueOf(month.longValue());// Because I can !
+        return hostelReservationService.book(name, month, security.getUserPrincipal().getName());
+    }
+
+}
+----
+====
+
+
 
 == C'est dans la boîte
 
