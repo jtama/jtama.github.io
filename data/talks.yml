@@ -38,16 +38,18 @@
   code: https://github.com/jtama/openrewrite-refactoring-as-code
   post: https://dev.to/onepoint/openrewrite-refactoring-as-code-2p48
   conferences:
-    - name: SnowCamp 2025
-    - name: Touraine Tech 2025
-      video: https://youtu.be/FsL8BPgKKPM?si=Df9vknCZCh5BM4Tm
     - name: DevoxxFR 2025
       video: https://youtu.be/aYHb7sLhsoQ?si=8qyI-LAf1nTnMOzp
+    - name: Devfest Nantes 2025
+      video: https://www.youtube.com/watch?v=E-wpR3FPU3w
+    - name: Touraine Tech 2025
+      video: https://youtu.be/FsL8BPgKKPM?si=Df9vknCZCh5BM4Tm
+    - name: SnowCamp 2025
 - title: "Quarkus : Greener, Better, Faster, stronger!"
   description: |
     Quarkus n'est maintenant plus un nouveau venu dans l'écosystème java, et de plus en plus de projets l'adoptent comme base de travail,  mais peu de développeurs comprennent vraiment à quel point la magie se cache dans ses extensions.
 
-    C'est en développant l'extension [Quarkus Min.io](https://github.com/quarkiverse/quarkus-minio) que j'ai  découvert une partie de leurs capacités,  et comment elles sont en fait au coeur des promesses du framework. Leur développement est simple et permet de rendre un grand nombre de services à nos utilisateurs. Mais surtout elles permettent de ne rendre que les services dont l'utilisateur à besoin nous permettant d'économiser mémoire, cpu et de raccourcir les temps de démarrage.
+    C'est en développant l'extension https://github.com/quarkiverse/quarkus-minio[Quarkus Minio] que j'ai  découvert une partie de leurs capacités,  et comment elles sont en fait au coeur des promesses du framework. Leur développement est simple et permet de rendre un grand nombre de services à nos utilisateurs. Mais surtout elles permettent de ne rendre que les services dont l'utilisateur à besoin nous permettant d'économiser mémoire, cpu et de raccourcir les temps de démarrage.
   
     Et si vous veniez en développer une avec moi et que nous mettions en oeuvre quelques uns de ces tours de magie ?
   
