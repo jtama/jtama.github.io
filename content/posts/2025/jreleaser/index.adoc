@@ -5,6 +5,7 @@ include::../../../../includes/attributes.adoc[]
 :page-image: https://jreleaser.org/images/jreleaser-duke.png
 :page-author: jtama
 :page-date: 2025-11-18
+:toc:
 
 
 [quote, Official tag line]
@@ -29,7 +30,7 @@ image:https://jreleaser.org/guide/latest/concepts/_images/jreleaser-workflow.png
 
 Now let's be serious and look at the needed steps to release your java artifact.
 
-== Pre-requisite
+== Pre-requisite (tools and credentials)
 
 === PGP
 
@@ -72,7 +73,7 @@ You'll be asked a passphrase to protect you keypair. Choose wisely, and don't te
 .🤫chhhhhht!
 [%collapsible]
 ====
-❤️ Eminem <3 <3
+❤️ Eminem<3<3
 ====
 
 
@@ -105,15 +106,45 @@ gpg --keyserver keyserver.ubuntu.com -send-key 4C2428BC373276273A30B9D4FA30C2633
 ----
 <1> Replace with your own key
 
+=== Obtaining your maven central credentials.
+
+Login to https://central.sonatype.com/[maven central], click on the top right menu item "View User Tokens", and generate a new token.
+
+You can specify its name and expiration date. Personally, I chose to go crazy for this :
+
+image::sonatype_token.png[The name of the token is JReleaser]
+
 === Install JReleaser
 
 There are many ways https://jreleaser.org/guide/latest/install.html[to install JReleaser,window=_blank], but my goto for local environment is to use https://www.jbang.dev/[JBang,window=_blank] :
 
 [source, console]
 ----
+// Download, and install localy
+jbang app install jreleaser@jreleaser
+
+// Execute by using
+jreleaser <command> [<args>]
+----
+
+If you prefere to run it without installing it you can also use JBang :
+
+[source, console]
+----
 // Download, cache, and run
 jbang jreleaser@jreleaser <command> [<args>]
 ----
+
+=== Verify your project descriptor
+
+Even though JReleaser will do it for you, you can always independently verify if your project descriptor has all the mandatory fields to be published by running :
+
+[source, console]
+----
+jbang pomchecker@kordamp check-maven-central
+----
+
+Please correct you descriptor accordingly and repeat the opertation until everything is clean
 
 == Configure you project
 
@@ -257,14 +288,104 @@ deploy: <2>
 
 You will have to specify a few secret variables, but for obvious security reasons, NOT in a versioned source file...
 
-== Obtaining your maven central credentials.
+== Specifying variables
 
-Login to https://central.sonatype.com/[maven central], click on the top right menu item "View User Tokens", and generate a new token.
+Most of the JReleaser needed credentials are gonna be common for all your project. So setting them globally for JReleaser is a good thing to do. I set them in the JReleaser defaut folder. By default `$HOME/.jreleaser/config.properties` (accepted formats are `PROPERTIES`, `YAML`, `TOML` and `JSON`)
 
-You can specify its name and expiration date. Personally, I chose to go crazy for this :
+https://jreleaser.org/guide/latest/reference/environment.html#_env_files[For more on this].
 
-image::sonatype_token.png[The name of the token is JReleaser]
+I choose `TOML` and here what my file looks like :
+
+[source, toml]
+.~/.jreleaser/config.toml
+----
+JRELEASER_GPG_PUBLIC_KEY = """-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+<place_your_public_key_here>
+-----END PGP PUBLIC KEY BLOCK-----""" <1>
+JRELEASER_GPG_SECRET_KEY = """-----BEGIN PGP PRIVATE KEY BLOCK-----
+
+<place_your_secret_key_here>
+-----END PGP PRIVATE KEY BLOCK-----"""
+
+JRELEASER_DRAFT = true <2>
+JRELEASER_GPG_PASSPHRASE = "❤️ Eminem<3<3"
+JRELEASER_MAVENCENTRAL_RELEASE_DEPLOY_USERNAME = "redacted"
+JRELEASER_MAVENCENTRAL_RELEASE_DEPLOY_TOKEN = "redacted"
+JRELEASER_NEXUS2_SNAPSHOT_DEPLOY_USERNAME = "redacted"
+JRELEASER_NEXUS2_SNAPSHOT_DEPLOY_TOKEN = "redacted" <3>
+----
+<1> Toml supports multiline string using triple double quotes: `"""`
+<2> I only do draft release from local env
+<3> Values obtained in <<obtaining-your-maven-central-credentials>> chapter. They are the same for *maven central* and *nexus2_snapshot*
+
+On more thing, please. I prefere to only do dry run execution locally but that cannot be specified through file at the moment, so I export the value just before running the commands :
+
+[source, console]
+----
+export JRELEASER_DRY_RUN=true && jreleaser full-release
+----
+
+Once you're happy, you can possibly unset the dry run property and relaunch, but I'd rather do the proper release from my _**CI**_, which is Github image:github-icon.svg[Github Icon,20,16] at the moment.
+
+== Running all this from Github image:github-actions.svg[Github actions,height=40]
+
+Here is the minimal github workflow to release a maven application.
+
+[source, yaml]
+----
+name: Release
+on:
+  workflow_dispatch: <1>
+    inputs:
+      version: <2>
+        description: "Release version"
+        required: true
+
+jobs:
+  build:
+    needs: [ precheck ]
+    name: 'Build artefacts'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Check out repository'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.precheck.outputs.HEAD }}
+      - name: 'Set up Java'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: 'maven'
+      - name: 'Build artefacts'
+        run: mvn -B -P release clean deploy
+      - name: Deploy to Central
+        uses: jreleaser/release-action@v2 <3>
+        with:
+          version: latest
+          arguments: 'full-release' <4>
+        env:
+          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          JRELEASER_MAVENCENTRAL_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          JRELEASER_NEXUS2_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          JRELEASER_NEXUS2_TOKEN: ${{ secrets.SONATYPE_PASSWORD }}
+          JRELEASER_PROJECT_VERSION: ${{ github.event.inputs.version }} <2>
+         #JRELEASER_DRAFT: true <6>
+----
+<1> Manually triggered workflow
+<2> The version to be released
+<3> Uses the JReleaser github action (Integration also exists with Gitlab, Gitea and many others)
+<4> Runs the *full-release* workflow
+<5> All the values to be assign in your project secrets
+<6> Wether or not do you want draft releases.
 
 
+== Wrap up
 
+We've only scratch the surface of what can be done with JReleaser. If you want a really full example, https://jreleaser.org/guide/latest/examples/jreleaser.html[here's how JReleaser releases itself], with JReleaser of course.
 
+But at least do you know how to publish your artefacts to Maven Central \o/.
