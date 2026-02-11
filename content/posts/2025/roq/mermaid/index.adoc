@@ -1,10 +1,11 @@
 = ROQ - Adding mermaid to your blog
-include::../../../../../includes/attributes.adoc
+include::../../../../../includes/attributes-fr.adoc[]
 :description: How-to add Mermaid diagram to your Roq powered blog
 :page-tags: roq,*-as-code,qute, HowTos
 :page-image: ningyo-no-zu-bunka.jpg
 :page-author: jtama
 :page-date: 2025-05-14
+:page-key: roq-adding-mermaid-to-your-blog
 :page-series: ROQ
 :qute:
 :toc:

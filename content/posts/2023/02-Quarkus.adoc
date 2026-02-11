@@ -1,5 +1,5 @@
 = Quarkus: Greener, Better, Faster, Stronger
-include::../../../includes/attributes.adoc[]
+include::../../../includes/attributes-fr.adoc[]
 :description: Deep diving into Quarkus extension development
 :page-tags: java,quarkus,extension
 :page-author: jtama

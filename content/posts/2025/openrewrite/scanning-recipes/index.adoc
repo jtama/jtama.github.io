@@ -1,10 +1,11 @@
 = Technique Avancée d'OpenRewrite : Orchestrer des refactorings complexes avec les `ScanningRecipe`
-include::../../../../../includes/attributes.adoc[]
+include::../../../../../includes/attributes-fr.adoc[]
 :description: Quand un simple visiteur ne suffit plus, il faut sortir l'artillerie lourde. Analyser plusieurs fichiers, générer du code ? Place aux _scanning recipes_ !
 :page-tags: openrewrite
 :page-image: panoramic-dental-xray.jpg
 :page-author: jtama
 :page-date: 2025-10-19
+:page-key: technique-avancee-dopenrewrite-orchestrer-des-refactorings-complexes-avec-les-scanningrecipe
 :icon-set:far
 :page-series: openrewrite
 

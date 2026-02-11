@@ -1,14 +1,15 @@
-= Release everything with JReleaser
-include::../../../../includes/attributes.adoc[]
-:description: Stop thinking about how to do it, and start thinking about what to do
-:page-tags: HowTos
+= Tout publier avec JReleaser
+include::../../../../includes/attributes-fr.adoc[]
+:description: Arrêtez de penser au comment et préoccupez-vous du quoi !
+:page-tags: Tutoriels
 :page-image: https://jreleaser.org/images/jreleaser-duke.png
 :page-author: jtama
 :page-date: 2025-11-18
+:page-key: tout-publier-avec-jreleaser
 :toc:
 
 
-[quote, Official tag line]
+[quote, Slogan officiel]
 ____
 https://jreleaser.org/[*JReleaser*,window=_blank]
 
@@ -16,33 +17,34 @@ The quick and effortless way to release your project!
 
 Java, Go, Node, Rust, Zig, Swift, Perl, Python, C/C++, C#, Elixir, Haskell, Ruby, Crystal, and more.
 ____
+ie - _Publier voter projet rapidement et sans effort._
 
-JReleaser is a tool that performs the most common steps related to releasing your application.
+JReleaser est un outil qui effectue les étapes les plus courantes liées à la publication de votre application.
 
-Releasing is not just about publishing a package to an artifact repository. It could also mean signing and generating artifacts, assembling and publishing a changelog, announcing the release on your favorite hub, and even making some noise about it through mail, Zulip, or whatever you want.
+Publier un projet ce n'est pas seulement pousser un paquet vers un dépôt centralisé. Cela peut aussi signifier signer et générer les artefacts, produire un _SBOM_, assembler et publier un _changelog_, annoncer la publication sur votre _hub_ git favori, et même faire le dire sur Zulip, Bluesky et encore bien d'autres choses.
 
-image:https://jreleaser.org/guide/latest/concepts/_images/jreleaser-workflow.png[JReleaser workflow, link=https://jreleaser.org/guide/latest/concepts/workflow.html,window=_blank]
+image:https://jreleaser.org/guide/latest/concepts/_images/jreleaser-workflow.png[Flux de travail JReleaser, link=https://jreleaser.org/guide/latest/concepts/workflow.html,window=_blank]
 
-In this post, we will focus on releasing a Java application.
+Dans cet article, nous nous concentrerons sur la publication d'une application Java.
 
-== Wait, it's not just Maven 🫘!
+== Attendez, ce n'est pas juste Maven 🫘 !
 
-Each packager, each artifact repository has its own specificity.
+Chaque gestionnaire de paquets, chaque dépôt d'artefacts a sa propre spécificité.
 
-As _Maven Central_ is the ultimate goal for Java developers, and as it's also one of the most complicated repositories, this is the one we will be looking at in this blog post. But of course, once you've done that, everything else will be a piece of cake 🧁!
+Comme _Maven Central_ est le but ultime pour les développeurs Java, et comme c'est aussi l'un des dépôts les plus compliqués, c'est celui que nous examinerons dans cet article de blog. Mais bien sûr, une fois que vous aurez fait cela, tout le reste sera du gâteau 🧁 !
 
-== Pre-requisite (tools ⚒️ and credentials 🔐)
+== Pré-requis (outils ⚒️ et identifiants 🔐)
 
 === PGP
 
-==== Generate your PGP key pair
+==== Générer votre paire de clés PGP
 
 [source,console]
 ----
 gpg --generate-key
 ----
 
-.That will prompt the following
+.Cela affichera l'invite suivante
 [%collapsible]
 ====
 [source, console]
@@ -65,22 +67,22 @@ pub   ed25519 2025-11-18 [SC] [expires: 2028-11-17]
 uid                      Guess who's back ? <back_again@shady.com>
 sub   cv25519 2025-11-18 [E] [expires: 2028-11-17]
 ----
-<1> This is your key identifier; keep it somewhere.
+<1> Ceci est votre identifiant de clé ; conservez-le quelque part.
 ====
 
 
-You'll be asked for a passphrase to protect your keypair. Choose wisely, and don't tell anyone
+On vous demandera une phrase de passe pour protéger votre paire de clés. Choisissez judicieusement, et ne le dites à personne.
 
 .🤫chhhhhht!
 [%collapsible]
 ====
-❤️ Eminem<3<3
+❤️ Dave<3<3
 ====
 
 
-If you forget to save your key identifier, you can find it back using
+Si vous oubliez de sauvegarder votre identifiant de clé, vous pouvez le retrouver en utilisant la
 
-.`list-keys` command
+.commande `list-keys`
 [%collapsible]
 ====
 [source,console]
@@ -95,67 +97,69 @@ sub   cv25519 2025-11-18 [E] [expires: 2028-11-17]
 ----
 ====
 
-==== Distribute it icon:key[]
+==== La distribuer icon:key[]
 
-There are sereval public keyservers and amongst them the following are supported `keyserver.ubuntu.com`, `keys.openpgp.org`, `pgp.mit.edu`.
+Il existe plusieurs serveurs de clés publics et parmi ceux-ci, les suivants sont supportés nativement: `keyserver.ubuntu.com`, `keys.openpgp.org`, `pgp.mit.edu`.
 
-The following command will make your key publicly available :
+La commande suivante rendra votre clé publique disponible :
 
 [source,console]
 ----
 gpg --keyserver keyserver.ubuntu.com -send-key 4C2428BC373276273A30B9D4FA30C263300AD893<1>
 ----
-<1> Replace with your own key
+<1> Remplacez par votre propre identifiant
 
-=== Obtaining your maven central credentials.
+[[obtaining-your-maven-central-credentials]]
+=== Obtenir vos identifiants Maven Central.
 
-Login to https://central.sonatype.com/[maven central], click on the top right menu item "View User Tokens", and generate a new token.
+Connectez-vous à https://central.sonatype.com/[maven central], cliquez sur l'élément de menu en haut à droite "View User Tokens", et générez un nouveau jeton.
 
-You can specify its name and expiration date. Personally, I chose to go crazy for this :
+Vous pouvez spécifier son nom et sa date d'expiration. Personnellement, j'ai choisi de faire une folie pour celui-ci :
 
-image::sonatype_token.png[The name of the token is JReleaser]
+image::sonatype_token.png[Le nom du jeton est JReleaser]
 
-=== Install JReleaser
+=== Installer JReleaser
 
-There are many ways https://jreleaser.org/guide/latest/install.html[to install JReleaser,window=_blank], but my goto for local environment is to use https://www.jbang.dev/[JBang,window=_blank] :
+Il existe de nombreuses façons https://jreleaser.org/guide/latest/install.html[d'installer JReleaser,window=_blank], mais mon choix pour mon environnement de dev est d'utiliser https://www.jbang.dev/[JBang,window=_blank] :
 
 [source, console]
 ----
-// Download, and install localy
+// Télécharge, et installe localement
 jbang app install jreleaser@jreleaser
 
-// Execute by using
+// Exécuter en utilisant
 jreleaser <command> [<args>]
 ----
 
-If you prefere to run it without installing it, you can also use JBang :
+Si vous préférez l'exécuter sans l'installer, vous pouvez aussi utiliser JBang :
 
 [source, console]
 ----
-// Download, cache, and run
-jbang jreleaser@jreleaser <command> [<args>]
+// Télécharger, mettre en cache, et exécuter
+jbang jreleaser@jreleaser <command> [<args>] <1>
 ----
+<1> Si vous ne l'aviez pas compris, j'aime bien JBang
 
-=== Verify your project descriptor
+=== Vérifier votre descripteur de projet
 
-Even though JReleaser will do it for you, you can always independently verify if your project descriptor has all the mandatory fields to be published by running :
+Même si JReleaser le fera pour vous, vous pouvez toujours vérifier indépendamment si votre descripteur de projet contient tous les champs obligatoires pour être publié en exécutant :
 
 [source, console]
 ----
 jbang pomchecker@kordamp check-maven-central
 ----
 
-Please correct your descriptor accordingly and repeat the operation until everything is clean
+Corriger votre descripteur en conséquence et répéter l'opération jusqu'à ce que tout soit propre.
 
-== Configure your project
+== Configurer votre projet
 
-This is a 2 steps process. You need to configure JReleaser but also your build process to generate all the necessary artefacts for publication.
+C'est un processus en 2 étapes. Vous devez configurer JReleaser mais aussi votre processus de build pour générer tous les artefacts nécessaires à la publication (ici par exemple la javadoc DOIT être générée).
 
-=== The Maven configuration
+=== La configuration Maven
 
-Add a release profile to your `pom.xml` :
+Ajoutez un profil `release` à votre `pom.xml` :
 
-.release profile
+.profil release
 [%collapsible]
 ====
 [source, xml]
@@ -204,23 +208,26 @@ Add a release profile to your `pom.xml` :
     </build>
 </profile>
 ----
-<1> [[local-deployment-repository]]You can of course change this value
+<1> [[local-deployment-repository]]Vous pouvez bien sûr changer cette valeur
 ====
 
-=== The Gradle configuration
+=== La configuration Gradle
 
-If you do use Gradle, I'm sure you know how to produce the equivalent configuration. I don't.
+Si vous utilisez Gradle, je suis sûr que vous savez comment produire la configuration équivalente. Moi non.
 
-=== The JReleaser configuration
+=== La configuration JReleaser
 
-You can initialize your project configuration with the following command :
+Vous pouvez initialiser la configuration de votre projet avec la commande suivante :
 
 [source, console]
 ----
 jbang jreleaser@jreleaser init
+//ou si vous l'avez installer localement
+jreleaser init
+
 ----
 
-This will generate your project configuration file that you will have to amend following your needs.
+Cela générera votre fichier de configuration de projet que vous devrez modifier selon vos besoins.
 
 .jreleaser.yaml
 [%collapsible]
@@ -256,7 +263,7 @@ distributions:
 ====
 
 
-The `distributions` and `github` can be removed if you only want `maven` deployment, anyway you have to specify the maven deployment configuration by adding the following to your config file :
+Les sections `distributions` et `github` peuvent être supprimées si vous voulez seulement un déploiement `maven`. Vous devrez par contre spécifier la configuration de déploiement maven en ajoutant ce qui suit à votre fichier de configuration :
 
 [source, yaml]
 ----
@@ -283,19 +290,19 @@ deploy: <2>
         stagingRepositories:
           - target/staging-deploy <3>
 ----
-<1> Lets JRelease do the artefact signing for you
-<2> Which maven repository to use for *release* and *snapshot* deployments
-<3> Where to find the artefacts locally. Must match <<local-deployment-repository, the value used in your project configuration>>.
+<1> Laisse JReleaser faire la signature des artefacts pour vous
+<2> Quel dépôt maven utiliser pour les déploiements *release* et *snapshot*
+<3> Où trouver les artefacts localement. Doit correspondre à <<local-deployment-repository, la valeur utilisée dans votre configuration de projet>>.
 
-You will have to specify a few secret variables, but for obvious security reasons, NOT in a versioned source file...
+Vous devrez spécifier quelques variables secrètes, mais pour des raisons de sécurité évidentes, PAS dans un fichier source versionné...
 
-== Specifying variables
+== Spécifier les variables
 
-Most of the JReleaser needed credentials are gonna be common for all your project. So setting them globally for JReleaser is a good thing to do. I set them in the JReleaser defaut folder. By default `$HOME/.jreleaser/config.properties` (accepted formats are `PROPERTIES`, `YAML`, `TOML` and `JSON`)
+La plupart des identifiants nécessaires à JReleaser seront communs à tous vos projets. Donc les définir globalement pour JReleaser est une bonne chose. Je les définis dans le dossier par défaut de JReleaser. Par défaut `$HOME/.jreleaser/config.properties` (les formats acceptés sont `PROPERTIES`, `YAML`, `TOML` et `JSON`)
 
-https://jreleaser.org/guide/latest/reference/environment.html#_env_files[For more on this].
+https://jreleaser.org/guide/latest/reference/environment.html#_env_files[Pour en savoir plus à ce sujet].
 
-I choose `TOML` and here what my file looks like :
+J'ai choisi `TOML` et voici à quoi ressemble mon fichier :
 
 [source, toml]
 .~/.jreleaser/config.toml
@@ -310,28 +317,28 @@ JRELEASER_GPG_SECRET_KEY = """-----BEGIN PGP PRIVATE KEY BLOCK-----
 -----END PGP PRIVATE KEY BLOCK-----"""
 
 JRELEASER_DRAFT = true <2>
-JRELEASER_GPG_PASSPHRASE = "❤️ Eminem<3<3"
+JRELEASER_GPG_PASSPHRASE = "❤️ Dave<3<3"
 JRELEASER_MAVENCENTRAL_RELEASE_DEPLOY_USERNAME = "redacted"
 JRELEASER_MAVENCENTRAL_RELEASE_DEPLOY_TOKEN = "redacted"
 JRELEASER_NEXUS2_SNAPSHOT_DEPLOY_USERNAME = "redacted"
 JRELEASER_NEXUS2_SNAPSHOT_DEPLOY_TOKEN = "redacted" <3>
 ----
-<1> Toml supports multiline string using triple double quotes: `"""`
-<2> I only do draft release from local env
-<3> Values obtained in <<obtaining-your-maven-central-credentials>> chapter. They are the same for *maven central* and *nexus2_snapshot*
+<1> TOML supporte les chaînes multilignes utilisant des triples _quotes_ : `"""`
+<2> Je fais seulement des "draft release" depuis l'environnement de dev
+<3> Valeurs obtenues dans le chapitre <<obtaining-your-maven-central-credentials>>. Ce sont les mêmes pour *maven central* et *nexus2_snapshot*
 
-One more thing, please. I prefere to only do dry run execution locally but that cannot be specified through file at the moment, so I export the value just before running the commands :
+Une dernière chose, je préfère faire uniquement des _dry run_ localement, mais cela ne peut pas être spécifié via un fichier pour le moment, donc j'exporte la valeur juste avant de lancer les commandes:
 
 [source, console]
 ----
 export JRELEASER_DRY_RUN=true && jreleaser full-release
 ----
 
-Once you're happy, you can possibly unset the dry run property and relaunch, but I'd rather do the proper release from my _**CI**_, which is Github image:github-icon.svg[Github Icon,20,16] at the moment.
+Une fois que vous êtes satisfait, vous pouvez éventuellement désactiver la propriété dry run et relancer, mais je préfère faire la vraie publication depuis ma _**CI**_, qui est Github image:github-icon.svg[Icône Github,20,16] pour le moment.
 
-== Running all this from Github image:github-actions.svg[Github actions,height=40]
+== Exécuter tout ça depuis Github image:github-actions.svg[Github actions,height=40]
 
-Here is the minimal github workflow to release a maven application.
+Voici le workflow github minimal pour publier une application maven.
 
 [source, yaml]
 ----
@@ -377,16 +384,16 @@ jobs:
           JRELEASER_PROJECT_VERSION: ${{ github.event.inputs.version }} <2>
          #JRELEASER_DRAFT: true <6>
 ----
-<1> Manually triggered workflow
-<2> The version to be released. It could also be retrieved from your maven project.
-<3> Uses the JReleaser github action (Integration also exists with Gitlab, Gitea and many others)
-<4> Runs the *full-release* workflow
-<5> All the values to be assign in your project secrets
-<6> Wether or not do you want draft releases.
+<1> Workflow déclenché manuellement
+<2> La version à publier. Elle pourrait aussi être récupérée depuis votre projet maven.
+<3> Utilise la github action JReleaser (Il existe aussi des intégrations avec Gitlab, Gitea et bien d'autres)
+<4> Exécute le workflow *full-release*
+<5> Toutes les valeurs à assigner dans les secrets de votre projet
+<6> Si vous voulez ou non faire des "draft releases".
 
 
-== Wrap up
+== Conclusion
 
-We've only scratch the surface of what can be done with JReleaser. If you want a really full example, https://jreleaser.org/guide/latest/examples/jreleaser.html[here's how JReleaser releases itself], with JReleaser of course.
+Nous n'avons fait qu'effleurer la surface de ce qui peut être fait avec JReleaser. Si vous voulez un exemple vraiment complet, https://jreleaser.org/guide/latest/examples/jreleaser.html[voici comment JReleaser se publie lui-même], avec JReleaser bien sûr.
 
-But at least you know how to publish your artefacts to Maven Central 🗻 \o/ .
+Mais au moins, vous savez comment publier vos artefacts sur Maven Central 🗻 \o/ . Ce soir ça va briller en société.

@@ -1,9 +1,10 @@
 = To Gather or not to Gather? That is the question.
-include::../../../includes/attributes.adoc[]
+include::../../../includes/attributes-fr.adoc[]
 :description: Et si on codait des Gatherer ?
 :page-tags: java,gatherer,preview
 :page-image: https://images.unsplash.com/photo-1530210124550-912dc1381cb8?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3
 :page-author: jtama
+:page-key: to-gather-or-not-to-gather-that-is-the-question
 :toc:
 :toc-title: Table des matières
 

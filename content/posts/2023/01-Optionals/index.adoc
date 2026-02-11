@@ -1,5 +1,5 @@
 = Vous allez finir par les aimer les `Optionals` ?
-include::../../../../includes/attributes.adoc[]
+include::../../../../includes/attributes-fr.adoc[]
 :page-tags: java,optional
 :page-image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/5f560xqwbgrev920b346.jpg
 :page-series: Java

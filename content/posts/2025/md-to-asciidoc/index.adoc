@@ -1,10 +1,11 @@
-= Even if you don't like MD, sometimes you don't have a choice
-include::../../../../includes/attributes.adoc[]
-:description: How-to convert Markdown document to asciidoc
-:page-tags: markdown, asciidoc, HowTos
+= Même si quand on n'aime pas le Markdown, parfois on n'a pas le choix
+include::../../../../includes/attributes-fr.adoc[]
+:description: Comment continuer à ecrire avec AsciiDoc et _transpiler_ en Markdown
+:page-tags: markdown, asciidoc, Tutoriels
 :page-image: pexels-charlotte-may-5946786.jpg
 :page-author: jtama
 :page-date: 2025-06-04
+:page-key: even-if-you-dont-like-md-sometimes-you-dont-have-a-choice
 
 == TL;DR;
 
@@ -15,43 +16,43 @@ downdoc -o out.md README.adoc
 
 
 
-icon:skull[*4] _Opinions are my own. I may have to exagerate them for obvious narrative reasons._
+icon:skull[*4] _Les opinions exprimées sont les miennes. Il est possible que je les exagère pour des raisons narratives évidentes._
 
-Yes, you hate *Markdown*, and yet it seems to spread like a disease.
+Vous détestez le *Markdown*. Et vous avez raison ! Et pourtant il semble se répandre comme une pandémie.
 
-Yet, textual format documentation is an absolute necessity for us developers, and I am sure you already have found your challenger. I am talking, of course, about *ASCIIDOC*
+Le _every thing as code_ étant évidemment votre mojo, la _documentation_ ne pouvais pas y échapper. Et comme toute personnes sensée vous avez fait votre choix. Et il va sans dire que vous avez choisi le format *ASCIIDOC*.
 
-Guess you would not be here if you hadn't.
+J'imagine que vous ne seriez pas là si ce n'était pas le cas.
 
-But there are some cases where you just don't have a choice and have to produce *Markdown*. 😢
+Et alors que tout va pour le mieux dans le meilleur des mondes arrive ce jour où les planètes se désalignent. Le jour où l'on vous dit que vous n'avez tout simplement pas le choix et devez produire du *Markdown*. 😢
 
-image::saaad.jpg[Saaad keanu crying about markdown flavours]
+image::saaad.jpg[Saaad keanu pleurant sur les _markdown flavors_]
 
-== You are not doomed.
+== Vous n'êtes pas condamnés.
 
-It seems that https://github.com/mojavelinux[Dan Allen], father of https://asciidoctor.org/[Asciidoctor], agrees with you 100%.
+Il semble que https://github.com/mojavelinux[Dan Allen], père d'https://asciidoctor.org/[Asciidoctor], soit d'accord avec vous à 100 %. Il vous envoie d'ailleurs ses meilleurs vœux.
 
-Strange, isn't it?
+Étrange, n'est-ce pas ?
 
-Anyway, he also fathered https://github.com/opendevise/downdoc[Downdoc]... That name is absolutely marvelous, and here is its headline:
+Quoi qu'il en soit, il a également engendré https://github.com/opendevise/downdoc[Downdoc]... Ce nom est absolument merveilleux, et voici son slogan :
 
 > Rapidly down-converts AsciiDoc to Markdown.
 
-You can either use _npx_ to use it :
+Vous pouvez soit utiliser _npx_ :
 
 [source,shell]
 ----
 npx downdoc -o out.md README.adoc
 ----
 
-Or install it using https://mise.jdx.dev/[mise]:
+Ou l'installer en utilisant https://mise.jdx.dev/[mise] :
 
 [source,shell]
 ----
-mise use npm:downdoc@latest
+mise use -g npm:downdoc@latest
 downdoc -v
 ----
 
 === All hail to _ASCIIDOC_
 
-All images are free to use.footnote:[https://www.pexels.com/photo/crop-person-squeezing-orange-in-bowl-5946786/[Charlotte May]]
+Toutes les images sont libres de droits.footnote:[https://www.pexels.com/photo/crop-person-squeezing-orange-in-bowl-5946786/[Charlotte May]]

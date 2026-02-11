@@ -1,10 +1,11 @@
 = Technique Avancée d'OpenRewrite : Utiliser les messages pour implémenter des logiques complexes
-include::../../../../../includes/attributes.adoc[]
+include::../../../../../includes/attributes-fr.adoc[]
 :description: Comment mettre en place des actions coordonnées sur plusieurs niveaux d'AST...
 :page-tags: openrewrite
 :page-image: pexels-pixabay-260551.jpg
 :page-author: jtama
 :page-date: 2025-09-05
+:page-key: technique-avancee-dopenrewrite-utiliser-les-messages-pour-implementer-des-logiques-complexes
 :icon-set:far
 :page-series: openrewrite
 :qute: true
