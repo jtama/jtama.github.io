@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta property="og:title" content="{ blog.sunix.org }">
+<title>{ blog.sunix.org }</title>
+<meta property="og:description" content="Sunix&#39;s personal blog site about Java, Cloud, and Open Source Software Development.">
+<meta property="og:url" content="https://blog.sunix.org/">
+<meta property="og:site_name" content="{ blog.sunix.org }">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@__sunix_">
+<meta name="twitter:creator" content="@__sunix_">
+<meta name="twitter:title" content="{ blog.sunix.org }">
+<meta name="twitter:description" content="Sunix&#39;s personal blog site about Java, Cloud, and Open Source Software Development.">
+<meta name="twitter:url" content="https://blog.sunix.org/">
+
+<meta property="og:type" content="website">
+<meta property="og:image" content="//assets/hero-illustration.webp">
+<meta name="twitter:image" content="//assets/hero-illustration.webp">
+
+<meta name="keywords" content="sunix, Java, Cloud, Software Development, FOSS, Open Source, Eclipse JKube, Fabric8 Kubernetes Java Client, Eclipse Che, Eclipse Theia, ParisJUG, Devoxx France, Java Community, Java Champion">
+
+<link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+<link rel="alternate icon" href="/images/favicon.ico">
+<link rel="canonical" href="https://blog.sunix.org/">
+<link rel="alternate" type="application/atom+xml" title="{ blog.sunix.org }" href="//feed.xml" />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          slate: {
+            50: '#f8fafc',
+            100: '#f1f5f9',
+            200: '#e2e8f0',
+            300: '#cbd5e1',
+            400: '#94a3b8',
+            500: '#64748b',
+            600: '#475569',
+            700: '#334155',
+            800: '#1e293b',
+            900: '#0f172a',
+            950: '#020617',
+          }
+        }
+      }
+    }
+  }
+</script>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Glass+Antiqua&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    /* Light Mode Palette (Les Fleurs) */
+    --mucha-bg: #FDF5E6;
+    --mucha-card-bg: #FFFFFF;
+    --mucha-text: #2C1810;
+    --mucha-gold: #D4AF37;
+    --mucha-sage: #8DA399;
+    --mucha-rose: #E6B8B8;
+    --mucha-mauve: #D4C1EC;
+    --mucha-blue: #A0C4C8;
+    --mucha-border: #D4AF37;
+    --mucha-shadow: rgba(212, 175, 55, 0.1);
+    
+    --font-heading: 'Glass Antiqua', cursive;
+    --font-body: 'Cormorant Garamond', serif;
+  }
+
+  /* Dark Mode Palette (Midnight/Absinthe) */
+  html.dark {
+    --mucha-bg: #151E1C; /* Deep Jungle/Black */
+    --mucha-card-bg: #1E2926;
+    --mucha-text: #E6D2AA; /* Pale Gold text */
+    --mucha-gold: #C5A059;
+    --mucha-sage: #3A5F56; /* Darker Sage */
+    --mucha-rose: #8B4A4A; /* Muted Rose */
+    --mucha-mauve: #5D4B66;
+    --mucha-blue: #3E5F63;
+    --mucha-border: #5C4826;
+    --mucha-shadow: rgba(0, 0, 0, 0.5);
+  }
+
+  /* Accessibility & Base Styles */
+  body {
+    background-color: var(--mucha-bg) !important;
+    color: var(--mucha-text) !important;
+    font-family: var(--font-body) !important;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    /* Art Nouveau Page Border */
+    border: 12px solid var(--mucha-gold);
+    min-height: 100vh;
+    position: relative;
+    box-sizing: border-box;
+  }
+  
+  html.dark body {
+    background-image: radial-gradient(circle at 50% 50%, rgba(20, 30, 28, 1) 0%, #0F1514 100%);
+  }
+  
+  /* Corner Ornaments (Bold & Visible) */
+  body::before, body::after {
+    content: "";
+    position: fixed;
+    width: 150px;
+    height: 150px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 1;
+  }
+  
+  body::before {
+    top: 12px;
+    left: 12px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23D4AF37' d='M0 0v100c0-55.2 44.8-100 100-100H0z'/%3E%3Ccircle cx='30' cy='30' r='15' fill='%23E6B8B8'/%3E%3Cpath fill='none' stroke='%233A5F56' stroke-width='2' d='M10 90Q10 10 90 10'/%3E%3C/svg%3E");
+  }
+  
+  body::after {
+    bottom: 12px;
+    right: 12px;
+    transform: rotate(180deg);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23D4AF37' d='M0 0v100c0-55.2 44.8-100 100-100H0z'/%3E%3Ccircle cx='30' cy='30' r='15' fill='%23E6B8B8'/%3E%3Cpath fill='none' stroke='%233A5F56' stroke-width='2' d='M10 90Q10 10 90 10'/%3E%3C/svg%3E");
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-extrabold {
+    font-family: var(--font-heading) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em;
+    line-height: 1.4 !important;
+    margin-bottom: 1.5rem !important;
+    max-width: 90%;
+    color: var(--mucha-text) !important; /* Adapt to dark mode */
+  }
+  
+  /* Header adjustments */
+  header .rounded-2xl {
+    border: 1px solid var(--mucha-gold) !important;
+    border-bottom: 3px solid var(--mucha-sage) !important;
+    background: var(--mucha-card-bg) !important;
+    box-shadow: 0 4px 15px var(--mucha-shadow) !important;
+  }
+
+  /* Ornamental Separator - Stronger */
+  .mucha-separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4rem 0;
+    opacity: 1;
+  }
+  .mucha-separator::before, .mucha-separator::after {
+    content: "";
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--mucha-gold), transparent);
+  }
+  .mucha-separator i {
+    margin: 0 1.5rem;
+    color: var(--mucha-rose);
+    font-size: 2rem;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
+  }
+
+  /* Article cards */
+  article, .group {
+    padding: 4rem 3.5rem !important;
+    border: 1px solid var(--mucha-sage) !important;
+    background: linear-gradient(135deg, var(--mucha-card-bg), var(--mucha-bg)) !important;
+    box-shadow: 8px 8px 0px var(--mucha-shadow) !important;
+    margin-bottom: 3rem;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  /* Neutralize clipping */
+  .text-transparent, .bg-clip-text {
+    color: var(--mucha-text) !important;
+    background-clip: unset !important;
+    -webkit-background-clip: unset !important;
+    background-image: none !important;
+    -webkit-text-fill-color: var(--mucha-text) !important;
+  }
+
+  /* Clean up modern backgrounds */
+  .bg-slate-50, .dark\:bg-slate-950, .bg-white\/70, .dark\:bg-slate-950\/60 {
+    background: none !important;
+    background-color: var(--mucha-bg) !important;
+    z-index: 1; /* Ensure text is above */
+  }
+
+  /* Gradients & Buttons */
+  .bg-gradient-to-br, .bg-gradient-to-r {
+    background: none !important;
+  }
+
+  a[class*="bg-gradient-to"] {
+    background: linear-gradient(to right, var(--mucha-sage), var(--mucha-blue)) !important;
+    color: #FDF5E6 !important; /* Ensure light text on buttons */
+    font-weight: 700 !important;
+    text-shadow: none !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    border-radius: 20px !important;
+  }
+  
+  a[class*="bg-gradient-to"]:hover {
+    background: linear-gradient(to right, var(--mucha-rose), var(--mucha-mauve)) !important;
+    color: #2C1810 !important; /* Dark text on brighter hover */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--mucha-shadow) !important;
+  }
+
+  /* Tags */
+  span[class*="bg-cyan"], a[class*="bg-cyan"], a[class*="bg-purple"] {
+    background-color: rgba(141, 163, 153, 0.2) !important;
+    border: 1px solid var(--mucha-sage) !important;
+    color: var(--mucha-text) !important;
+  }
+
+  /* Links */
+  a {
+    color: var(--mucha-gold) !important;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  a:hover {
+    color: var(--mucha-sage) !important;
+  }
+
+  /* Icons */
+  i {
+    color: var(--mucha-text);
+  }
+  
+  .blur-3xl { display: none !important; }
+  .noise { opacity: 0.05 !important; mix-blend-mode: overlay; }
+</style>
+
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+
+<body class="font-sans text-slate-900 dark:text-slate-100 bg-slate-50 dark:bg-slate-950">
+
+<!-- Background decor -->
+<div class="pointer-events-none fixed inset-0 -z-10">
+  <div class="absolute inset-0 opacity-70 dark:opacity-50 noise"></div>
+  <div class="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full blur-3xl
+              bg-gradient-to-br from-fuchsia-400/30 via-cyan-300/25 to-amber-300/25 dark:from-fuchsia-500/18 dark:via-cyan-400/14 dark:to-amber-300/12"></div>
+  <div class="absolute -bottom-48 right-[-120px] h-[420px] w-[420px] rounded-full blur-3xl
+              bg-gradient-to-br from-emerald-400/25 via-violet-400/20 to-sky-300/20 dark:from-emerald-400/12 dark:via-violet-400/12 dark:to-sky-300/10"></div>
+</div>
+
+<header class="sticky top-0 z-50">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <div class="mt-4 rounded-2xl border border-white/30 dark:border-white/10 bg-white/70 dark:bg-slate-950/60 backdrop-blur shadow-sm">
+      <div class="flex items-center justify-between px-4 sm:px-6 py-3">
+        <a href="/" class="flex items-center gap-3">
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl
+                       bg-gradient-to-br from-cyan-400 via-purple-400 to-pink-400 text-white shadow-lg hover:shadow-[0_0_20px_rgba(34,211,238,0.6)] transition-all duration-300">
+            <span class="font-extrabold">S</span>
+          </span>
+          <span class="font-extrabold tracking-tight text-lg">{ blog.sunix.org }</span>
+          <span class="hidden sm:inline text-xs font-medium text-slate-600 dark:text-slate-400">
+            Java Devops AI and FOSS
+          </span>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-700 dark:text-slate-300">
+          <a class="hover:text-slate-900 dark:hover:text-white" href="/archives">Articles</a>
+          <a class="hover:text-slate-900 dark:hover:text-white" href="/about">About</a>
+          <div class="relative cv-menu-container">
+            <a class="hover:text-slate-900 dark:hover:text-white cursor-pointer" href="/cv">CV</a>
+            <div class="cv-submenu absolute left-0 top-full pt-2 hidden w-56 z-50">
+              <div class="rounded-xl border border-white/30 dark:border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur shadow-lg py-2">
+                <a class="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg mx-2" href="/cv#professional-summary">Professional Summary</a>
+                <a class="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg mx-2" href="/cv#open-source-projects">Open Source Projects</a>
+                <a class="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg mx-2" href="/cv#experience">Experience</a>
+                <a class="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg mx-2" href="/cv#community-involvement">Community Involvement</a>
+                <a class="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg mx-2" href="/cv#conferences-talks">Conferences &amp; Talks</a>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <div class="flex items-center gap-2">
+          <button
+            id="themeToggle"
+            class="inline-flex items-center justify-center rounded-xl border border-slate-200 dark:border-white/10
+                   bg-white/80 dark:bg-white/5 px-3 py-2 text-sm font-semibold hover:bg-white transition"
+            aria-label="Toggle dark mode"
+            type="button"
+          >
+            <span class="dark:hidden">🌙</span>
+            <span class="hidden dark:inline">☀️</span>
+          </button>
+
+          <button
+            id="mobileMenuToggle"
+            class="md:hidden inline-flex items-center justify-center rounded-xl px-3 py-2 border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/5 hover:bg-white transition"
+            aria-label="Open menu"
+            type="button"
+          >
+            <span class="sr-only">Open menu</span>
+            <svg class="h-6 w-6 text-slate-900 dark:text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobileMenu" class="hidden md:hidden border-b border-white/30 dark:border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur">
+    <div class="space-y-1 px-4 py-4">
+      <a class="block rounded-lg px-3 py-2 text-base font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800" href="/archives">Articles</a>
+      <a class="block rounded-lg px-3 py-2 text-base font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800" href="/about">About</a>
+      <a class="block rounded-lg px-3 py-2 text-base font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800" href="/cv">CV</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Hero Section -->
+  <div class="relative overflow-hidden pt-16 pb-20 sm:pt-24 sm:pb-32">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white drop-shadow-sm">
+        <span class="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500">
+          Coding with Passion
+        </span>
+        <span class="block mt-2">Sharing the Journey</span>
+      </h1>
+      <p class="mt-6 text-lg sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
+        Welcome to my digital garden. I write about <span class="font-semibold text-slate-900 dark:text-white">Java</span>,
+        <span class="font-semibold text-slate-900 dark:text-white">Cloud Native</span> technologies, and
+        <span class="font-semibold text-slate-900 dark:text-white">Open Source</span> development.
+      </p>
+
+      <div class="mt-8 flex justify-center gap-4">
+        <a
+          href="/about"
+          class="inline-flex items-center justify-center rounded-2xl px-5 py-3 font-semibold text-slate-900 dark:text-white
+                 border border-slate-200 dark:border-white/20 bg-white/60 dark:bg-white/5 hover:bg-white hover:scale-105 transition-all duration-300"
+        >
+          More about me
+        </a>
+      </div>
+      
+      <div class="mt-6 flex flex-col sm:flex-row gap-3">
+        <a
+          href="#articles"
+          class="inline-flex items-center justify-center rounded-2xl px-5 py-3 font-semibold text-white
+                 bg-gradient-to-r from-cyan-400 via-yellow-400 to-pink-400 shadow-glow hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] hover:scale-105 transition-all duration-300"
+        >
+          Explore Articles →
+        </a>
+      </div>
+
+      <!-- Small stats -->
+      <div class="mt-8 grid grid-cols-3 gap-3 max-w-xl mx-auto">
+        <div class="rounded-2xl border border-white/40 dark:border-white/10 bg-white/60 dark:bg-white/5 p-4">
+          <div class="text-sm text-slate-600 dark:text-slate-400">Focus</div>
+          <div class="mt-1 font-extrabold">Dev + Ops</div>
+        </div>
+        <div class="rounded-2xl border border-white/40 dark:border-white/10 bg-white/60 dark:bg-white/5 p-4">
+          <div class="text-sm text-slate-600 dark:text-slate-400">Ton</div>
+          <div class="mt-1 font-extrabold">Pragmatique</div>
+        </div>
+        <div class="rounded-2xl border border-white/40 dark:border-white/10 bg-white/60 dark:bg-white/5 p-4">
+          <div class="text-sm text-slate-600 dark:text-slate-400">Vibe</div>
+          <div class="mt-1 font-extrabold">Open Source</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Articles -->
+  <div id="articles" class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pb-20">
+    <h2 class="text-3xl font-bold mb-8 text-slate-900 dark:text-white">Latest Articles</h2>
+
+    <div class="space-y-12">
+<article class="rounded-[24px] border border-white/40 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur p-6 sm:p-8 shadow-sm hover:shadow-[0_0_40px_rgba(139,92,246,0.3),0_0_20px_rgba(34,211,238,0.2)] hover:border-fuchsia-400/50 dark:hover:border-fuchsia-500/30 transition-all duration-300">
+  <!-- Tags at the top -->
+  <div class="flex flex-wrap gap-2 mb-4">
+    <span class="text-xs font-bold rounded-full px-3 py-1 bg-cyan-200/70 text-cyan-900 dark:bg-cyan-300/20 dark:text-cyan-200 border border-cyan-300/40 dark:border-cyan-300/20">
+      articles
+    </span>
+    <a href="/tags#Tennis" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Tennis
+    </a>
+    <a href="/tags#Browser Automation" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Browser Automation
+    </a>
+    <a href="/tags#JavaScript" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      JavaScript
+    </a>
+    <a href="/tags#Problem Solving" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Problem Solving
+    </a>
+    <a href="/tags#Hacking" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Hacking
+    </a>
+  </div>
+
+  <!-- Title -->
+  <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight leading-snug mb-3">
+    <a href="/posts/feeling-powerful-with-just-a-browser-working-around-a-broken-tennis-booking-system/" class="hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-cyan-500 hover:to-purple-500 transition">Feeling Powerful with Just a Browser: Working Around a Broken Tennis Booking System</a>
+  </h3>
+
+  <!-- Excerpt -->
+  <p class="mt-3 text-slate-700 dark:text-slate-300 leading-relaxed">
+    I don&#39;t get many chances to play tennis. Between work, everyday constraints, and lately some pretty uncooperative weather, court time is rare and valuable. So when I finally found a slot that worked — and the booking system refused to give it back — frustration set in fast.
+  </p>
+
+  <!-- Date -->
+  <div class="mt-4">
+    <time class="text-sm font-semibold text-slate-600 dark:text-slate-400" datetime="2026-01-11T00:00Z[Etc/UTC]">
+      Jan 11, 2026
+    </time>
+  </div>
+
+  <!-- Read More button -->
+  <div class="mt-3">
+    <a
+      href="/posts/feeling-powerful-with-just-a-browser-working-around-a-broken-tennis-booking-system/"
+      class="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 text-white hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 shadow-md hover:shadow-lg transition-all"
+    >
+      Read more <span>→</span>
+    </a>
+  </div>
+</article>
+
+<div class="mucha-separator" aria-hidden="true">
+  <i class="fas fa-seedling"></i>
+</div>
+
+<article class="rounded-[24px] border border-white/40 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur p-6 sm:p-8 shadow-sm hover:shadow-[0_0_40px_rgba(139,92,246,0.3),0_0_20px_rgba(34,211,238,0.2)] hover:border-fuchsia-400/50 dark:hover:border-fuchsia-500/30 transition-all duration-300">
+  <!-- Tags at the top -->
+  <div class="flex flex-wrap gap-2 mb-4">
+    <span class="text-xs font-bold rounded-full px-3 py-1 bg-cyan-200/70 text-cyan-900 dark:bg-cyan-300/20 dark:text-cyan-200 border border-cyan-300/40 dark:border-cyan-300/20">
+      articles
+    </span>
+    <a href="/tags#GitHub Copilot" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      GitHub Copilot
+    </a>
+    <a href="/tags#AI-Assisted Development" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      AI-Assisted Development
+    </a>
+    <a href="/tags#PWA" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      PWA
+    </a>
+    <a href="/tags#Side Projects" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Side Projects
+    </a>
+    <a href="/tags#Developer Productivity" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Developer Productivity
+    </a>
+  </div>
+
+  <!-- Title -->
+  <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight leading-snug mb-3">
+    <a href="/posts/building-a-gift-card-management-app-with-github-copilot-my-first-completed-side-project/" class="hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-cyan-500 hover:to-purple-500 transition">Building a Gift Card Management App with GitHub Copilot: My First Completed Side Project</a>
+  </h3>
+
+  <!-- Excerpt -->
+  <p class="mt-3 text-slate-700 dark:text-slate-300 leading-relaxed">
+    For years, I’ve started side projects only to abandon them when the initial excitement faded or I got stuck on tedious details. But recently, I finally broke that cycle. I built and deployed my first complete side project: a Gift Card Management App.
+  </p>
+
+  <!-- Date -->
+  <div class="mt-4">
+    <time class="text-sm font-semibold text-slate-600 dark:text-slate-400" datetime="2025-12-29T00:00Z[Etc/UTC]">
+      Dec 29, 2025
+    </time>
+  </div>
+
+  <!-- Read More button -->
+  <div class="mt-3">
+    <a
+      href="/posts/building-a-gift-card-management-app-with-github-copilot-my-first-completed-side-project/"
+      class="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 text-white hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 shadow-md hover:shadow-lg transition-all"
+    >
+      Read more <span>→</span>
+    </a>
+  </div>
+</article>
+
+      <div class="flex justify-center mt-12">
+        <a class="inline-flex items-center justify-center rounded-2xl px-6 py-3 font-semibold text-slate-900 dark:text-white
+                  border border-slate-200 dark:border-white/20 bg-white/60 dark:bg-white/5 hover:bg-white hover:scale-105 transition-all duration-300" href="/archives">
+          All Articles →
+        </a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="border-t border-white/30 dark:border-white/10 bg-white/40 dark:bg-white/5 backdrop-blur">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <div>
+        <div class="font-extrabold">{ blog.sunix.org }</div>
+        <div class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+          © <span id="year"></span> — Java Devops AI and FOSS
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-4 text-2xl text-slate-700 dark:text-slate-300">
+        <a class="hover:text-slate-900 dark:hover:text-white transition-transform hover:-translate-y-1" href="/feed.xml" aria-label="RSS Feed">
+          <i class="fas fa-rss" aria-hidden="true"></i>
+        </a>
+        <a class="hover:text-slate-900 dark:hover:text-white transition-transform hover:-translate-y-1" href="https://github.com/sunix" aria-label="GitHub">
+          <i class="fab fa-github" aria-hidden="true"></i>
+        </a>
+        <a class="hover:text-slate-900 dark:hover:text-white transition-transform hover:-translate-y-1" href="https://twitter.com/__sunix_" aria-label="Twitter / X">
+          <i class="fab fa-twitter" aria-hidden="true"></i>
+        </a>
+        <a class="hover:text-slate-900 dark:hover:text-white transition-transform hover:-translate-y-1" href="https://bsky.app/profile/sunix.org" aria-label="Bluesky">
+          <i class="fas fa-cloud" aria-hidden="true"></i>
+        </a>
+        <a class="hover:text-slate-900 dark:hover:text-white transition-transform hover:-translate-y-1" href="https://www.linkedin.com/in/sun-seng-david-tan-b05a684" aria-label="LinkedIn">
+          <i class="fab fa-linkedin" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Dark mode toggle
+  const toggle = document.getElementById("themeToggle");
+  const root = document.documentElement;
+
+  // Initialize theme
+  const saved = localStorage.getItem("theme");
+  if (saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+    root.classList.add("dark");
+  } else {
+    root.classList.remove("dark");
+  }
+
+  toggle?.addEventListener("click", () => {
+    root.classList.toggle("dark");
+    localStorage.setItem("theme", root.classList.contains("dark") ? "dark" : "light");
+  });
+
+  // Mobile menu toggle
+  const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+  const mobileMenu = document.getElementById("mobileMenu");
+
+  if (mobileMenuToggle && mobileMenu) {
+    mobileMenuToggle.addEventListener("click", () => {
+      const isHidden = mobileMenu.classList.contains("hidden");
+      if (isHidden) {
+        mobileMenu.classList.remove("hidden");
+        mobileMenuToggle.setAttribute("aria-expanded", "true");
+      } else {
+        mobileMenu.classList.add("hidden");
+        mobileMenuToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  // Desktop CV submenu hover
+  const cvMenuContainers = document.querySelectorAll(".cv-menu-container");
+  cvMenuContainers.forEach(container => {
+    const submenu = container.querySelector(".cv-submenu");
+    
+    // Show on hover
+    container.addEventListener("mouseenter", () => {
+      submenu.classList.remove("hidden");
+    });
+    
+    // Hide when leaving container
+    container.addEventListener("mouseleave", () => {
+      submenu.classList.add("hidden");
+    });
+  });
+
+  // Set year
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>

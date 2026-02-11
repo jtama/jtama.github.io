@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Art Nouveau Reference Page</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Glass+Antiqua&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            mucha: {
+              bg: '#FDF5E6',     // Old Lace / Cream
+              gold: '#D4AF37',   // Metallic Gold
+              sage: '#8DA399',   // Muted Green
+              rose: '#E6B8B8',   // Dusty Pink
+              mauve: '#D4C1EC',  // Pale Purple
+              blue: '#A6C6C9',   // Powder Blue
+              text: '#1A2F2B',   // Dark Slate Green - High Contrast
+              
+              // Dark Mode (Midnight Absinthe)
+              dark: {
+                bg: '#151E1C',      // Deep Jungle / Black
+                card: '#1E2926',    // Darker Sage card bg
+                text: '#E6D2AA',    // Pale Gold Text
+                gold: '#D6B552',    // Lighter Gold
+                sage: '#9DC6BA',    // Pastel Sage (High Contrast)
+                rose: '#E09F9F',    // Pastel Rose (High Contrast)
+                blue: '#A0CED1',    // Pastel Blue (High Contrast)
+              }
+            }
+          },
+          fontFamily: {
+            heading: ['"Glass Antiqua"', 'cursive'],
+            body: ['"Cormorant Garamond"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Styles if needed beyond Tailwind */
+    body {
+      font-family: 'Cormorant Garamond', serif;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Glass Antiqua', cursive;
+    }
+  </style>
+
+  <script>
+    // Initialize theme based on user preference or system setting
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+
+    function toggleTheme() {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark')
+        localStorage.theme = 'light'
+      } else {
+        document.documentElement.classList.add('dark')
+        localStorage.theme = 'dark'
+      }
+    }
+  </script>
+</head>
+<body class="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white via-mucha-bg to-[#E8DCC5] dark:from-mucha-dark-bg dark:via-mucha-dark-bg dark:to-mucha-dark-card text-mucha-text dark:text-mucha-dark-text antialiased min-h-screen transition-colors duration-500">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:bg-mucha-gold focus:text-mucha-text focus:p-4 focus:z-50 focus:rounded-md">Skip to main content</a>
+
+  <header class="border-b-4 border-mucha-blue dark:border-mucha-dark-blue bg-white/50 dark:bg-mucha-dark-card/60 backdrop-blur-sm sticky top-0 z-50 transition-colors duration-500">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+      <!-- Brand -->
+      <div class="text-2xl sm:text-3xl font-bold text-mucha-text dark:text-mucha-dark-gold font-heading tracking-wide">
+        Art Nouveau
+      </div>
+      
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center space-x-6">
+        <ul class="flex space-x-6 text-lg">
+          <li><a href="#" class="text-mucha-text dark:text-mucha-dark-text font-bold hover:text-mucha-sage dark:hover:text-mucha-dark-sage transition-colors border-b-2 border-transparent hover:border-mucha-sage dark:hover:border-mucha-dark-sage">Home</a></li>
+          <li><a href="#" class="text-mucha-text dark:text-mucha-dark-text font-bold hover:text-mucha-sage dark:hover:text-mucha-dark-sage transition-colors border-b-2 border-transparent hover:border-mucha-sage dark:hover:border-mucha-dark-sage">Articles</a></li>
+          <li><a href="#" class="text-mucha-text dark:text-mucha-dark-text font-bold hover:text-mucha-sage dark:hover:text-mucha-dark-sage transition-colors border-b-2 border-transparent hover:border-mucha-sage dark:hover:border-mucha-dark-sage">About</a></li>
+        </ul>
+        
+        <!-- Dark Mode Toggle (Desktop) -->
+        <button onclick="toggleTheme()" class="p-2 rounded-full text-mucha-text dark:text-mucha-dark-gold hover:bg-mucha-sage/20 dark:hover:bg-mucha-dark-card transition-colors focus:outline-none focus:ring-2 focus:ring-mucha-text dark:focus:ring-mucha-dark-gold" aria-label="Toggle Dark Mode">
+          <!-- Sun Icon (Dark Mode) -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <!-- Moon Icon (Light Mode) -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+      </nav>
+
+      <!-- Mobile Controls -->
+      <div class="flex items-center gap-4 md:hidden">
+        <!-- Dark Mode Toggle (Mobile) -->
+        <button onclick="toggleTheme()" class="text-mucha-text dark:text-mucha-dark-gold p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-mucha-text dark:focus:ring-mucha-dark-gold" aria-label="Toggle Dark Mode">
+           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+
+        <!-- Mobile Menu Button Placeholder -->
+        <button class="text-mucha-text dark:text-mucha-dark-text p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-mucha-text dark:focus:ring-mucha-dark-gold" aria-label="Open Menu">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <!-- Hero Section -->
+    <section class="py-16 sm:py-24 px-4 sm:px-8 text-center bg-white/30 dark:bg-mucha-dark-card/30 border-b-2 border-mucha-blue/30 dark:border-mucha-dark-blue/30">
+       <div class="max-w-4xl mx-auto">
+         <h1 class="text-5xl sm:text-7xl mb-6 text-mucha-text dark:text-mucha-dark-text font-heading drop-shadow-sm leading-tight">
+           Organic Lines & <br class="hidden sm:block" /> Floral Patterns
+         </h1>
+         <p class="text-xl sm:text-2xl max-w-2xl mx-auto text-mucha-text/90 dark:text-mucha-dark-text/90 font-light leading-relaxed mb-8">
+           Exploring the beauty of the <span class="font-bold text-mucha-rose dark:text-mucha-dark-rose">Art Nouveau</span> aesthetic in a digital age.
+         </p>
+         <div class="flex flex-col sm:flex-row justify-center gap-4">
+           <a href="#articles" class="px-8 py-3 bg-mucha-blue text-mucha-text dark:text-mucha-dark-bg font-bold rounded-full shadow-lg hover:bg-mucha-blue/90 hover:shadow-xl transition-all transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-mucha-text dark:focus:ring-mucha-dark-gold">
+             Explore Gallery
+           </a>
+           <a href="#" class="px-8 py-3 border-2 border-mucha-text dark:border-mucha-dark-gold text-mucha-text dark:text-mucha-dark-gold font-bold rounded-full hover:bg-mucha-text dark:hover:bg-mucha-dark-gold hover:text-white dark:hover:text-mucha-dark-bg transition-all transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-mucha-text dark:focus:ring-mucha-dark-gold">
+             Read Manifesto
+           </a>
+         </div>
+       </div>
+    </section>
+
+    <!-- Article List Placeholder -->
+    <section id="articles" class="max-w-5xl mx-auto px-4 py-16 sm:py-24 space-y-12 sm:space-y-16">
+      
+      <!-- Section Header -->
+      <div class="text-center mb-12">
+        <h2 class="text-3xl sm:text-4xl font-heading text-mucha-text border-b-2 border-mucha-blue inline-block pb-2 px-8">Latest Reflections</h2>
+      </div>
+
+      <!-- Article 1 -->
+      <article class="group relative overflow-hidden bg-white/80 dark:bg-mucha-dark-card/80 border-2 border-mucha-blue dark:border-mucha-dark-blue rounded-[30px_10px_30px_10px] shadow-xl hover:shadow-2xl transition-all duration-300">
+        <div class="p-6 sm:p-10 flex flex-col md:flex-row gap-8 items-start">
+          <!-- Optional Image Placeholder -->
+          <div class="w-full md:w-1/3 h-48 sm:h-auto bg-mucha-blue/20 dark:bg-mucha-dark-blue/80 rounded-2xl flex items-center justify-center border border-mucha-blue dark:border-mucha-dark-blue">
+            <span class="text-mucha-blue dark:text-mucha-dark-bg font-heading text-xl">Illustration</span>
+          </div>
+          
+          <div class="flex-1">
+            <div class="flex flex-wrap gap-2 mb-3">
+              <span class="bg-mucha-sage/20 dark:bg-mucha-dark-sage dark:text-mucha-dark-bg text-mucha-sage px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Design</span>
+              <span class="bg-mucha-rose/20 dark:bg-mucha-dark-rose dark:text-mucha-dark-bg text-mucha-rose px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">History</span>
+            </div>
+            
+            <h3 class="text-2xl sm:text-3xl mb-3 font-heading text-mucha-text leading-tight group-hover:text-mucha-sage transition-colors">
+              <a href="#" class="focus:outline-none focus:underline decoration-2 decoration-mucha-blue underline-offset-4">
+                The Mucha Style: A Graphical Revolution
+              </a>
+            </h3>
+            
+            <p class="mb-6 text-lg text-mucha-text/80 leading-relaxed font-serif">
+              Alphonse Mucha's distinctive style featuring idealized young women in Neoclassical-looking robes, often surrounded by lush flowers which sometimes formed halos behind their heads, defined an era of optimism and beauty.
+            </p>
+            
+            <div class="flex items-center justify-between mt-auto">
+              <span class="text-sm text-mucha-text/60 italic">Published on Feb 9, 2026</span>
+              <a href="#" class="inline-flex items-center text-mucha-text font-bold hover:text-mucha-sage transition-colors group-hover:translate-x-1 duration-300" aria-label="Read more about Mucha Style">
+                Read more <span class="ml-2 text-xl">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Article 2 -->
+      <article class="group relative overflow-hidden bg-white/80 dark:bg-mucha-dark-card/80 border-2 border-mucha-sage dark:border-mucha-dark-sage rounded-[10px_30px_10px_30px] shadow-xl hover:shadow-2xl transition-all duration-300">
+        <div class="p-6 sm:p-10 flex flex-col md:flex-row-reverse gap-8 items-start">
+           <!-- Optional Image Placeholder -->
+           <div class="w-full md:w-1/3 h-48 sm:h-auto bg-mucha-sage/20 dark:bg-mucha-dark-sage/80 rounded-2xl flex items-center justify-center border border-mucha-sage dark:border-mucha-dark-sage">
+            <span class="text-mucha-sage dark:text-mucha-dark-bg font-heading text-xl">Details</span>
+          </div>
+
+          <div class="flex-1">
+             <div class="flex flex-wrap gap-2 mb-3">
+              <span class="bg-mucha-mauve/20 dark:bg-mucha-dark-rose/90 text-mucha-mauve dark:text-mucha-dark-bg px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Architecture</span>
+            </div>
+
+            <h3 class="text-2xl sm:text-3xl mb-3 font-heading text-mucha-text leading-tight group-hover:text-mucha-rose transition-colors">
+              <a href="#" class="focus:outline-none focus:underline decoration-2 decoration-mucha-rose underline-offset-4">
+                Iron & Glass: The Structural Poetry
+              </a>
+            </h3>
+            
+            <p class="mb-6 text-lg text-mucha-text/80 leading-relaxed font-serif">
+              Art Nouveau architecture was a reaction against the eclectic styles that dominated European architecture in the second half of the 19th century. It expressed itself through decoration, where every structural element became an opportunity for organic ornamentation.
+            </p>
+            
+            <div class="flex items-center justify-between mt-auto">
+              <span class="text-sm text-mucha-text/60 italic">Published on Feb 8, 2026</span>
+              <a href="#" class="inline-flex items-center text-mucha-text font-bold hover:text-mucha-rose transition-colors group-hover:translate-x-1 duration-300" aria-label="Read more about Iron and Glass">
+                Read more <span class="ml-2 text-xl">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="bg-mucha-text dark:bg-mucha-dark-bg text-mucha-bg dark:text-mucha-dark-text py-12 border-t-8 border-mucha-blue dark:border-mucha-dark-blue relative overflow-hidden transition-colors duration-500">
+    <!-- Decorative Corner (CSS/SVG placeholder) -->
+    <div class="absolute top-0 left-0 w-24 h-24 border-t-4 border-l-4 border-mucha-blue dark:border-mucha-dark-blue rounded-tl-3xl opacity-20"></div>
+    <div class="absolute top-0 right-0 w-24 h-24 border-t-4 border-r-4 border-mucha-blue dark:border-mucha-dark-blue rounded-tr-3xl opacity-20"></div>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+      
+      <!-- Brand & Copyright -->
+      <div class="space-y-4">
+        <h3 class="text-2xl font-heading text-mucha-blue dark:text-mucha-dark-blue tracking-widest uppercase">Art Nouveau</h3>
+        <p class="text-mucha-bg/70 dark:text-mucha-dark-text/70 text-sm leading-relaxed max-w-xs mx-auto md:mx-0">
+          Celebrating the harmony of natural forms and artistic design. A digital homage to the Belle Époque.
+        </p>
+        <p class="text-mucha-bg/50 dark:text-mucha-dark-text/50 text-xs mt-4">
+          &copy; 2026 J.Tama. Licensed under MIT.
+        </p>
+      </div>
+
+      <!-- Links -->
+      <div class="flex flex-col space-y-2">
+        <h4 class="text-lg font-heading text-mucha-rose dark:text-mucha-dark-rose mb-2 uppercase tracking-wide">Explore</h4>
+        <a href="#" class="text-mucha-bg/80 dark:text-mucha-dark-text/80 hover:text-mucha-gold dark:hover:text-mucha-dark-gold transition-colors text-sm">Manifesto</a>
+        <a href="#" class="text-mucha-bg/80 dark:text-mucha-dark-text/80 hover:text-mucha-gold dark:hover:text-mucha-dark-gold transition-colors text-sm">Gallery</a>
+        <a href="#" class="text-mucha-bg/80 dark:text-mucha-dark-text/80 hover:text-mucha-gold dark:hover:text-mucha-dark-gold transition-colors text-sm">Typography</a>
+        <a href="#" class="text-mucha-bg/80 dark:text-mucha-dark-text/80 hover:text-mucha-gold dark:hover:text-mucha-dark-gold transition-colors text-sm">Color Palette</a>
+      </div>
+
+      <!-- Social / Contact -->
+      <div class="flex flex-col space-y-2">
+         <h4 class="text-lg font-heading text-mucha-mauve dark:text-mucha-dark-rose mb-2 uppercase tracking-wide">Connect</h4>
+         <a href="#" class="text-mucha-bg/80 dark:text-mucha-dark-text/80 hover:text-mucha-mauve dark:hover:text-mucha-dark-rose transition-colors text-sm flex items-center justify-center md:justify-start gap-2">
+           <span>GitHub</span>
+           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" /></svg>
+         </a>
+         <a href="#" class="text-mucha-bg/80 dark:text-mucha-dark-text/80 hover:text-mucha-mauve dark:hover:text-mucha-dark-rose transition-colors text-sm">Twitter</a>
+         <a href="#" class="text-mucha-bg/80 dark:text-mucha-dark-text/80 hover:text-mucha-mauve dark:hover:text-mucha-dark-rose transition-colors text-sm">Email</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

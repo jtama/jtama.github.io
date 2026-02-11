@@ -11,17 +11,48 @@ layout: theme-layouts/roq-default/main
 {#insert /}
 
 {#footer}
-<footer>
-    {#include partials/roq-default/sidebar-contact /}
-    <section class="social">
-        <a href="{site.url}rss.xml"><i class="fa-solid fa-rss"></i></a>
-    </section>
-    <section class="support">
-        <p><b>Follow me if you like:</b></p>
-        <!-- Place this tag where you want the button to render. -->
-        <!-- Place this tag where you want the button to render. -->
-        <a class="github-button" href="https://github.com/jtama" data-color-scheme="no-preference: light; light: light; dark: dark;" data-size="large" data-show-count="true" aria-label="Follow @jtama on GitHub">Follow @jtama</a>
-    </section>
-    {#include partials/roq-default/sidebar-copyright /}
+<footer class="border-t border-mucha-border bg-mucha-bg/80 backdrop-blur mt-12">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div>
+        <div class="font-heading font-extrabold text-2xl text-mucha-text">{site.title}</div>
+        <div class="mt-1 text-sm text-mucha-text/80">
+          © {java.time.Year.now()} — Java Devops AI and FOSS
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-6 text-2xl text-mucha-text">
+        <a class="hover:text-mucha-gold transition-transform hover:-translate-y-1" href="{site.url}rss.xml" aria-label="RSS Feed">
+          <i class="fas fa-rss" aria-hidden="true"></i>
+        </a>
+        <a class="hover:text-mucha-gold transition-transform hover:-translate-y-1" href="https://github.com/jtama" aria-label="GitHub">
+          <i class="fab fa-github" aria-hidden="true"></i>
+        </a>
+        <a class="hover:text-mucha-gold transition-transform hover:-translate-y-1" href="https://twitter.com/jtama" aria-label="Twitter / X">
+          <i class="fab fa-twitter" aria-hidden="true"></i>
+        </a>
+        <a class="hover:text-mucha-gold transition-transform hover:-translate-y-1" href="https://www.linkedin.com/in/jtama" aria-label="LinkedIn">
+          <i class="fab fa-linkedin" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+  </div>
 </footer>
+<script>
+  // Dark mode toggle logic
+  const toggle = document.getElementById("themeToggle");
+  const root = document.documentElement;
+
+  // Initialize theme based on local storage or system preference
+  const saved = localStorage.getItem("theme");
+  if (saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+    root.classList.add("dark");
+  } else {
+    root.classList.remove("dark");
+  }
+
+  toggle?.addEventListener("click", () => {
+    root.classList.toggle("dark");
+    localStorage.setItem("theme", root.classList.contains("dark") ? "dark" : "light");
+  });
+</script>
 {/}

@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta property="og:title" content="{ blog.sunix.org }">
+<title>{ blog.sunix.org }</title>
+<meta property="og:description" content="Sunix&#39;s personal blog site about Java, Cloud, and Open Source Software Development.">
+<meta property="og:url" content="https://blog.sunix.org/archives/">
+<meta property="og:site_name" content="{ blog.sunix.org }">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@__sunix_">
+<meta name="twitter:creator" content="@__sunix_">
+<meta name="twitter:title" content="{ blog.sunix.org }">
+<meta name="twitter:description" content="Sunix&#39;s personal blog site about Java, Cloud, and Open Source Software Development.">
+<meta name="twitter:url" content="https://blog.sunix.org/archives/">
+
+<meta property="og:type" content="website">
+<meta property="og:image" content="//assets/hero-illustration.webp">
+<meta name="twitter:image" content="//assets/hero-illustration.webp">
+
+<meta name="keywords" content="sunix, Java, Cloud, Software Development, FOSS, Open Source, Eclipse JKube, Fabric8 Kubernetes Java Client, Eclipse Che, Eclipse Theia, ParisJUG, Devoxx France, Java Community, Java Champion">
+
+<link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+<link rel="alternate icon" href="/images/favicon.ico">
+<link rel="canonical" href="https://blog.sunix.org/archives/">
+<link rel="alternate" type="application/atom+xml" title="{ blog.sunix.org }" href="//feed.xml" />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          slate: {
+            50: '#f8fafc',
+            100: '#f1f5f9',
+            200: '#e2e8f0',
+            300: '#cbd5e1',
+            400: '#94a3b8',
+            500: '#64748b',
+            600: '#475569',
+            700: '#334155',
+            800: '#1e293b',
+            900: '#0f172a',
+            950: '#020617',
+          }
+        }
+      }
+    }
+  }
+</script>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Glass+Antiqua&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --mucha-bg: #FDF5E6; /* Old Lace */
+    --mucha-text: #2C1810; /* Dark Brown */
+    --mucha-gold: #D4AF37;
+    --mucha-sage: #8DA399;
+    --mucha-rose: #E6B8B8;
+    --mucha-mauve: #D4C1EC;
+    --mucha-blue: #A0C4C8;
+    --font-heading: 'Glass Antiqua', cursive;
+    --font-body: 'Cormorant Garamond', serif;
+  }
+
+  body {
+    background-color: var(--mucha-bg) !important;
+    color: var(--mucha-text) !important;
+    font-family: var(--font-body) !important;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-extrabold {
+    font-family: var(--font-heading) !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    max-width: 90%;
+  }
+
+  /* Article cards with extra large padding to contain titles */
+  article {
+    padding: 4rem 3.5rem !important;
+    border: 1px solid var(--mucha-sage) !important;
+    background: linear-gradient(135deg, #FFFFFF, var(--mucha-bg)) !important;
+    box-shadow: 8px 8px 0px rgba(212, 175, 55, 0.1) !important;
+    margin-bottom: 3rem;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  /* Redefine gradients to be powdery and soft instead of neon */
+  .bg-gradient-to-br, .bg-gradient-to-r, .bg-slate-50, .dark\:bg-slate-950, .bg-white\/70, .dark\:bg-slate-950\/60 {
+    background: none !important;
+    background-color: var(--mucha-bg) !important;
+    background-image: linear-gradient(135deg, rgba(141, 163, 153, 0.1), rgba(160, 196, 200, 0.1)) !important;
+  }
+  
+  /* Override specific button gradients */
+  a[class*="bg-gradient-to"] {
+    background: linear-gradient(to right, var(--mucha-sage), var(--mucha-blue)) !important;
+    color: var(--mucha-text) !important; /* Dark text for accessibility on pastel bg */
+    font-weight: 700 !important;
+    text-shadow: none !important;
+    border: 1px solid rgba(255,255,255,0.4) !important;
+    border-radius: 20px !important;
+  }
+  
+  a[class*="bg-gradient-to"]:hover {
+    background: linear-gradient(to right, var(--mucha-rose), var(--mucha-mauve)) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3) !important;
+  }
+
+  span.bg-gradient-to-br {
+    background: linear-gradient(135deg, var(--mucha-gold), var(--mucha-rose)) !important;
+    color: var(--mucha-text) !important;
+    border: none !important;
+  }
+  
+  /* Tags: Colorful but pastel */
+  span[class*="bg-cyan"], a[class*="bg-cyan"] {
+    background-color: rgba(160, 196, 200, 0.3) !important; /* Pale Blue */
+    border: 1px solid var(--mucha-blue) !important;
+    color: #2F4F4F !important;
+  }
+  
+  a[class*="bg-purple"] {
+    background-color: rgba(201, 160, 220, 0.3) !important; /* Pale Mauve */
+    border: 1px solid var(--mucha-mauve) !important;
+    color: #4B0082 !important;
+  }
+
+  .blur-3xl {
+    opacity: 0 !important;
+    display: none !important;
+  }
+
+  header .rounded-2xl {
+    border: 2px solid var(--mucha-border) !important;
+    background-color: rgba(250, 243, 224, 0.95) !important;
+    box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3) !important;
+    position: relative;
+  }
+
+  header .rounded-2xl::before, header .rounded-2xl::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--mucha-terracotta);
+    transition: all 0.3s ease;
+  }
+  header .rounded-2xl::before {
+    top: -5px;
+    left: -5px;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 10px 0 0 0;
+  }
+  header .rounded-2xl::after {
+    bottom: -5px;
+    right: -5px;
+    border-left: none;
+    border-top: none;
+    border-radius: 0 0 10px 0;
+  }
+
+  .text-slate-900, .dark\:text-slate-100, .text-slate-700, .dark\:text-slate-300 {
+    color: var(--mucha-text) !important;
+  }
+
+  a {
+    color: var(--mucha-terracotta) !important;
+  }
+  a:hover {
+    color: var(--mucha-gold) !important;
+    text-decoration: underline;
+  }
+
+  .pointer-events-none.fixed.inset-0.-z-10 {
+    display: none;
+  }
+</style>
+
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+
+<body class="font-sans text-slate-900 dark:text-slate-100 bg-slate-50 dark:bg-slate-950">
+
+<!-- Background decor -->
+<div class="pointer-events-none fixed inset-0 -z-10">
+  <div class="absolute inset-0 opacity-70 dark:opacity-50 noise"></div>
+  <div class="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full blur-3xl
+              bg-gradient-to-br from-fuchsia-400/30 via-cyan-300/25 to-amber-300/25 dark:from-fuchsia-500/18 dark:via-cyan-400/14 dark:to-amber-300/12"></div>
+  <div class="absolute -bottom-48 right-[-120px] h-[420px] w-[420px] rounded-full blur-3xl
+              bg-gradient-to-br from-emerald-400/25 via-violet-400/20 to-sky-300/20 dark:from-emerald-400/12 dark:via-violet-400/12 dark:to-sky-300/10"></div>
+</div>
+
+<header class="sticky top-0 z-50">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <div class="mt-4 rounded-2xl border border-white/30 dark:border-white/10 bg-white/70 dark:bg-slate-950/60 backdrop-blur shadow-sm">
+      <div class="flex items-center justify-between px-4 sm:px-6 py-3">
+        <a href="/" class="flex items-center gap-3">
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl
+                       bg-gradient-to-br from-cyan-400 via-purple-400 to-pink-400 text-white shadow-lg hover:shadow-[0_0_20px_rgba(34,211,238,0.6)] transition-all duration-300">
+            <span class="font-extrabold">S</span>
+          </span>
+          <span class="font-extrabold tracking-tight text-lg">{ blog.sunix.org }</span>
+          <span class="hidden sm:inline text-xs font-medium text-slate-600 dark:text-slate-400">
+            Java Devops AI and FOSS
+          </span>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-700 dark:text-slate-300">
+          <a class="hover:text-slate-900 dark:hover:text-white" href="/archives">Articles</a>
+          <a class="hover:text-slate-900 dark:hover:text-white" href="/about">About</a>
+          <div class="relative cv-menu-container">
+            <a class="hover:text-slate-900 dark:hover:text-white cursor-pointer" href="/cv">CV</a>
+            <div class="cv-submenu absolute left-0 top-full pt-2 hidden w-56 z-50">
+              <div class="rounded-xl border border-white/30 dark:border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur shadow-lg py-2">
+                <a class="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg mx-2" href="/cv#professional-summary">Professional Summary</a>
+                <a class="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg mx-2" href="/cv#open-source-projects">Open Source Projects</a>
+                <a class="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg mx-2" href="/cv#experience">Experience</a>
+                <a class="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg mx-2" href="/cv#community-involvement">Community Involvement</a>
+                <a class="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg mx-2" href="/cv#conferences-talks">Conferences &amp; Talks</a>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <div class="flex items-center gap-2">
+          <button
+            id="themeToggle"
+            class="inline-flex items-center justify-center rounded-xl border border-slate-200 dark:border-white/10
+                   bg-white/80 dark:bg-white/5 px-3 py-2 text-sm font-semibold hover:bg-white transition"
+            aria-label="Toggle dark mode"
+            type="button"
+          >
+            <span class="dark:hidden">🌙</span>
+            <span class="hidden dark:inline">☀️</span>
+          </button>
+
+          <button
+            id="mobileMenuToggle"
+            class="md:hidden inline-flex items-center justify-center rounded-xl px-3 py-2 border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/5 hover:bg-white transition"
+            aria-label="Toggle mobile menu"
+            aria-expanded="false"
+            type="button"
+          >
+            ☰
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile menu -->
+      <div id="mobileMenu" class="hidden md:hidden px-4 sm:px-6 pb-4">
+        <nav class="flex flex-col gap-3 text-sm font-semibold text-slate-700 dark:text-slate-300">
+          <a class="hover:text-slate-900 dark:hover:text-white py-2 border-b border-slate-200 dark:border-white/10" href="/archives">Articles</a>
+          <a class="hover:text-slate-900 dark:hover:text-white py-2 border-b border-slate-200 dark:border-white/10" href="/about">About</a>
+          <div class="py-2 border-b border-slate-200 dark:border-white/10">
+            <div class="cv-mobile-menu-toggle hover:text-slate-900 dark:hover:text-white cursor-pointer flex justify-between items-center" role="button" aria-expanded="false" aria-controls="cv-mobile-submenu" aria-label="Toggle CV submenu" tabindex="0">
+              <span>CV</span>
+              <span class="cv-mobile-arrow text-xs">▼</span>
+            </div>
+            <div id="cv-mobile-submenu" class="cv-mobile-submenu hidden mt-2 ml-4 space-y-2">
+              <a class="block hover:text-slate-900 dark:hover:text-white text-xs py-1" href="/cv#professional-summary">Professional Summary</a>
+              <a class="block hover:text-slate-900 dark:hover:text-white text-xs py-1" href="/cv#open-source-projects">Open Source Projects</a>
+              <a class="block hover:text-slate-900 dark:hover:text-white text-xs py-1" href="/cv#experience">Experience</a>
+              <a class="block hover:text-slate-900 dark:hover:text-white text-xs py-1" href="/cv#community-involvement">Community Involvement</a>
+              <a class="block hover:text-slate-900 dark:hover:text-white text-xs py-1" href="/cv#conferences-talks">Conferences &amp; Talks</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 min-h-screen">
+  <div class="py-10">
+
+<div class="mb-8">
+  <h1 class="text-4xl font-extrabold tracking-tight mb-3">All Articles</h1>
+  <p class="text-slate-700 dark:text-slate-300">Browse all blog posts chronologically</p>
+</div>
+
+<div class="space-y-8">
+<article class="rounded-[24px] border border-white/40 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur p-6 sm:p-8 shadow-sm hover:shadow-[0_0_40px_rgba(139,92,246,0.3),0_0_20px_rgba(34,211,238,0.2)] hover:border-fuchsia-400/50 dark:hover:border-fuchsia-500/30 transition-all duration-300">
+  <!-- Tags at the top -->
+  <div class="flex flex-wrap gap-2 mb-4">
+    <span class="text-xs font-bold rounded-full px-3 py-1 bg-cyan-200/70 text-cyan-900 dark:bg-cyan-300/20 dark:text-cyan-200 border border-cyan-300/40 dark:border-cyan-300/20">
+      articles
+    </span>
+    <a href="/tags#DevTools" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      DevTools
+    </a>
+    <a href="/tags#Browser" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Browser
+    </a>
+    <a href="/tags#Web Development" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Web Development
+    </a>
+    <a href="/tags#Problem Solving" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Problem Solving
+    </a>
+    <a href="/tags#Tennis" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Tennis
+    </a>
+  </div>
+
+  <!-- Title -->
+  <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight leading-snug mb-3">
+    <a href="/posts/feeling-powerful-with-just-a-browser-working-around-a-broken-tennis-booking-system/" class="hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-cyan-500 hover:to-purple-500 transition">Feeling Powerful with Just a Browser: Working Around a Broken Tennis Booking System</a>
+  </h3>
+
+  <!-- Excerpt -->
+  <p class="mt-3 text-slate-700 dark:text-slate-300 leading-relaxed">
+    I don&#39;t get many chances to play tennis. Between work, everyday constraints, and lately some pretty uncooperative weather, court time is rare and valuable. So when I finally found a slot that worked — and the booking system refused to give it back — frustration set in fast.
+  </p>
+
+  <!-- Date -->
+  <div class="mt-4">
+    <time class="text-sm font-semibold text-slate-600 dark:text-slate-400" datetime="2026-01-11T00:00Z[Etc/UTC]">
+      Jan 11, 2026
+    </time>
+  </div>
+
+  <!-- Read More button -->
+  <div class="mt-3">
+    <a
+      href="/posts/feeling-powerful-with-just-a-browser-working-around-a-broken-tennis-booking-system/"
+      class="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 text-white hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 shadow-md hover:shadow-lg transition-all"
+    >
+      Read more <span>→</span>
+    </a>
+  </div>
+</article>
+<article class="rounded-[24px] border border-white/40 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur p-6 sm:p-8 shadow-sm hover:shadow-[0_0_40px_rgba(139,92,246,0.3),0_0_20px_rgba(34,211,238,0.2)] hover:border-fuchsia-400/50 dark:hover:border-fuchsia-500/30 transition-all duration-300">
+  <!-- Tags at the top -->
+  <div class="flex flex-wrap gap-2 mb-4">
+    <span class="text-xs font-bold rounded-full px-3 py-1 bg-cyan-200/70 text-cyan-900 dark:bg-cyan-300/20 dark:text-cyan-200 border border-cyan-300/40 dark:border-cyan-300/20">
+      articles
+    </span>
+    <a href="/tags#GitHub Copilot" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      GitHub Copilot
+    </a>
+    <a href="/tags#AI-Assisted Development" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      AI-Assisted Development
+    </a>
+    <a href="/tags#PWA" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      PWA
+    </a>
+    <a href="/tags#Side Projects" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Side Projects
+    </a>
+    <a href="/tags#Developer Productivity" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Developer Productivity
+    </a>
+  </div>
+
+  <!-- Title -->
+  <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight leading-snug mb-3">
+    <a href="/posts/building-a-gift-card-management-app-with-github-copilot-my-first-completed-side-project/" class="hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-cyan-500 hover:to-purple-500 transition">Building a Gift Card Management App with GitHub Copilot: My First Completed Side Project</a>
+  </h3>
+
+  <!-- Excerpt -->
+  <p class="mt-3 text-slate-700 dark:text-slate-300 leading-relaxed">
+    Note: A 🇫🇷 French version of this post is available on Sciam&#39;s blog (my employer). Like many developers, my life is littered with unfinished side projects. But this time was different. This time, I had GitHub Copilot as my coding companion, and I actually finished. Let me tell you how AI-assisted development helped me build a gift card management application that I actually use every day — and I did it almost entirely without opening an IDE.
+  </p>
+
+  <!-- Date -->
+  <div class="mt-4">
+    <time class="text-sm font-semibold text-slate-600 dark:text-slate-400" datetime="2025-11-14T00:00Z[Etc/UTC]">
+      Nov 14, 2025
+    </time>
+  </div>
+
+  <!-- Read More button -->
+  <div class="mt-3">
+    <a
+      href="/posts/building-a-gift-card-management-app-with-github-copilot-my-first-completed-side-project/"
+      class="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 text-white hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 shadow-md hover:shadow-lg transition-all"
+    >
+      Read more <span>→</span>
+    </a>
+  </div>
+</article>
+<article class="rounded-[24px] border border-white/40 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur p-6 sm:p-8 shadow-sm hover:shadow-[0_0_40px_rgba(139,92,246,0.3),0_0_20px_rgba(34,211,238,0.2)] hover:border-fuchsia-400/50 dark:hover:border-fuchsia-500/30 transition-all duration-300">
+  <!-- Tags at the top -->
+  <div class="flex flex-wrap gap-2 mb-4">
+    <span class="text-xs font-bold rounded-full px-3 py-1 bg-cyan-200/70 text-cyan-900 dark:bg-cyan-300/20 dark:text-cyan-200 border border-cyan-300/40 dark:border-cyan-300/20">
+      articles
+    </span>
+    <a href="/tags#Git" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Git
+    </a>
+    <a href="/tags#Git Flow" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Git Flow
+    </a>
+    <a href="/tags#Trunk-Based Development" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Trunk-Based Development
+    </a>
+    <a href="/tags#CI/CD" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      CI/CD
+    </a>
+    <a href="/tags#Software Development" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Software Development
+    </a>
+    <a href="/tags#DevOps" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      DevOps
+    </a>
+  </div>
+
+  <!-- Title -->
+  <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight leading-snug mb-3">
+    <a href="/posts/why-i-think-git-flow-doesn-t-fit-most-projects-anymore/" class="hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-cyan-500 hover:to-purple-500 transition">Why I Think Git Flow Doesn&#39;t Fit Most Projects Anymore</a>
+  </h3>
+
+  <!-- Excerpt -->
+  <p class="mt-3 text-slate-700 dark:text-slate-300 leading-relaxed">
+    I&#39;ve used Git Flow on quite a few projects over the years — and honestly, I&#39;ve reached a point where I don&#39;t think it&#39;s the right choice for most modern teams anymore. It&#39;s not that Git Flow was bad. In fact, when Vincent Driessen came up with it back in 2010, it made a lot of sense. We didn&#39;t have solid CI/CD pipelines yet. Releases were manual. Teams were smaller and slower. Having a clean branching model for &quot;features,&quot; &quot;releases,&quot; and &quot;hotfixes&quot; was a huge step forward at the time. But now?...
+  </p>
+
+  <!-- Date -->
+  <div class="mt-4">
+    <time class="text-sm font-semibold text-slate-600 dark:text-slate-400" datetime="2025-11-07T00:00Z[Etc/UTC]">
+      Nov 07, 2025
+    </time>
+  </div>
+
+  <!-- Read More button -->
+  <div class="mt-3">
+    <a
+      href="/posts/why-i-think-git-flow-doesn-t-fit-most-projects-anymore/"
+      class="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 text-white hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 shadow-md hover:shadow-lg transition-all"
+    >
+      Read more <span>→</span>
+    </a>
+  </div>
+</article>
+<article class="rounded-[24px] border border-white/40 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur p-6 sm:p-8 shadow-sm hover:shadow-[0_0_40px_rgba(139,92,246,0.3),0_0_20px_rgba(34,211,238,0.2)] hover:border-fuchsia-400/50 dark:hover:border-fuchsia-500/30 transition-all duration-300">
+  <!-- Tags at the top -->
+  <div class="flex flex-wrap gap-2 mb-4">
+    <span class="text-xs font-bold rounded-full px-3 py-1 bg-cyan-200/70 text-cyan-900 dark:bg-cyan-300/20 dark:text-cyan-200 border border-cyan-300/40 dark:border-cyan-300/20">
+      articles
+    </span>
+    <a href="/tags#fedora" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      fedora
+    </a>
+    <a href="/tags#linux" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      linux
+    </a>
+  </div>
+
+  <!-- Title -->
+  <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight leading-snug mb-3">
+    <a href="/posts/recovering-my-frozen-fedora-laptop/" class="hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-cyan-500 hover:to-purple-500 transition">Recovering My Frozen Fedora Laptop</a>
+  </h3>
+
+  <!-- Excerpt -->
+  <p class="mt-3 text-slate-700 dark:text-slate-300 leading-relaxed">
+    I left Red Hat a few months ago and joined Sciam, but I had to return my corporate laptop. To maintain my workstation setup, I decided to reuse my old Dell XPS and migrate my data from one laptop to another. After installing a fresh Fedora system on the XPS, everything seemed fine initially, but some unexpected issues arose afterward.
+  </p>
+
+  <!-- Date -->
+  <div class="mt-4">
+    <time class="text-sm font-semibold text-slate-600 dark:text-slate-400" datetime="2024-12-31T00:00Z[Etc/UTC]">
+      Dec 31, 2024
+    </time>
+  </div>
+
+  <!-- Read More button -->
+  <div class="mt-3">
+    <a
+      href="/posts/recovering-my-frozen-fedora-laptop/"
+      class="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 text-white hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 shadow-md hover:shadow-lg transition-all"
+    >
+      Read more <span>→</span>
+    </a>
+  </div>
+</article>
+<article class="rounded-[24px] border border-white/40 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur p-6 sm:p-8 shadow-sm hover:shadow-[0_0_40px_rgba(139,92,246,0.3),0_0_20px_rgba(34,211,238,0.2)] hover:border-fuchsia-400/50 dark:hover:border-fuchsia-500/30 transition-all duration-300">
+  <!-- Tags at the top -->
+  <div class="flex flex-wrap gap-2 mb-4">
+    <span class="text-xs font-bold rounded-full px-3 py-1 bg-cyan-200/70 text-cyan-900 dark:bg-cyan-300/20 dark:text-cyan-200 border border-cyan-300/40 dark:border-cyan-300/20">
+      articles
+    </span>
+    <a href="/tags#Agile Development" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Agile Development
+    </a>
+    <a href="/tags#Project Management" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Project Management
+    </a>
+    <a href="/tags#Task Estimation" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Task Estimation
+    </a>
+    <a href="/tags#Sprint Planning" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      Sprint Planning
+    </a>
+  </div>
+
+  <!-- Title -->
+  <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight leading-snug mb-3">
+    <a href="/posts/why-we-estimate-the-true-value-of-estimation-in-agile-development/" class="hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-cyan-500 hover:to-purple-500 transition">Why We Estimate: The True Value of Estimation in Agile Development</a>
+  </h3>
+
+  <!-- Excerpt -->
+  <p class="mt-3 text-slate-700 dark:text-slate-300 leading-relaxed">
+    Reading the article “4 Fallacious Reasons Why We Estimate”, I felt it missed the most important part of why we estimate. The article seemed to suggest that estimation is only fraught with drawbacks and is ultimately useless. However, from my experience working with various teams at Red Hat, I believe that estimation holds significant value, albeit for reasons that might not be immediately apparent. In this blog post, I will delve into why we estimate, addressing misconceptions and highlighting...
+  </p>
+
+  <!-- Date -->
+  <div class="mt-4">
+    <time class="text-sm font-semibold text-slate-600 dark:text-slate-400" datetime="2024-07-23T00:00Z[Etc/UTC]">
+      Jul 23, 2024
+    </time>
+  </div>
+
+  <!-- Read More button -->
+  <div class="mt-3">
+    <a
+      href="/posts/why-we-estimate-the-true-value-of-estimation-in-agile-development/"
+      class="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 text-white hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 shadow-md hover:shadow-lg transition-all"
+    >
+      Read more <span>→</span>
+    </a>
+  </div>
+</article>
+<article class="rounded-[24px] border border-white/40 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur p-6 sm:p-8 shadow-sm hover:shadow-[0_0_40px_rgba(139,92,246,0.3),0_0_20px_rgba(34,211,238,0.2)] hover:border-fuchsia-400/50 dark:hover:border-fuchsia-500/30 transition-all duration-300">
+  <!-- Tags at the top -->
+  <div class="flex flex-wrap gap-2 mb-4">
+    <span class="text-xs font-bold rounded-full px-3 py-1 bg-cyan-200/70 text-cyan-900 dark:bg-cyan-300/20 dark:text-cyan-200 border border-cyan-300/40 dark:border-cyan-300/20">
+      articles
+    </span>
+    <a href="/tags#gmail" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      gmail
+    </a>
+    <a href="/tags#migration" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      migration
+    </a>
+    <a href="/tags#imap" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      imap
+    </a>
+  </div>
+
+  <!-- Title -->
+  <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight leading-snug mb-3">
+    <a href="/posts/migrating-gmail-from-one-account-to-another-a-comprehensive-guide/" class="hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-cyan-500 hover:to-purple-500 transition">Migrating Gmail from One Account to Another: A Comprehensive Guide</a>
+  </h3>
+
+  <!-- Excerpt -->
+
+  <!-- Date -->
+  <div class="mt-4">
+    <time class="text-sm font-semibold text-slate-600 dark:text-slate-400" datetime="2024-07-09T00:00Z[Etc/UTC]">
+      Jul 09, 2024
+    </time>
+  </div>
+
+  <!-- Read More button -->
+  <div class="mt-3">
+    <a
+      href="/posts/migrating-gmail-from-one-account-to-another-a-comprehensive-guide/"
+      class="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 text-white hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 shadow-md hover:shadow-lg transition-all"
+    >
+      Read more <span>→</span>
+    </a>
+  </div>
+</article>
+<article class="rounded-[24px] border border-white/40 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur p-6 sm:p-8 shadow-sm hover:shadow-[0_0_40px_rgba(139,92,246,0.3),0_0_20px_rgba(34,211,238,0.2)] hover:border-fuchsia-400/50 dark:hover:border-fuchsia-500/30 transition-all duration-300">
+  <!-- Tags at the top -->
+  <div class="flex flex-wrap gap-2 mb-4">
+    <span class="text-xs font-bold rounded-full px-3 py-1 bg-cyan-200/70 text-cyan-900 dark:bg-cyan-300/20 dark:text-cyan-200 border border-cyan-300/40 dark:border-cyan-300/20">
+      articles
+    </span>
+    <a href="/tags#eclipseche" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      eclipseche
+    </a>
+    <a href="/tags#gsoc" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      gsoc
+    </a>
+    <a href="/tags#pairprogramming" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      pairprogramming
+    </a>
+    <a href="/tags#unittest" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      unittest
+    </a>
+  </div>
+
+  <!-- Title -->
+  <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight leading-snug mb-3">
+    <a href="/posts/news-from-eclipse-che-google-summer-of-code-2016-projects/" class="hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-cyan-500 hover:to-purple-500 transition">News from Eclipse Che Google Summer of Code 2016 Projects</a>
+  </h3>
+
+  <!-- Excerpt -->
+  <p class="mt-3 text-slate-700 dark:text-slate-300 leading-relaxed">
+    Summer is heating up in the Eclipse Che ecosystem. More contributors, including Red Hat and SAP, are joining the Che adventure. Everyone is working hard on Che improvements, such as implementing the Language Server Protocol and multi-container workspaces. But they are not the only ones working this summer. Earlier this year, Florent and I submitted a few ideas to the Google Summer of Code (GSoC). The GSoC is a program organized by Google to encourage students to be more involved in open-source...
+  </p>
+
+  <!-- Date -->
+  <div class="mt-4">
+    <time class="text-sm font-semibold text-slate-600 dark:text-slate-400" datetime="2016-08-24T00:00Z[Etc/UTC]">
+      Aug 24, 2016
+    </time>
+  </div>
+
+  <!-- Read More button -->
+  <div class="mt-3">
+    <a
+      href="/posts/news-from-eclipse-che-google-summer-of-code-2016-projects/"
+      class="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 text-white hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 shadow-md hover:shadow-lg transition-all"
+    >
+      Read more <span>→</span>
+    </a>
+  </div>
+</article>
+<article class="rounded-[24px] border border-white/40 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur p-6 sm:p-8 shadow-sm hover:shadow-[0_0_40px_rgba(139,92,246,0.3),0_0_20px_rgba(34,211,238,0.2)] hover:border-fuchsia-400/50 dark:hover:border-fuchsia-500/30 transition-all duration-300">
+  <!-- Tags at the top -->
+  <div class="flex flex-wrap gap-2 mb-4">
+    <span class="text-xs font-bold rounded-full px-3 py-1 bg-cyan-200/70 text-cyan-900 dark:bg-cyan-300/20 dark:text-cyan-200 border border-cyan-300/40 dark:border-cyan-300/20">
+      articles
+    </span>
+    <a href="/tags#eclipseche" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      eclipseche
+    </a>
+    <a href="/tags#typescript" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      typescript
+    </a>
+    <a href="/tags#vscode" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      vscode
+    </a>
+    <a href="/tags#eclipsecon" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      eclipsecon
+    </a>
+    <a href="/tags#commitstrip" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      commitstrip
+    </a>
+    <a href="/tags#languageserverprotocol" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      languageserverprotocol
+    </a>
+  </div>
+
+  <!-- Title -->
+  <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight leading-snug mb-3">
+    <a href="/posts/eclipsecon-france-2016-language-server-protocol-eclipse-che-and-commit-strip/" class="hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-cyan-500 hover:to-purple-500 transition">EclipseCon France 2016: Language Server Protocol, Eclipse Che, and Commit Strip</a>
+  </h3>
+
+  <!-- Excerpt -->
+  <p class="mt-3 text-slate-700 dark:text-slate-300 leading-relaxed">
+    This blog post will soon be available in French on the Serli blog site. Once again, I spent a fantastic week at EclipseCon France in Toulouse. A huge thank you to the Eclipse Foundation for organizing this amazing event! This year, I learned a lot and had many interesting discussions about Eclipse technologies.
+  </p>
+
+  <!-- Date -->
+  <div class="mt-4">
+    <time class="text-sm font-semibold text-slate-600 dark:text-slate-400" datetime="2016-06-24T00:00Z[Etc/UTC]">
+      Jun 24, 2016
+    </time>
+  </div>
+
+  <!-- Read More button -->
+  <div class="mt-3">
+    <a
+      href="/posts/eclipsecon-france-2016-language-server-protocol-eclipse-che-and-commit-strip/"
+      class="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 text-white hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 shadow-md hover:shadow-lg transition-all"
+    >
+      Read more <span>→</span>
+    </a>
+  </div>
+</article>
+<article class="rounded-[24px] border border-white/40 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur p-6 sm:p-8 shadow-sm hover:shadow-[0_0_40px_rgba(139,92,246,0.3),0_0_20px_rgba(34,211,238,0.2)] hover:border-fuchsia-400/50 dark:hover:border-fuchsia-500/30 transition-all duration-300">
+  <!-- Tags at the top -->
+  <div class="flex flex-wrap gap-2 mb-4">
+    <span class="text-xs font-bold rounded-full px-3 py-1 bg-cyan-200/70 text-cyan-900 dark:bg-cyan-300/20 dark:text-cyan-200 border border-cyan-300/40 dark:border-cyan-300/20">
+      articles
+    </span>
+    <a href="/tags#che" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      che
+    </a>
+    <a href="/tags#eclipse" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      eclipse
+    </a>
+    <a href="/tags#docker" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      docker
+    </a>
+    <a href="/tags#ide" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      ide
+    </a>
+  </div>
+
+  <!-- Title -->
+  <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight leading-snug mb-3">
+    <a href="/posts/a-universal-eclipse-ide/" class="hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-cyan-500 hover:to-purple-500 transition">A Universal Eclipse IDE</a>
+  </h3>
+
+  <!-- Excerpt -->
+  <p class="mt-3 text-slate-700 dark:text-slate-300 leading-relaxed">
+    This year, I am participating in Google Summer of Code as a mentor for the Eclipse umbrella organization. I&#39;ve submitted a few ideas about Eclipse Che and Eclipse Flux, and some of them have been selected. I am mentoring the project &quot;Pair Programming with Eclipse Che,&quot; which involves improving an existing prototype I demonstrated at various developer conferences. You can check out the GitHub pair programming Che extension. A few days ago, my padawan Randika encountered issues setting up his...
+  </p>
+
+  <!-- Date -->
+  <div class="mt-4">
+    <time class="text-sm font-semibold text-slate-600 dark:text-slate-400" datetime="2016-05-16T00:00Z[Etc/UTC]">
+      May 16, 2016
+    </time>
+  </div>
+
+  <!-- Read More button -->
+  <div class="mt-3">
+    <a
+      href="/posts/a-universal-eclipse-ide/"
+      class="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 text-white hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 shadow-md hover:shadow-lg transition-all"
+    >
+      Read more <span>→</span>
+    </a>
+  </div>
+</article>
+<article class="rounded-[24px] border border-white/40 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur p-6 sm:p-8 shadow-sm hover:shadow-[0_0_40px_rgba(139,92,246,0.3),0_0_20px_rgba(34,211,238,0.2)] hover:border-fuchsia-400/50 dark:hover:border-fuchsia-500/30 transition-all duration-300">
+  <!-- Tags at the top -->
+  <div class="flex flex-wrap gap-2 mb-4">
+    <span class="text-xs font-bold rounded-full px-3 py-1 bg-cyan-200/70 text-cyan-900 dark:bg-cyan-300/20 dark:text-cyan-200 border border-cyan-300/40 dark:border-cyan-300/20">
+      articles
+    </span>
+    <a href="/tags#linux" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      linux
+    </a>
+    <a href="/tags#display" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      display
+    </a>
+    <a href="/tags#xrandr" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      xrandr
+    </a>
+    <a href="/tags#mini display port" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      mini display port
+    </a>
+    <a href="/tags#ubuntu" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      ubuntu
+    </a>
+  </div>
+
+  <!-- Title -->
+  <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight leading-snug mb-3">
+    <a href="/posts/vga-external-projector-not-detected-with-ubuntu-on-dell-xps-13/" class="hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-cyan-500 hover:to-purple-500 transition">VGA External Projector Not Detected with Ubuntu on Dell XPS 13</a>
+  </h3>
+
+  <!-- Excerpt -->
+  <p class="mt-3 text-slate-700 dark:text-slate-300 leading-relaxed">
+    Just got back from an amazing Jug Summercamp at La Rochelle. I was ready for the presentation of the Live Pair Programming with Eclipse Cloud Development and ... AGAIN! I faced display issues with the external VGA projector not being detected on my computer, the same issue I encountered a few months ago at Eclipse Con France. Here’s how I managed to resolve it.
+  </p>
+
+  <!-- Date -->
+  <div class="mt-4">
+    <time class="text-sm font-semibold text-slate-600 dark:text-slate-400" datetime="2015-09-20T00:00Z[Etc/UTC]">
+      Sep 20, 2015
+    </time>
+  </div>
+
+  <!-- Read More button -->
+  <div class="mt-3">
+    <a
+      href="/posts/vga-external-projector-not-detected-with-ubuntu-on-dell-xps-13/"
+      class="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 text-white hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 shadow-md hover:shadow-lg transition-all"
+    >
+      Read more <span>→</span>
+    </a>
+  </div>
+</article>
+<article class="rounded-[24px] border border-white/40 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur p-6 sm:p-8 shadow-sm hover:shadow-[0_0_40px_rgba(139,92,246,0.3),0_0_20px_rgba(34,211,238,0.2)] hover:border-fuchsia-400/50 dark:hover:border-fuchsia-500/30 transition-all duration-300">
+  <!-- Tags at the top -->
+  <div class="flex flex-wrap gap-2 mb-4">
+    <span class="text-xs font-bold rounded-full px-3 py-1 bg-cyan-200/70 text-cyan-900 dark:bg-cyan-300/20 dark:text-cyan-200 border border-cyan-300/40 dark:border-cyan-300/20">
+      articles
+    </span>
+    <a href="/tags#blog" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      blog
+    </a>
+    <a href="/tags#jekyll" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      jekyll
+    </a>
+    <a href="/tags#codenvy" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      codenvy
+    </a>
+    <a href="/tags#eclipse che" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      eclipse che
+    </a>
+    <a href="/tags#github pages" class="text-xs font-bold rounded-full px-3 py-1 bg-purple-200/70 text-purple-900 dark:bg-purple-300/20 dark:text-purple-200 border border-purple-300/40 dark:border-purple-300/20 hover:bg-purple-300/90 transition">
+      github pages
+    </a>
+  </div>
+
+  <!-- Title -->
+  <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight leading-snug mb-3">
+    <a href="/posts/a-blog-site-with-jekyll-github-pages-eclipse-che-and-codenvy/" class="hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-cyan-500 hover:to-purple-500 transition">A blog site with Jekyll, Github Pages Eclipse Che and Codenvy</a>
+  </h3>
+
+  <!-- Excerpt -->
+  <p class="mt-3 text-slate-700 dark:text-slate-300 leading-relaxed">
+    Hello everyone! I&#39;m starting my new blog site. This blog site is hosted by Github Pages and uses Jekyll as the blog engine. For this first blog post, let&#39;s see how to create such a blog post: I&#39;m going to detail all the steps to create a blog site with Jekyll, Github Pages, Docker, Eclipse Che cloud IDE, and Codenvy.
+  </p>
+
+  <!-- Date -->
+  <div class="mt-4">
+    <time class="text-sm font-semibold text-slate-600 dark:text-slate-400" datetime="2015-07-31T00:00Z[Etc/UTC]">
+      Jul 31, 2015
+    </time>
+  </div>
+
+  <!-- Read More button -->
+  <div class="mt-3">
+    <a
+      href="/posts/a-blog-site-with-jekyll-github-pages-eclipse-che-and-codenvy/"
+      class="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 text-white hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 shadow-md hover:shadow-lg transition-all"
+    >
+      Read more <span>→</span>
+    </a>
+  </div>
+</article>
+</div>
+
+  </div>
+</main>
+
+<footer class="border-t border-white/30 dark:border-white/10 bg-white/40 dark:bg-white/5 backdrop-blur">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <div>
+        <div class="font-extrabold">{ blog.sunix.org }</div>
+        <div class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+          © <span id="year"></span> — Java Devops AI and FOSS
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-4 text-2xl text-slate-700 dark:text-slate-300">
+        <a class="hover:text-slate-900 dark:hover:text-white transition-transform hover:-translate-y-1" href="/feed.xml" aria-label="RSS Feed">
+          <i class="fas fa-rss" aria-hidden="true"></i>
+        </a>
+        <a class="hover:text-slate-900 dark:hover:text-white transition-transform hover:-translate-y-1" href="https://github.com/sunix" aria-label="GitHub">
+          <i class="fab fa-github" aria-hidden="true"></i>
+        </a>
+        <a class="hover:text-slate-900 dark:hover:text-white transition-transform hover:-translate-y-1" href="https://twitter.com/__sunix_" aria-label="Twitter / X">
+          <i class="fab fa-twitter" aria-hidden="true"></i>
+        </a>
+        <a class="hover:text-slate-900 dark:hover:text-white transition-transform hover:-translate-y-1" href="https://bsky.app/profile/sunix.org" aria-label="Bluesky">
+          <i class="fas fa-cloud" aria-hidden="true"></i>
+        </a>
+        <a class="hover:text-slate-900 dark:hover:text-white transition-transform hover:-translate-y-1" href="https://www.linkedin.com/in/sun-seng-david-tan-b05a684" aria-label="LinkedIn">
+          <i class="fab fa-linkedin" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Dark mode toggle
+  const toggle = document.getElementById("themeToggle");
+  const root = document.documentElement;
+
+  // Initialize theme
+  const saved = localStorage.getItem("theme");
+  if (saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+    root.classList.add("dark");
+  } else {
+    root.classList.remove("dark");
+  }
+
+  toggle?.addEventListener("click", () => {
+    root.classList.toggle("dark");
+    localStorage.setItem("theme", root.classList.contains("dark") ? "dark" : "light");
+  });
+
+  // Mobile menu toggle
+  const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+  const mobileMenu = document.getElementById("mobileMenu");
+
+  if (mobileMenuToggle && mobileMenu) {
+    mobileMenuToggle.addEventListener("click", () => {
+      const isHidden = mobileMenu.classList.contains("hidden");
+      if (isHidden) {
+        mobileMenu.classList.remove("hidden");
+        mobileMenuToggle.setAttribute("aria-expanded", "true");
+      } else {
+        mobileMenu.classList.add("hidden");
+        mobileMenuToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  // Desktop CV submenu hover
+  const cvMenuContainers = document.querySelectorAll(".cv-menu-container");
+  cvMenuContainers.forEach(container => {
+    const submenu = container.querySelector(".cv-submenu");
+    if (submenu) {
+      container.addEventListener("mouseenter", () => {
+        submenu.classList.remove("hidden");
+      });
+      container.addEventListener("mouseleave", () => {
+        submenu.classList.add("hidden");
+      });
+    }
+  });
+
+  // Mobile CV submenu toggle
+  const cvMobileToggle = document.querySelector(".cv-mobile-menu-toggle");
+  const cvMobileSubmenu = document.getElementById("cv-mobile-submenu");
+  const cvMobileArrow = document.querySelector(".cv-mobile-arrow");
+
+  if (cvMobileToggle && cvMobileSubmenu) {
+    const toggleSubmenu = () => {
+      const isHidden = cvMobileSubmenu.classList.contains("hidden");
+      if (isHidden) {
+        cvMobileSubmenu.classList.remove("hidden");
+        cvMobileToggle.setAttribute("aria-expanded", "true");
+        if (cvMobileArrow) cvMobileArrow.textContent = "▲";
+      } else {
+        cvMobileSubmenu.classList.add("hidden");
+        cvMobileToggle.setAttribute("aria-expanded", "false");
+        if (cvMobileArrow) cvMobileArrow.textContent = "▼";
+      }
+    };
+
+    cvMobileToggle.addEventListener("click", toggleSubmenu);
+    // Handle keyboard events for accessibility (Enter and Space keys)
+    // Prevent default for Space to avoid page scrolling
+    cvMobileToggle.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleSubmenu();
+      }
+    });
+  }
+
+  // Update year
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+</body>
+
+</html>

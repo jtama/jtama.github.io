@@ -1,11 +1,15 @@
 ---
 layout: theme-layouts/roq-default/post
 ---
-{@io.quarkiverse.roq.frontmatter.runtime.model.DocumentPage page}
+<article class="mucha-card mx-auto max-w-4xl">
+  {@io.quarkiverse.roq.frontmatter.runtime.model.DocumentPage page}
 
-{#include partials/roq-series /}
+  {#include partials/roq-series /}
 
-{#insert /}
+  <div class="prose prose-lg dark:prose-invert prose-headings:font-heading prose-headings:text-mucha-text prose-p:text-mucha-text prose-a:text-mucha-gold hover:prose-a:text-mucha-sage max-w-none">
+    {#insert /}
+  </div>
+</article>
 
 {#article-end}
 <div class="giscus"></div>

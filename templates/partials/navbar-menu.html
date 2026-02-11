@@ -1,13 +1,45 @@
 {@io.quarkiverse.roq.frontmatter.runtime.model.Site site}
 {@java.util.List<io.vertx.core.json.JsonObject> menu}
 
-<section class="menu">
-    <ul>
-        {#for item in menu}
-        <li>
-            <a href="{site.url(item.path)}" {#if item.target??}target="{item.target}"{/if}><h2><i class="{item.icon}"></i> {item.title}</h2></a>
-        </li>
-        {/for}
-        <li><h2 id="search-button"><i class="fa-solid fa-magnifying-glass"></i> Search</h2></li>
-    </ul>
-</section>
+{@io.quarkiverse.roq.frontmatter.runtime.model.Site site}
+{@java.util.List<io.vertx.core.json.JsonObject> menu}
+
+<header class="sticky top-0 z-50 mb-8 pt-4">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <div class="rounded-2xl border border-mucha-gold border-b-[3px] border-b-mucha-sage bg-mucha-card-bg shadow-[0_4px_15px_var(--mucha-shadow)] backdrop-blur relative">
+      <!-- Decorative corners handled by CSS pseudo-elements in app.css if needed, or inline SVG here if preferred -->
+      
+      <div class="flex items-center justify-between px-4 sm:px-6 py-3">
+        <!-- Logo / Home Link -->
+        <a href="{site.url}" class="flex items-center gap-3 group">
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-mucha-gold to-mucha-rose text-white shadow-lg group-hover:shadow-[0_0_20px_rgba(212,175,55,0.6)] transition-all duration-300 border border-mucha-text/20">
+            <span class="font-heading font-bold text-lg">J</span>
+          </span>
+          <span class="font-heading font-bold tracking-tight text-lg text-mucha-text">{site.title}</span>
+        </a>
+
+        <!-- Desktop Menu -->
+        <nav class="hidden md:flex items-center gap-6 text-sm font-bold text-mucha-text font-heading">
+            {#for item in menu}
+            <a class="hover:text-mucha-gold transition-colors relative group" href="{site.url(item.path)}" {#if item.target??}target="{item.target}"{/if}>
+                <span>{item.title}</span>
+                <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-mucha-gold transition-all group-hover:w-full"></span>
+            </a>
+            {/for}
+            <button id="search-button" class="hover:text-mucha-gold transition-colors" aria-label="Search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            <button id="themeToggle" class="hover:text-mucha-gold transition-colors ml-2" aria-label="Toggle Dark Mode">
+                <i class="fas fa-moon dark:hidden"></i>
+                <i class="fas fa-sun hidden dark:inline"></i>
+            </button>
+        </nav>
+
+        <!-- Mobile Menu Toggle (Simplified) -->
+        <button id="mobileMenuToggle" class="md:hidden text-mucha-text">
+            <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
