@@ -1,5 +1,5 @@
 = OpenRewrite: Refactoring as code
-include::../../../includes/attributes.adoc[]
+include::../../../includes/attributes-fr.adoc[]
 :description: Introduction à OpenRewrite
 :page-image: https://images.unsplash.com/photo-1589152144820-692b189e0b34?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3
 :page-tags: java, tools, *-as-code

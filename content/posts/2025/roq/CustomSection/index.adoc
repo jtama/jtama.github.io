@@ -1,9 +1,10 @@
 = ROQ - Creating a custom section helper
-include::../../../../../includes/attributes.adoc
+include::../../../../../includes/attributes-fr.adoc[]
 :description: How-to Create a custom helper to simplify repetitive or complex tasks
 :page-tags: roq,*-as-code,qute,HowTos
 :page-author: jtama
 :page-date: 2025-06-30
+:page-key: roq-creating-a-custom-section-helper
 :page-image: https://images.unsplash.com/photo-1581116536636-deb9983bc943?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3
 :page-series: ROQ
 :qute:

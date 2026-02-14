@@ -3,3 +3,4 @@
 :idprefix:
 :idseparator: -
 :page-layout: :theme/post
+:page-lang: fr
