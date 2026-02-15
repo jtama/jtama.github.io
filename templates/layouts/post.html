@@ -1,0 +1,77 @@
+---
+layout: main
+asciidoc-attributes:
+    notitle: true
+---
+{@io.quarkiverse.roq.frontmatter.runtime.model.DocumentPage page}
+
+<style>
+    /* Cadre Art Nouveau dynamique */
+    .art-nouveau-frame {
+        border-style: solid;
+        border-width: 80px; /* Épaisseur du cadre */
+        border-image-source: url({site.image("background.png")});
+        border-image-slice: 200; /* Ajuste la portion de l'image utilisée pour les coins */
+        border-image-repeat: round;
+        background-color: white;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+    }
+</style>
+<div class="max-w-5xl mx-auto mb-20 px-4">
+    <article class="art-nouveau-frame overflow-hidden">
+        <div class="p-8 md:p-20">
+            <header class="text-center mb-16">
+                <div class="text-red-400 text-xs font-bold uppercase tracking-[0.3em] mb-4 underline decoration-1 underline-offset-8">
+                    {page.data.tags}
+                </div>
+                <h1 class="text-4xl md:text-6xl leading-tight mb-8">
+                    {page.title.asciidocify}
+                </h1>
+                <div class="flex items-center justify-center space-x-4 text-sm text-gray-400 italic">
+                    <span>{page.date.format('dd MM yyyy')}</span>
+                    <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                    <span>{page.readTime} min de lecture</span>
+                </div>
+            </header>
+            <div class="prose prose-stone max-w-none">
+                {#i18n /}
+                {#include partials/roq-series /}
+                {#insert /}
+            </div>
+            <div class="mt-20 pt-12 border-t border-stone-100 flex items-center justify-between">
+                {#if page.data.author??}
+                {#let author=cdi:authors.get(page.data.author)}
+                {#if author}
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-red-400 font-bold">
+                        {author.name}
+                    </div>
+                    <img src="{site.image(author.avatar)}" alt="author-{page.data.author}"/>
+                    <div>
+                        <p class="font-bold">{author.name}</p>
+                        <p class="text-xs text-gray-500 uppercase">{author.job}</p>
+                    </div>
+                </div>
+            </div>
+            {/if}
+            {/let}
+            {/if}
+        </div>
+        <div class="giscus"></div>
+        <script src="https://giscus.app/client.js"
+                data-repo="jtama/jtama.github.io"
+                data-repo-id="R_kgDONVeHHw"
+                data-category="Comments"
+                data-category-id="DIC_kwDONVeHH84Cpc0c"
+                data-mapping="pathname"
+                data-strict="0"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="bottom"
+                data-theme="light"
+                data-lang="en"
+                crossorigin="anonymous"
+                async>
+        </script>
+    </article>
+</div>

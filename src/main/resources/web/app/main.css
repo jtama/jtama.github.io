@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+body {
+  background-color: #FDF8E1; /* Crème inspiré de l'image 1 */
+  font-family: 'Inter', sans-serif;
+  color: #2D2424;
+}
+
+h1, h2, h3, .serif {
+  font-family: 'Playfair Display', serif;
+}
+
+.btn-primary {
+  background-color: #F87171; /* Corail de l'image 1 */
+  transition: transform 0.2s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  background-color: #ef4444;
+}
+
+/* Ajustement pour mobile car les bordures larges prennent trop de place */
+@media (max-width: 768px) {
+  .art-nouveau-frame {
+    border-width: 20px;
+    border-image-slice: 100;
+  }
+}
+
+.dropcap::first-letter {
+  float: left;
+  font-family: 'Playfair Display', serif;
+  font-size: 5rem;
+  line-height: 4rem;
+  padding-right: 1rem;
+  color: #F87171;
+  font-weight: 900;
+}
+
+.hljs {
+  background-color: #f7f7f8;
+}

@@ -1,13 +1,13 @@
-{@io.quarkiverse.roq.frontmatter.runtime.model.Site site}
-{@java.util.List<io.vertx.core.json.JsonObject> menu}
-
-<section class="menu">
-    <ul>
-        {#for item in menu}
-        <li>
-            <a href="{site.url(item.path)}" {#if item.target??}target="{item.target}"{/if}><h2><i class="{item.icon}"></i> {item.title}</h2></a>
-        </li>
-        {/for}
-        <li><h2 id="search-button"><i class="fa-solid fa-magnifying-glass"></i> Search</h2></li>
-    </ul>
-</section>
+<nav class="flex items-center justify-between px-8 py-6 max-w-7xl mx-auto">
+    <div class="flex space-x-6 text-sm font-semibold tracking-wide uppercase">
+        <a href="/" class="hover:opacity-60">Articles</a>
+        <a href="/talks" class="hover:opacity-60">Talks</a>
+        <a href="/about" class="hover:opacity-60">À propos</a>
+    </div>
+    <div class="text-2xl font-black italic serif">
+        Jérôme Tama's blog
+    </div>
+    <div class="flex space-x-6 text-sm font-semibold tracking-wide uppercase">
+        <a href="#" class="hover:opacity-60" id="search-button">Recherche</a>
+    </div>
+</nav>

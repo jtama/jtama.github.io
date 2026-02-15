@@ -9,8 +9,73 @@ social-github: jtama
 social-linkedin: jérôme-tama-591699
 social-bluesky: jtama.bsky.social
 paginate:
-  collection: posts
-  size: 5
-layout: :theme/index
+    collection: posts
+    size: 5
+layout: main
 ---
-<span />
+
+<header class="max-w-7xl mx-auto px-8 pt-12 pb-24 grid md:grid-cols-2 gap-12 items-center">
+    <div>
+        <h1 class="text-7xl lg:text-8xl leading-none mb-8">
+            L'Art du <br> <span class="text-red-400">Java</span>
+        </h1>
+        <p class="text-xl text-gray-700 leading-relaxed mb-10 max-w-md">
+            Exploration esthétique du développement backend, des microservices et de l'écosystème Cloud Native. Le code
+            est une toile, Java est mon pinceau.
+        </p>
+        <div class="flex space-x-4">
+            <a href="#articles" class="btn-primary text-white px-8 py-4 rounded-lg font-bold shadow-lg">
+                LIRE LE BLOG
+            </a>
+            <a href="#"
+               class="bg-white border-2 border-gray-200 px-8 py-4 rounded-lg font-bold flex items-center space-x-2 hover:bg-gray-50">
+                <span>🎥</span> <span>MES TALKS</span>
+            </a>
+        </div>
+    </div>
+    <div class="relative">
+        <img src='{site.image("main_page.png")}' alt="Art Nouveau Java"
+             class="rounded-3xl shadow-2xl w-full object-cover border-8 border-white">
+        <div class="absolute -bottom-10 -right-10 w-40 h-40 opacity-20 bg-green-800 rounded-full blur-3xl"></div>
+    </div>
+</header>
+
+<section id="articles" class="bg-white py-24 border-t border-gray-100">
+    <div class="max-w-7xl mx-auto px-8">
+        <div class="flex justify-between items-end mb-16">
+            <div>
+                <h2 class="text-5xl mb-4">Dernières publications</h2>
+                <div class="h-1 w-24 bg-red-400"></div>
+            </div>
+            <a href="#" class="text-sm font-bold border-b-2 border-black pb-1">VOIR TOUT</a>
+        </div>
+
+        {@io.quarkiverse.roq.frontmatter.runtime.model.NormalPage page}
+
+        {#if site.collections.get('posts')}
+        <div class="grid md:grid-cols-3 gap-12">
+            {#for post in site.collections.get('posts').paginated(page.paginator)}
+            <article class="group">
+                <a href="{post.url}">
+                    <div class="overflow-hidden rounded-2xl mb-6 bg-stone-100 p-4 aspect-[4/5] flex items-center justify-center relative">
+                        <img src='{site.image("background.png")}'
+                             class="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-multiply group-hover:scale-120 transition duration-500">
+                        <div class="relative z-10 bg-white/90 p-6 shadow-sm border border-stone-200 rounded-lg">
+                            {#if post.image}
+                            <img class="w-50%" src='{post.image}'/>
+                            {/if}
+                            <span class="text-xs font-bold uppercase tracking-widest text-red-400">{post.title.asciidocify}</span>
+                            <h3 class="text-2xl mt-2 leading-snug">{post.description.asciidocify}</h3>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">{post.date.format('dd MM yyyy')}
+                        &nbsp;&nbsp;&nbsp;—&nbsp;{post.readTime} minute(s) read</p>
+                </a>
+            </article>
+            {/for}
+        </div>
+        {#include partials/paginate/}
+        {/if}
+    </div>
+</section>
+
