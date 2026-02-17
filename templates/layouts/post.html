@@ -1,0 +1,65 @@
+---
+layout: main
+asciidoc-attributes:
+    notitle: true
+---
+{@io.quarkiverse.roq.frontmatter.runtime.model.DocumentPage page}
+
+<div class="max-w-5xl mx-auto mb-20 px-4">
+    <article class="art-nouveau-frame overflow-hidden">
+        <div class="p-8 md:p-20">
+            <header class="text-center mb-16">
+                <div class="text-red-400 text-xs font-bold uppercase tracking-[0.3em] mb-4 underline decoration-1 underline-offset-8">
+                    {page.data.tags}
+                </div>
+                <!-- Responsive height for image to save space on mobile (Accessibility: Perceivable) -->
+                <img src="{page.image}" class="w-full h-48 md:h-80 object-cover rounded-lg my-12 shadow-lg">
+                <!-- Changed leading-tight to md:leading-tight for better line spacing on mobile titles (Accessibility: Perceivable) -->
+                <h1 class="text-4xl md:text-6xl leading-snug md:leading-tight mb-8">
+                    {page.title.asciidocify}
+                </h1>
+                <div class="flex items-center justify-center space-x-4 text-sm text-gray-400 italic">
+                    <span>{page.date.format('dd MM yyyy')}</span>
+                    <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                    <span>{page.readTime} min de lecture</span>
+                </div>
+            </header>
+            <div class="prose prose-stone max-w-none doc">
+                {#i18n page/}
+                {#include partials/roq-series /}
+                {#insert /}
+            </div>
+            <div class="mt-20 pt-12 border-t border-stone-100 flex items-center justify-between">
+                {#if page.data.author??}
+                {#let author=cdi:authors.get(page.data.author)}
+                {#if author}
+                <div class="flex items-center space-x-4">
+                    <img src="{site.image(author.avatar)}" class="size-24 rounded-full" alt="author-{page.data.author}"/>
+                    <div>
+                        <p class="font-bold">{author.name}</p>
+                        <p class="text-xs text-gray-500 uppercase">{author.job}</p>
+                    </div>
+                </div>
+            </div>
+            {/if}
+            {/let}
+            {/if}
+        </div>
+        <div class="giscus"></div>
+        <script src="https://giscus.app/client.js"
+                data-repo="jtama/jtama.github.io"
+                data-repo-id="R_kgDONVeHHw"
+                data-category="Comments"
+                data-category-id="DIC_kwDONVeHH84Cpc0c"
+                data-mapping="pathname"
+                data-strict="0"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="bottom"
+                data-theme="light"
+                data-lang="en"
+                crossorigin="anonymous"
+                async>
+        </script>
+    </article>
+</div>

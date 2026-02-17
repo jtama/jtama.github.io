@@ -1,16 +1,51 @@
 ---
-title: Blabla dev
-description: "'Tis but a scratch"
-name: Jérôme Tama's blog
-simple-name: Jérôme Tama's blog
 image: brutus.png
-social-twitter: JTama_
-social-github: jtama
-social-linkedin: jérôme-tama-591699
-social-bluesky: jtama.bsky.social
 paginate:
-  collection: posts
-  size: 5
-layout: :theme/index
+    collection: posts
+    size: 6
+layout: main
 ---
-<span />
+
+<section id="articles" class="bg-cream py-24 border-t border-gray-100">
+    <div class="max-w-7xl mx-auto px-8">
+        <div class="flex justify-between items-end mb-16">
+            <div>
+                <h2 class="text-5xl mb-4">Dernières publications</h2>
+                <div class="h-1 w-24 bg-red-400"></div>
+            </div>
+            <a href="#" class="text-sm font-bold border-b-2 border-black pb-1">VOIR TOUT</a>
+        </div>
+
+        {@io.quarkiverse.roq.frontmatter.runtime.model.NormalPage page}
+
+        {#if site.collections.get('posts')}
+        <div class="grid md:grid-cols-2 gap-12">
+                {#for post in site.collections.get('posts').paginated(page.paginator)}
+                <article class="group">
+                    <a href="{post.url}">
+                        <div class="overflow-hidden rounded-2xl mb-6 bg-stone-100 p-4 md:aspect-[4/5] flex items-center justify-center relative">
+                            <img src='{site.image("background.png")}'
+                            class="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-multiply group-hover:scale-120 transition duration-500">
+                            <div class="relative z-10 bg-white/90 p-6 shadow-sm border border-stone-200 rounded-lg w-full">
+                                {#if post.image}
+                                <!-- Reduce fixed height on mobile to prevent content overflow (Accessibility: Perceivable) -->
+                                <img src='{post.image}' class="w-full h-48 md:h-80 object-cover rounded-lg mb-6 md:my-12 shadow-lg"/>
+                                {/if}
+                                <!-- Use leading-snug to prevent overlapping lines on mobile (Accessibility: Perceivable) -->
+                                <h3 class="text-2xl mt-2 leading-snug mb-2">{post.title.asciidocify}</h3>
+                                {#if post.description}
+                                <!-- Changed to div for block layout and added margin for clarity (Accessibility: Perceivable) -->
+                                <div class="text-xs font-bold uppercase tracking-widest text-red-400 mt-2">{post.description.asciidocify}</div>
+                                {/if}
+                            </div>
+                        </div>
+                        <p class="text-gray-600 leading-relaxed">{post.date.format('dd MM yyyy')}
+                        &nbsp;&nbsp;&nbsp;—&nbsp;{post.readTime} minute(s) read</p>
+                    </a>
+                </article>
+                {/for}        </div>
+        {#include partials/paginate/}
+        {/if}
+    </div>
+</section>
+

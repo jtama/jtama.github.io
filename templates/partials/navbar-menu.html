@@ -1,13 +1,17 @@
-{@io.quarkiverse.roq.frontmatter.runtime.model.Site site}
-{@java.util.List<io.vertx.core.json.JsonObject> menu}
-
-<section class="menu">
-    <ul>
-        {#for item in menu}
-        <li>
-            <a href="{site.url(item.path)}" {#if item.target??}target="{item.target}"{/if}><h2><i class="{item.icon}"></i> {item.title}</h2></a>
-        </li>
-        {/for}
-        <li><h2 id="search-button"><i class="fa-solid fa-magnifying-glass"></i> Search</h2></li>
-    </ul>
-</section>
+<nav class="flex flex-col md:flex-row items-center justify-between px-8 py-6 max-w-7xl mx-auto space-y-4 md:space-y-0">
+    <div class="flex items-center justify-center md:justify-start">
+        <a href="/"><img src="{site.image}" class="size-24 rounded-full object-cover"></a>
+    </div>
+    <div class="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-sm font-semibold tracking-wide uppercase">
+        <a href="/" class="hover:opacity-60"><i class="fa fa-pencil mr-1" aria-hidden="true"></i>
+             Articles</a>
+        <a href="/talks" class="hover:opacity-60"><i class="fa fa-microphone mr-1" aria-hidden="true"></i>
+             Talks</a>
+    </div>
+    <div class="text-2xl font-black italic serif text-center md:text-left">
+        Asta siempre <span class="text-red-400">Java</span>
+    </div>
+    <div class="flex items-center text-sm font-semibold tracking-wide uppercase">
+        <a href="#" class="hover:opacity-60" id="search-button">Recherche</a>
+    </div>
+</nav>

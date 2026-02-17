@@ -84,6 +84,12 @@ public class I18NTemplateExtension {
                 .stream()
                 .filter(doc -> translationId.equals(doc.data(DOCUMENT_KEY)))
                 .filter(doc -> !doc.equals(page));
+                //.filter(distinctByKey(Page::id));
+    }
+
+    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
     }
 
     public record Translation(String code, String flag, RoqUrl url) {

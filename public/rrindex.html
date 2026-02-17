@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!-- SEO PAGINATOR -->
+    <link rel="next" href="/posts/page2/"/>
+    <link rel="alternate" type="application/rss+xml" title="Blabla dev" href="/rss.xml"/>
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/images/site-icon.svg" type="image/svg+xml">
+
+    <base href="/">
+
+
+    <meta name="theme-color" content="#263959">
+    <meta name="msapplication-navbutton-color" content="#263959">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#263959">
+    <link rel="stylesheet" href="/static/bundle/roq.css?id=ff28386c-2b46-445e-bdb9-3164ff5d6b8c">
+
+    <script type="module" src="/static/bundle/app.js"></script>
+    <link rel="stylesheet" href="/static/bundle/app.css" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;600&display=swap"
+          rel="stylesheet">
+
+    <script type="module" src="/static/bundle/search.js?id=ff28386c-2b46-445e-bdb9-3164ff5d6b8c"></script>
+    <script type="module">
+        setupSearch({
+            url: '/search-index.json'
+        });
+    </script>
+    <link rel="stylesheet" href="/static/bundle/search.css?id=ff28386c-2b46-445e-bdb9-3164ff5d6b8c">    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+</head>
+
+<body class="antialiased">
+
+
+<div class="search-overlay" id="search-overlay">
+    <div class="search-overlay-content">
+        <button class="search-close" id="search-close">&times;</button>
+        <div id="search-field">
+            <input
+                    type="search"
+                    class="search-input"
+                    id="search-input"
+                    placeholder="Search..."
+                    autocomplete="off"
+                    autofocus
+            />
+        </div>
+        <div class="search-results" id="search-results">
+            <!-- Search results will be dynamically inserted here -->
+        </div>
+    </div>
+</div>
+<nav class="flex items-center justify-between px-8 py-6 max-w-7xl mx-auto">
+    <div class="flex space-x-6 text-sm font-semibold tracking-wide uppercase">
+        <a href="/" class="hover:opacity-60">Articles</a>
+        <a href="/talks" class="hover:opacity-60">Talks</a>
+        <a href="/about" class="hover:opacity-60">À propos</a>
+    </div>
+    <div class="text-2xl font-black italic serif">
+        Jérôme Tama's blog
+    </div>
+    <div class="flex space-x-6 text-sm font-semibold tracking-wide uppercase">
+        <a href="#" class="hover:opacity-60" id="search-button">Recherche</a>
+    </div>
+</nav>
+
+
+<header class="max-w-7xl mx-auto px-8 pt-12 pb-24 grid md:grid-cols-2 gap-12 items-center">
+    <div>
+        <h1 class="text-7xl lg:text-8xl leading-none mb-8">
+            L'Art du <br> <span class="text-red-400">Java</span>
+        </h1>
+        <p class="text-xl text-gray-700 leading-relaxed mb-10 max-w-md">
+            Exploration esthétique du développement backend, des microservices et de l'écosystème Cloud Native. Le code
+            est une toile, Java est mon pinceau.
+        </p>
+        <div class="flex space-x-4">
+            <a href="#articles" class="btn-primary text-white px-8 py-4 rounded-lg font-bold shadow-lg">
+                LIRE LE BLOG
+            </a>
+            <a href="#"
+               class="bg-white border-2 border-gray-200 px-8 py-4 rounded-lg font-bold flex items-center space-x-2 hover:bg-gray-50">
+                <span>▶</span> <span>MES TALKS</span>
+            </a>
+        </div>
+    </div>
+    <div class="relative">
+        <img src='/images/main_page.png' alt="Art Nouveau Java"
+             class="rounded-3xl shadow-2xl w-full object-cover border-8 border-white">
+        <div class="absolute -bottom-10 -right-10 w-40 h-40 opacity-20 bg-green-800 rounded-full blur-3xl"></div>
+    </div>
+</header>
+
+<section id="articles" class="bg-white py-24 border-t border-gray-100">
+    <div class="max-w-7xl mx-auto px-8">
+        <div class="flex justify-between items-end mb-16">
+            <div>
+                <h2 class="text-5xl mb-4">Dernières publications</h2>
+                <div class="h-1 w-24 bg-red-400"></div>
+            </div>
+            <a href="#" class="text-sm font-bold border-b-2 border-black pb-1">VOIR TOUT</a>
+        </div>
+
+
+        <div class="grid md:grid-cols-3 gap-12">
+            <article class="group">
+                <a href="/posts/release-everything-with-jreleaser/">
+                    <div class="overflow-hidden rounded-2xl mb-6 bg-stone-100 p-4 aspect-[4/5] flex items-center justify-center relative">
+                        <img src='/images/background.png'
+                             class="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-multiply group-hover:scale-120 transition duration-500">
+                        <div class="relative z-10 bg-white/90 p-6 shadow-sm border border-stone-200 rounded-lg">
+                            <img class="w-50%" src='https://jreleaser.org/images/jreleaser-duke.png'/>
+                            <span class="text-xs font-bold uppercase tracking-widest text-red-400"><div class="paragraph">
+<p>Release everything with JReleaser</p>
+</div></span>
+                            <h3 class="text-2xl mt-2 leading-snug"><div class="paragraph">
+                                <p>Stop thinking about how to do it, and start thinking about what to do</p>
+                            </div></h3>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">18 11 2025
+                        &nbsp;&nbsp;&nbsp;—&nbsp;0 minute(s) read</p>
+                </a>
+            </article>
+            <article class="group">
+                <a href="/posts/technique-avanc-e-d-openrewrite-orchestrer-des-refactorings-complexes-avec-les-scanningrecipe/">
+                    <div class="overflow-hidden rounded-2xl mb-6 bg-stone-100 p-4 aspect-[4/5] flex items-center justify-center relative">
+                        <img src='/images/background.png'
+                             class="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-multiply group-hover:scale-120 transition duration-500">
+                        <div class="relative z-10 bg-white/90 p-6 shadow-sm border border-stone-200 rounded-lg">
+                            <img class="w-50%" src='/posts/technique-avanc-e-d-openrewrite-orchestrer-des-refactorings-complexes-avec-les-scanningrecipe/panoramic-dental-xray.jpg'/>
+                            <span class="text-xs font-bold uppercase tracking-widest text-red-400"><div class="paragraph">
+<p>Technique Avancée d&#8217;OpenRewrite : Orchestrer des refactorings complexes avec les <code>ScanningRecipe</code></p>
+</div></span>
+                            <h3 class="text-2xl mt-2 leading-snug"><div class="paragraph">
+                                <p>Quand un simple visiteur ne suffit plus, il faut sortir l&#8217;artillerie lourde. Analyser plusieurs fichiers, générer du code ? Place aux <em>scanning recipes</em> !</p>
+                            </div></h3>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">19 10 2025
+                        &nbsp;&nbsp;&nbsp;—&nbsp;0 minute(s) read</p>
+                </a>
+            </article>
+            <article class="group">
+                <a href="/posts/technique-avanc-e-d-openrewrite-utiliser-les-messages-pour-impl-menter-des-logiques-complexes/">
+                    <div class="overflow-hidden rounded-2xl mb-6 bg-stone-100 p-4 aspect-[4/5] flex items-center justify-center relative">
+                        <img src='/images/background.png'
+                             class="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-multiply group-hover:scale-120 transition duration-500">
+                        <div class="relative z-10 bg-white/90 p-6 shadow-sm border border-stone-200 rounded-lg">
+                            <img class="w-50%" src='/posts/technique-avanc-e-d-openrewrite-utiliser-les-messages-pour-impl-menter-des-logiques-complexes/pexels-pixabay-260551.jpg'/>
+                            <span class="text-xs font-bold uppercase tracking-widest text-red-400"><div class="paragraph">
+<p>Technique Avancée d&#8217;OpenRewrite : Utiliser les messages pour implémenter des logiques complexes</p>
+</div></span>
+                            <h3 class="text-2xl mt-2 leading-snug"><div class="paragraph">
+                                <p>Comment mettre en place des actions coordonnées sur plusieurs niveaux d&#8217;AST&#8230;&#8203;</p>
+                            </div></h3>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">05 09 2025
+                        &nbsp;&nbsp;&nbsp;—&nbsp;0 minute(s) read</p>
+                </a>
+            </article>
+            <article class="group">
+                <a href="/posts/de-la-programmation-orient-e-objet-vers-la-programmation-orient-e-donn-es-un-guide-pratique/">
+                    <div class="overflow-hidden rounded-2xl mb-6 bg-stone-100 p-4 aspect-[4/5] flex items-center justify-center relative">
+                        <img src='/images/background.png'
+                             class="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-multiply group-hover:scale-120 transition duration-500">
+                        <div class="relative z-10 bg-white/90 p-6 shadow-sm border border-stone-200 rounded-lg">
+                            <img class="w-50%" src='https://images.unsplash.com/photo-1470342495351-a5f90c5011cd?q=80&amp;w=1740&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.0.3'/>
+                            <span class="text-xs font-bold uppercase tracking-widest text-red-400"><div class="paragraph">
+<p>De la Programmation Orientée Objet vers la Programmation Orientée Données - Un Guide Pratique</p>
+</div></span>
+                            <h3 class="text-2xl mt-2 leading-snug"><div class="paragraph">
+                                <p>Fatiguée de la POO ? Passez à la DOP !</p>
+                            </div></h3>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">24 07 2025
+                        &nbsp;&nbsp;&nbsp;—&nbsp;0 minute(s) read</p>
+                </a>
+            </article>
+            <article class="group">
+                <a href="/posts/roq-creating-a-custom-section-helper/">
+                    <div class="overflow-hidden rounded-2xl mb-6 bg-stone-100 p-4 aspect-[4/5] flex items-center justify-center relative">
+                        <img src='/images/background.png'
+                             class="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-multiply group-hover:scale-120 transition duration-500">
+                        <div class="relative z-10 bg-white/90 p-6 shadow-sm border border-stone-200 rounded-lg">
+                            <img class="w-50%" src='https://images.unsplash.com/photo-1581116536636-deb9983bc943?q=80&amp;w=3474&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.0.3'/>
+                            <span class="text-xs font-bold uppercase tracking-widest text-red-400"><div class="paragraph">
+<p>ROQ - Creating a custom section helper</p>
+</div></span>
+                            <h3 class="text-2xl mt-2 leading-snug"><div class="paragraph">
+                                <p>How-to Create a custom helper to simplify repetitive or complex tasks</p>
+                            </div></h3>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">30 06 2025
+                        &nbsp;&nbsp;&nbsp;—&nbsp;0 minute(s) read</p>
+                </a>
+            </article>
+        </div>
+        <div class="container">
+
+            <nav class="pagination" role="navigation">
+                <ul>
+
+                    <p><span class="page-number">Page 1 of 3</span></p>
+
+                    <p><a class="older-posts" href="/posts/page2/"><i class="fa fa-long-arrow-right" aria-hidden="true"></i></a></p>
+                </ul>
+            </nav>
+
+        </div>    </div>
+</section>
+
+
+
+<footer class="py-12 px-8 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center border-t border-stone-200">
+    <div class="flex space-x-6 mb-6 md:mb-0">
+        <a href="#" class="hover:text-red-400">LinkedIn</a>
+        <a href="#" class="hover:text-red-400">GitHub</a>
+        <a href="#" class="hover:text-red-400">Twitter</a>
+        <a href="/rss.xml" class="hover:text-red-400"><i class="fa-solid fa-rss"></i>
+    </div>
+    <div class="text-sm text-gray-400">
+        &copy; 2026 L'Art du Code. Propulsé par Java & Passion.
+    </div>
+</footer>
+</body>
+</html>
+

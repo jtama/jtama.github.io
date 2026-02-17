@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article - L'Art du Code Java</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #FDF8E1;
+            font-family: 'Inter', sans-serif;
+            color: #2D2424;
+        }
+        h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
+        code { font-family: 'Fira Code', monospace; }
+
+        /* Cadre Art Nouveau dynamique */
+        .art-nouveau-frame {
+            border-style: solid;
+            border-width: 80px; /* Épaisseur du cadre */
+            border-image-source: url('background.png');
+            border-image-slice: 200; /* Ajuste la portion de l'image utilisée pour les coins */
+            border-image-repeat: round;
+            background-color: white;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+        }
+
+        /* Ajustement pour mobile car les bordures larges prennent trop de place */
+        @media (max-width: 768px) {
+            .art-nouveau-frame {
+                border-width: 20px;
+                border-image-slice: 100;
+            }
+        }
+
+        .dropcap::first-letter {
+            float: left;
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            line-height: 4rem;
+            padding-right: 1rem;
+            color: #F87171;
+            font-weight: 900;
+        }
+    </style>
+</head>
+<body class="antialiased bg-[#FDF8E1]">
+
+<nav class="flex items-center justify-between px-8 py-6 max-w-7xl mx-auto">
+    <a href="index.html" class="group flex items-center space-x-2 text-sm font-semibold tracking-wide uppercase">
+        <span class="group-hover:-translate-x-1 transition-transform">←</span>
+        <span>Retour</span>
+    </a>
+    <div class="text-2xl font-black italic serif">J<span class="text-red-400">/</span>R</div>
+    <div class="hidden md:flex space-x-6 text-sm font-semibold tracking-wide uppercase">
+        <a href="#" class="hover:opacity-60">Articles</a>
+        <a href="#" class="border-2 border-current px-4 py-1 rounded-full hover:bg-black hover:text-white transition">S'abonner</a>
+    </div>
+</nav>
+
+<div class="max-w-5xl mx-auto mb-20 px-4">
+    <article class="art-nouveau-frame overflow-hidden">
+
+        <div class="p-8 md:p-20">
+            <header class="text-center mb-16">
+                <div class="text-red-400 text-xs font-bold uppercase tracking-[0.3em] mb-4 underline decoration-1 underline-offset-8">
+                    Technique & Design
+                </div>
+                <h1 class="text-4xl md:text-6xl leading-tight mb-8">
+                    Les Threads Virtuels : <br>L'Élégance du Parallélisme
+                </h1>
+                <div class="flex items-center justify-center space-x-4 text-sm text-gray-400 italic">
+                    <span>15 Mars 2026</span>
+                    <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                    <span>8 min de lecture</span>
+                </div>
+            </header>
+
+            <div class="prose prose-stone max-w-none">
+                <p class="dropcap text-xl leading-relaxed mb-10 text-gray-800">
+                    L'évolution de Java vers le projet Loom marque un tournant historique. En réintroduisant une forme de légèreté que nous avions perdue au profit de frameworks réactifs complexes, Java 21 nous permet de revenir à une écriture plus organique du code.
+                </p>
+
+                <img src="main_page.png" alt="Illustration Java" class="w-full h-80 object-cover rounded-lg my-12 shadow-lg">
+
+                <h2 class="text-3xl serif mb-6 mt-12">Le Retour à la Simplicité</h2>
+                <p class="mb-8 leading-relaxed">
+                    Imaginez pouvoir lancer un million de threads sans saturer la mémoire de votre serveur. Ce n'est plus une utopie, c'est la promesse tenue par les threads virtuels. Voici la structure fondamentale :
+                </p>
+
+                <div class="bg-stone-900 rounded-lg p-6 my-10 shadow-2xl">
+                        <pre class="text-stone-300 text-sm overflow-x-auto"><code><span class="text-emerald-400">// Un thread qui ne pèse presque rien</span>
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    executor.submit(() -> {
+        var result = fetchDataFromDatabase();
+        return process(result);
+    });
+}</code></pre>
+                </div>
+
+                <p class="mb-8 leading-relaxed">
+                    Cette approche nous permet de traiter chaque requête HTTP comme une unité de travail isolée et séquentielle, simplifiant drastiquement le débogage et la maintenance de nos applications microservices.
+                </p>
+            </div>
+
+            <div class="mt-20 pt-12 border-t border-stone-100 flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-red-400 font-bold">JR</div>
+                    <div>
+                        <p class="font-bold">Jean-Robert</p>
+                        <p class="text-xs text-gray-500 uppercase">Artisan Codeur Java</p>
+                    </div>
+                </div>
+                <div class="flex space-x-4">
+                    <button class="text-gray-400 hover:text-red-400 transition">Partager</button>
+                </div>
+            </div>
+        </div>
+    </article>
+</div>
+
+<footer class="text-center pb-12 text-stone-400 text-sm">
+    <p>© 2026 L'Art du Code — Créé avec Java et Amour.</p>
+</footer>
+
+</body>
+</html>

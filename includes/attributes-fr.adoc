@@ -2,5 +2,5 @@
 :toclevels: 2
 :idprefix:
 :idseparator: -
-:page-layout: :theme/post
+:page-layout: post
 :page-lang: fr

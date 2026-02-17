@@ -1,30 +1,53 @@
 ---
 title: My talks
 description: The list of talks I gave
-layout: :theme/page
+layout: main
+asciidoc-attributes:
+    notitle: true
 ---
+<section id="articles" class="bg-cream py-24 border-t border-gray-100">
+    <div class="max-w-7xl mx-auto px-8">
+        {@io.quarkiverse.roq.frontmatter.runtime.model.NormalPage page}
+        <div class="grid md:grid-cols-1 gap-8">
+        {#for talk in cdi:talks.list}
+            <article class="group">
+                <div class="overflow-hidden rounded-2xl mb-6 bg-stone-100 grid  gap-8 p-6 justify-center items-center relative">
+                    <img src='{site.image("background.png")}'
+                         class="absolute inset-0 w-full object-cover opacity-70 mix-blend-multiply group-hover:scale-120 transition duration-500">
+                    <header class="text-center mb-16">
+                        <h1 class="text-4xl md:text-6xl leading-tight mb-8">
+                            {talk.title.asciidocify}
+                        </h1>
+                    </header>
+                    <div class="prose prose-stone max-w-none doc">
+                        <div class="relative z-10 bg-white/90 p-6 shadow-sm border border-stone-200 rounded-lg">
+                            {talk.description.asciidocify}
 
-<h1>Talks</h1>
+                            {#if talk.slides}<a href="{talk.slides}" target="_blank"><i class="fa-solid fa-film"></i> Les
+                            slides</a>{/if}
 
-{#for talk in cdi:talks.list}
-<article class="event">
-    <div class="event-content">
-        <h2 class="event-title">{talk.title}</h2>
-        {talk.description.asciidocToHtml.raw}
-        {#if talk.slides}<a href="{talk.slides}" target="_blank"><i class="fa-solid fa-film"></i> Les slides</a>{/if}
-        {#if talk.code}<a href="{talk.code}" target="_blank"><i class="fa-brands fa-square-github"></i> Le dépôt git</a>{/if}
-        {#if talk.post}<a href="{talk.post}" target="_blank"><i class="fa-solid fa-pen-fancy"></i> L'article</a>{/if}
-        <h3>Donné dans les conférences suivantes :</h3>
-        <ul>
-        {#for conference in talk.conferences}
-            <li>
-                <div class="event-conference">
-                    <strong>{conference.name}</strong> <span>{#if conference.video}<a href="{conference.video}" target="_blank"><i class="fa-brands fa-youtube"></i> La captation</a>{/if}</span>
+                            {#if talk.code}<a href="{talk.code}" target="_blank"><i class="fa-brands fa-square-github"></i>
+                            Le dépôt git</a>{/if}
+
+                            {#if talk.post}<a href="{talk.post}" target="_blank"><i class="fa-solid fa-pen-fancy"></i>
+                            L'article</a>{/if}
+
+                            <h3>Donné dans les conférences suivantes :</h3>
+                            <ul>
+                                {#for conference in talk.conferences}
+                                <li>
+                                    <div class="event-conference">
+                                        <strong>{conference.name}</strong> <span>{#if conference.video}<a
+                                            href="{conference.video}" target="_blank"><i class="fa-brands fa-youtube"></i> La captation</a>{/if}</span>
+                                    </div>
+                                </li>
+                                {/for}
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-            </li>
-        {/for}
-
-        </ul>
+            </article>
+            {/for}
+        </div>
     </div>
-</article>
-{/for}
+</section>
