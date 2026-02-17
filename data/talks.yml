@@ -1,22 +1,18 @@
-- title: "To Gather, or not to Gather, that is the question."
+- title: Fatigués de la POO ? Passez à la DOP !
   description: |
-    Depuis l'arrivée de l'api java.util.Stream en Java 8, on entend une complainte monter de la communauté :
-    
-     _Ô rage ! Ô désespoir ! Ô vieillesse ennemie ! Les opérations finales sont ouvertes, mais pas les opérations intermédaires... N'ai-je donc tant vécu que pour cette infamie ? 😱_
+    Depuis Java 8 et l'introduction de d'une dose de programmation _fonctionnelle_, le langage a beaucoup évoluer.
 
-    Amis, réjouissez vous, car votre complainte a été entendue ! Nous voici donc tous réunis pour nous jeter corps et âmes dans cet ajout : les 🔥 java.util.stream.Gatherer 🔥.
+    Chaque _release_ ou presque apporte son lot de nouveautés qui nous permettent de repenser nos applications, qui nous donnent de nouveaux outils.
 
-    Comment fonctionnent-ils ? Est-il simple d'en implémenter ? Et d'ailleurs pourquoi je voudrais même le faire ?
+    La **P**rogrammation **O**rientée **D**onnées (_Data Oriented Programming_) représente un paradigme émergent qui privilégie la manipulation des données plutôt que l’encapsulation des comportements. 
 
-    N'avez-vous jamais eu envie d'avoir un index dans vos streams, de les zipper ou de les fusionner ? C'est ce que je vous propose de mettre en oeuvre avec quelques Gatherers, du plus simple au plus complexe (tout est relatif).
+    *Ce guide pratique* -sous forme de refactoring- explore les étapes clés pour transformer du code Java, d'une approche traditionnelle, orientés objet vers une approche orientée données.
 
-    Et cadeau bonux, vous repartirez avec le dépôt git contenant les sources explorées !
-  slides: https://jtama.github.io/to-gather-or-not-to-gather/#/
-  code: https://github.com/jtama/to-gather-or-not-to-gather
-  post: ../posts/to-gather-or-not-to-gather-that-is-the-question/
+    🏹 Armez vos arcs de nouvelles cordes et repartez avec un kata à faire en équipe.
+  code: https://github.com/jtama/crazy-data-oriented-programming
+  post: http://localhost:8081/posts/de-la-programmation-orient-e-objet-vers-la-programmation-orient-e-donn-es-un-guide-pratique/
   conferences:
-    - name: Touraine Tech 2025
-      video: https://youtu.be/FsL8BPgKKPM?si=Bq53NbCjSpRlXSHn
+    - name: Touraine Tech 2026
 - title: "OpenRewrite: Refactoring as code"
   description: |
     Vous êtes dans la team __Doc as code, Infrastructure as code, Ci as code__ ? La réponse à ces questions vous semble évidente.
@@ -45,6 +41,25 @@
     - name: Touraine Tech 2025
       video: https://youtu.be/FsL8BPgKKPM?si=Df9vknCZCh5BM4Tm
     - name: SnowCamp 2025
+- title: "To Gather, or not to Gather, that is the question."
+  description: |
+    Depuis l'arrivée de l'api java.util.Stream en Java 8, on entend une complainte monter de la communauté :
+    
+     _Ô rage ! Ô désespoir ! Ô vieillesse ennemie ! Les opérations finales sont ouvertes, mais pas les opérations intermédaires... N'ai-je donc tant vécu que pour cette infamie ? 😱_
+
+    Amis, réjouissez vous, car votre complainte a été entendue ! Nous voici donc tous réunis pour nous jeter corps et âmes dans cet ajout : les 🔥 java.util.stream.Gatherer 🔥.
+
+    Comment fonctionnent-ils ? Est-il simple d'en implémenter ? Et d'ailleurs pourquoi je voudrais même le faire ?
+
+    N'avez-vous jamais eu envie d'avoir un index dans vos streams, de les zipper ou de les fusionner ? C'est ce que je vous propose de mettre en oeuvre avec quelques Gatherers, du plus simple au plus complexe (tout est relatif).
+
+    Et cadeau bonux, vous repartirez avec le dépôt git contenant les sources explorées !
+  slides: https://jtama.github.io/to-gather-or-not-to-gather/#/
+  code: https://github.com/jtama/to-gather-or-not-to-gather
+  post: ../posts/to-gather-or-not-to-gather-that-is-the-question/
+  conferences:
+    - name: Touraine Tech 2025
+      video: https://youtu.be/FsL8BPgKKPM?si=Bq53NbCjSpRlXSHn
 - title: "Quarkus : Greener, Better, Faster, stronger!"
   description: |
     Quarkus n'est maintenant plus un nouveau venu dans l'écosystème java, et de plus en plus de projets l'adoptent comme base de travail,  mais peu de développeurs comprennent vraiment à quel point la magie se cache dans ses extensions.
@@ -75,7 +90,7 @@
     Fonctions anonymes, d'ordre supérieur ou encore la composition de fonctions, toutes ces notions n'auront désormais plus de secret pour vous et trouveront une place de choix dans votre boîte à outils de refactoring.
     
     Vous repartirez avec un dépôt git avant/après en prime !
-    Avec le merveilleux https://github.com/dlucasd[Damien Lucas] image:https://github.com/dlucasd.png[Damien Lucas,role="co-author"]
+    Avec le merveilleux https://github.com/dlucasd[Damien Lucas]
   slides: https://jtama.github.io/les-super-pouvoirs-du-package-java.util.function/#/
   code: https://github.com/jtama/les-super-pouvoirs-du-package-java.util.function
   conferences:

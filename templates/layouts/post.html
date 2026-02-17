@@ -5,18 +5,6 @@ asciidoc-attributes:
 ---
 {@io.quarkiverse.roq.frontmatter.runtime.model.DocumentPage page}
 
-<style>
-    /* Cadre Art Nouveau dynamique */
-    .art-nouveau-frame {
-        border-style: solid;
-        border-width: 80px; /* Épaisseur du cadre */
-        border-image-source: url({site.image("background.png")});
-        border-image-slice: 200; /* Ajuste la portion de l'image utilisée pour les coins */
-        border-image-repeat: round;
-        background-color: white;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
-    }
-</style>
 <div class="max-w-5xl mx-auto mb-20 px-4">
     <article class="art-nouveau-frame overflow-hidden">
         <div class="p-8 md:p-20">
@@ -24,7 +12,10 @@ asciidoc-attributes:
                 <div class="text-red-400 text-xs font-bold uppercase tracking-[0.3em] mb-4 underline decoration-1 underline-offset-8">
                     {page.data.tags}
                 </div>
-                <h1 class="text-4xl md:text-6xl leading-tight mb-8">
+                <!-- Responsive height for image to save space on mobile (Accessibility: Perceivable) -->
+                <img src="{page.image}" class="w-full h-48 md:h-80 object-cover rounded-lg my-12 shadow-lg">
+                <!-- Changed leading-tight to md:leading-tight for better line spacing on mobile titles (Accessibility: Perceivable) -->
+                <h1 class="text-4xl md:text-6xl leading-snug md:leading-tight mb-8">
                     {page.title.asciidocify}
                 </h1>
                 <div class="flex items-center justify-center space-x-4 text-sm text-gray-400 italic">
@@ -33,8 +24,8 @@ asciidoc-attributes:
                     <span>{page.readTime} min de lecture</span>
                 </div>
             </header>
-            <div class="prose prose-stone max-w-none">
-                {#i18n /}
+            <div class="prose prose-stone max-w-none doc">
+                {#i18n page/}
                 {#include partials/roq-series /}
                 {#insert /}
             </div>
@@ -43,10 +34,7 @@ asciidoc-attributes:
                 {#let author=cdi:authors.get(page.data.author)}
                 {#if author}
                 <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-red-400 font-bold">
-                        {author.name}
-                    </div>
-                    <img src="{site.image(author.avatar)}" alt="author-{page.data.author}"/>
+                    <img src="{site.image(author.avatar)}" class="size-24 rounded-full" alt="author-{page.data.author}"/>
                     <div>
                         <p class="font-bold">{author.name}</p>
                         <p class="text-xs text-gray-500 uppercase">{author.job}</p>

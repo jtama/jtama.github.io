@@ -336,7 +336,7 @@ export JRELEASER_DRY_RUN=true && jreleaser full-release
 
 Une fois que vous êtes satisfait, vous pouvez éventuellement désactiver la propriété dry run et relancer, mais je préfère faire la vraie publication depuis ma _**CI**_, qui est Github image:github-icon.svg[Icône Github,20,16] pour le moment.
 
-== Exécuter tout ça depuis Github image:github-actions.svg[Github actions,height=40]
+== Exécuter tout ça depuis Github
 
 Voici le workflow github minimal pour publier une application maven.
 

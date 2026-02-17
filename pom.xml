@@ -89,6 +89,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.mvnpm.at.fortawesome</groupId>
+            <artifactId>fontawesome-free</artifactId>
+            <version>7.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mvnpm.at.catppuccin</groupId>
             <artifactId>palette</artifactId>
             <version>1.7.1</version>
