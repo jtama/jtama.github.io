@@ -1,8 +1,8 @@
 = De la Programmation Orientée Objet vers la Programmation Orientée Données - Un Guide Pratique
-include::../../../includes/attributes-fr.adoc[]
+include::../../../../includes/attributes-fr.adoc[]
 :description: Fatiguée de la POO ? Passez à la DOP !
 :page-tags: java, data-oriented-programming, records, sealed-interfaces, pattern-matching
-:page-image: https://images.unsplash.com/photo-1470342495351-a5f90c5011cd?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3
+:page-image: photo-1470342495351-a5f90c5011cd.jpg
 :page-author: jtama
 :page-date: 2025-07-24
 :page-key: de-la-programmation-orientee-objet-vers-la-programmation-orientee-donnees-un-guide-pratique

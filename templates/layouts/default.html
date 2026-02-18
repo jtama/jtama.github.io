@@ -23,12 +23,9 @@
     {#if site.data.containsKey("analytics")}
     {#ga4 tag=site.data.getJsonObject('analytics').getString("ga4", "") /}
     {/if}
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;600&display=swap"
-          rel="stylesheet">
-
     {#search-script /}
-    <!-- Place this tag in your head or just before your close body tag. -->
-    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <!-- Place this tag in your head or just before your close body tag.
+    <script async defer src="https://buttons.github.io/buttons.js"></script>-->
 </head>
 
 <body class="antialiased bg-cream">

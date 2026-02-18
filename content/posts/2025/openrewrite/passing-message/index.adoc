@@ -46,7 +46,7 @@ Oui, mais si mon cas d'usage nécessite d'identifier [.bg-green]#une invocation 
 Oui, je te comprends, et cette question m'a moi aussi empecher de dormir pendant quelques jours. Seulement vois-tu, les gens derrières Openrewrite aussi.
 Ils nous ont donc mis à disposition un système de message très convaincant et plutôt sûr.
 
-image::philipides_running_message.png[]
+image::philipides_running_message.png[Philipidès running]
 
 == Cas d'usage
 

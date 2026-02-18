@@ -1,8 +1,9 @@
 = So you wanna know where your maven dependency version comes from ?
-include::../../../includes/attributes-fr.adoc[]
+include::../../../../includes/attributes-fr.adoc[]
 :description: How to quickly find where your dependencied version comes from.
 :page-tags: java,maven,dependencies
-:page-image: https://images.unsplash.com/photo-1621294465978-6b4198a5f2f7?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3
+:page-image: photo-1621294465978-6b4198a5f2f7.jpg
+:page-date: 2025-03-26
 :page-author: jtama
 :page-key: so-you-wanna-know-where-your-maven-dependency-version-comes-from
 ---

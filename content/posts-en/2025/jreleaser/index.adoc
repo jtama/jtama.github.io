@@ -2,7 +2,7 @@
 include::../../../../includes/attributes-en.adoc[]
 :description: Stop thinking about how to do it, and start thinking about what to do
 :page-tags: HowTos
-:page-image: https://jreleaser.org/images/jreleaser-duke.png
+:page-image: jreleaser-duke.png
 :page-author: jtama
 :page-date: 2025-11-18
 :page-key: tout-publier-avec-jreleaser

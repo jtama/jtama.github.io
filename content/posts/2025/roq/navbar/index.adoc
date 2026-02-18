@@ -3,7 +3,7 @@ include::../../../../../includes/attributes-fr.adoc[]
 :description: "How-to change the menu layout of your Roq powered blog"
 :page-date: 2025-05-19
 :page-key: roq-changing-the-menu-layout
-:page-image: https://upload.wikimedia.org/wikipedia/commons/1/11/Panopticon.jpg
+:page-image: Panopticon.jpg
 :page-tags: roq,theme,layout,*-as-code,HowTos
 :page-series: ROQ
 :qute:

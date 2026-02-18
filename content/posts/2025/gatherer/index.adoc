@@ -1,9 +1,10 @@
 = To Gather or not to Gather? That is the question.
-include::../../../includes/attributes-fr.adoc[]
+include::../../../../includes/attributes-fr.adoc[]
 :description: Et si on codait des Gatherer ?
 :page-tags: java,gatherer,preview
-:page-image: https://images.unsplash.com/photo-1530210124550-912dc1381cb8?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3
+:page-image: photo-1530210124550-912dc1381cb8.jpg
 :page-author: jtama
+:page-date: 2025-03-20
 :page-key: to-gather-or-not-to-gather-that-is-the-question
 :toc:
 :toc-title: Table des matières
@@ -12,7 +13,7 @@ include::../../../includes/attributes-fr.adoc[]
 
 **De java**. Oui je préfère le dire dès le début. Cet article va parler de **Java** !
 
-image::https://cdn.svgporn.com/logos/java.svg[logo java]
+image::java.svg[logo java]
 
 Les `gatherers` sont le premier ajout d'**importance** à l’API `java.util.Streams`, depuis sa sortie, et on parle de **2014**. Cela signifie qu’il ne s’était pas passé grand-chose depuis __environ longtemps__.
 Arrivés en _preview_ en Java 22, ils le sont toujours en Java 24.
@@ -21,7 +22,7 @@ Arrivés en _preview_ en Java 22, ils le sont toujours en Java 24.
 
 Même si on ne va pas faire une revue complète de l'_API_ `java.util.Streams`, je vous propose de commencer par un petit quizz, _tranquilles, posés_.
 
-image::https://raw.githubusercontent.com/jtama/to-gather-or-not-to-gather/refs/heads/main/slides/images/quizz.png[Shakespeare posant une question]
+image::quizz.png[Shakespeare posant une question]
 
 === Quiz 1/3
 
@@ -426,7 +427,7 @@ oeuvres.map(value -> new Tuple<>(index.getAndIncrement(), value)));<2>
 C'est une approche qui fonctionne très bien jusqu'à ce que quelqu'un ait la bonne idée d'ajouter un petit `.parallel()` avant.
 
 Et là :
-image::https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExMXBhZnU4dWUxNDlicTJzNTdya3dramtlM3BoMXByZ2dwNGp4bnU5bCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/iazocTLOsKzFS/giphy.gif[C'est le drame]
+image::crumble.gif[C'est le drame]
 
 Bon je me permets d'ajouter qu'une bonne vieille boucle `for` est certainement ce qu'il vous faut.
 
@@ -549,7 +550,7 @@ Il n'est pas possible, simplement, à ce jour de fusionner des `stream`. Ce que 
 
 Mais en plus strict.
 
-image::https://dev-to-uploads.s3.amazonaws.com/uploads/articles/k39zm4yfco6uyfda0jwl.png[Illustration du résultat souhaité]
+image::fusion.png[Illustration du résultat souhaité]
 
 Voilà comme ça.
 
@@ -631,4 +632,4 @@ https://github.com/jtama/to-gather-or-not-to-gather[To gather or not to Gather]
 
 Et surtout n'oubliez pas :
 
-image::https://dev-to-uploads.s3.amazonaws.com/uploads/articles/89jg0fa71rsz387n9y1i.jpg[Rester curieux]
+image::restez-curieux.jpg[Rester curieux]

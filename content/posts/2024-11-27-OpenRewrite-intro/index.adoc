@@ -1,7 +1,7 @@
 = OpenRewrite: Refactoring as code
 include::../../../includes/attributes-fr.adoc[]
 :description: Introduction à OpenRewrite
-:page-image: https://images.unsplash.com/photo-1589152144820-692b189e0b34?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3
+:page-image: photo-1589152144820-692b189e0b34.jpg
 :page-tags: java, tools, *-as-code
 :page-author: jtama
 :page-slug: openrewrite-refactoring-as-code
@@ -9,7 +9,7 @@ include::../../../includes/attributes-fr.adoc[]
 :toc:
 :toc-title: Table des matières
 
-image::logo.svg[Logo d'openrewrite]
+image:logo.svg[Logo d'openrewrite]
 
 {empty} +
 {empty} +
