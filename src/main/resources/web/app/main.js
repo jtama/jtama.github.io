@@ -1,6 +1,5 @@
 import hljs from 'highlight.js';
 import 'highlight.js/scss/github.scss';
-import '@catppuccin/palette/css/catppuccin.css'
 import mermaid from 'mermaid/dist/mermaid.esm.min.mjs';
 import '@fortawesome/fontawesome-free/scss/fontawesome.scss';
 import '@fortawesome/fontawesome-free/scss/regular.scss';

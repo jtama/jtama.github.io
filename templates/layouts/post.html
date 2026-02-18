@@ -5,13 +5,18 @@ asciidoc-attributes:
 ---
 {@io.quarkiverse.roq.frontmatter.runtime.model.DocumentPage page}
 
-<div class="max-w-5xl mx-auto mb-20 px-4">
+<div class="hidden">
+    <span class="text-orange-500"></span>
+    <span class="text-violet-400"></span>
+    <span class="text-green-600"></span>
+    <span class="text-blue-600"></span>
+    <span class="text-red-400"></span>
+</div>
+
+<div class="max-w-7xl mx-auto mb-20 px-4">
     <article class="art-nouveau-frame overflow-hidden">
-        <div class="p-8 md:p-20">
+        <div class="p-8 md:p-20 bg">
             <header class="text-center mb-16">
-                <div class="text-red-400 text-xs font-bold uppercase tracking-[0.3em] mb-4 underline decoration-1 underline-offset-8">
-                    {page.data.tags}
-                </div>
                 <!-- Responsive height for image to save space on mobile (Accessibility: Perceivable) -->
                 <img src="{page.image}" class="w-full h-48 md:h-80 object-cover rounded-lg my-12 shadow-lg">
                 <!-- Changed leading-tight to md:leading-tight for better line spacing on mobile titles (Accessibility: Perceivable) -->
@@ -23,8 +28,14 @@ asciidoc-attributes:
                     <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
                     <span>{page.readTime} min de lecture</span>
                 </div>
+                <div class="page-tag">
+                    {#for tag in page.data.tags.asStrings}
+                    {#let tagSlug = tag.slugify}
+                    <a href="{site.url('/posts/tag', tagSlug)}" class="tag"><span class="text-xs font-bold uppercase tracking-widest {tag_index.tagColor}">&#35; {tagSlug}</span></a>
+                    {/for}
+                </div>
             </header>
-            <div class="prose prose-stone max-w-none doc">
+            <div class="max-w-none doc">
                 {#i18n page/}
                 {#include partials/roq-series /}
                 {#insert /}
