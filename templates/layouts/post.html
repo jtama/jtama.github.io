@@ -15,12 +15,12 @@ asciidoc-attributes:
 </div>
 <!-- Forces css class bundle start -->
 
-<div class="max-w-7xl mx-auto mb-20 px-4">
+<main class="max-w-7xl mx-auto mb-20 px-4">
     <article class="art-nouveau-frame overflow-hidden">
         <div class="p-8 md:p-20 bg">
             <header class="text-center mb-16">
                 <!-- Responsive height for image to save space on mobile (Accessibility: Perceivable) -->
-                <img src="{page.image}" class="w-full h-48 md:h-80 object-cover rounded-lg my-12 shadow-lg">
+                <img src="{page.image}" class="w-full h-48 md:h-80 object-cover rounded-lg my-12 shadow-lg" alt="Illustration de l'article">
                 <!-- Changed leading-tight to md:leading-tight for better line spacing on mobile titles (Accessibility: Perceivable) -->
                 <h1 class="text-4xl md:text-6xl leading-snug md:leading-tight mb-8">
                     {page.title.asciidocify}
@@ -76,4 +76,4 @@ asciidoc-attributes:
                 async>
         </script>
     </article>
-</div>
+</main>
