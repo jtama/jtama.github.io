@@ -1,49 +1,49 @@
-= Vos articles en mode multilangue avec ROQ
-include::../../../../../includes/attributes-fr.adoc[]
-:description: Parce qu'écrire en français c'est bien, mais être lu en anglais, c'est pas mal aussi
+= Multilingual articles with ROQ
+include::../../../../../includes/attributes-en.adoc[]
+:description: Because writing in French is great, but being read in English is not bad either
 :page-tags: roq,i18n
 :page-image: photo-1533709475520-a0745bba78bf.webp
 :page-author: jtama
 :page-date: 2026-02-18
 :page-key: roq-i18n
-:page-lang: fr
+:page-lang: en
 :toc:
 
-Vous aurez pu le constater, ce blog comporte des articles en français et des articles en anglais.
+As you may have noticed, this blog contains articles (mostly in) French and some in English.
 
-[quote, Lecteur passif/agressif,De l'autre côté du quatrième mur]
-Parce que faire un choix est trop difficile pour toi bichette ?
+[quote, Passive/aggressive reader, From the other side of the fourth wall]
+Because making a choice is too hard for you, honey?
 
-Comme le laisse penser le sous-titre de cet article, j'aime écrire en français. D'abord parce que c'est ma langue maternelle, que je m'y sens à l'aise et précis, ensuite parce que je trouve qu'il n'y a pas assez de contenu français de qualité dans notre domaine.
+As the subtitle of this article suggests, I like writing in French. First because it is my mother tongue, where I feel comfortable and accurate, and second because I find there isn't enough quality content in french in our field.
 
-Mais je ne suis pas dupe, une très grande majorité des lecteurs ne lit pas le français. Difficile de le leur reprocher. Il faudrait donc trouver un moyen d'écrire des articles en plusieurs langues, mais sans dégrader l'expérience utilisateur :
+But I'm not fooling myself, a vast majority of readers do not read French. Not blaming anyone here. So we need to find a way to write articles in multiple languages, but without degrading the user experience:
 
-* Je ne veux donc pas qu'un article écrit en plusieurs langues apparaisse plusieurs fois dans la liste des articles.
-* Je veux que l'indexation, elle, prenne en compte toutes les versions de l'article.
-* Détecter automatiquement la présence d'une autre langue sur un article et fournir un switch sur les posts. Comme ça :
+* I don't want an article written in multiple languages to appear multiple times in the article list.
+* I want indexing to take all versions into account.
+* Automatically detect the presence of another language on an article and provide a switch for the reader. Like this:
 +
 image::lang_switch.webp[]
 
-== Et c'est parti !
+== And off we go!
 
-Les articles n'étant écrit qu'en une seule langue le son dans la collection `post` par défaut.
+Articles written in only one language are in the `post` collection by default.
 
-=== Une collection par langue
+=== One collection per language
 
-Nous allons donc créer un deuxième collection (c'est-à-dire un deuxième dossier sous le répertoire `content`), dans mon cas, la deuxième collection sera `post-en`. Si vous voulez fournir une troisième langue, créez une troisième collection.
+So we are going to create a second collection (that is, a second folder under the `content` directory), in my case, the second collection will be `post-en`. If you want to provide a third language, create a third collection.
 
-Les articles présents dans cette collection sont bien générés, mais ils ne sont pas listés dans la page d'accueil par défaut et donc difficilement accessibles.
+Articles present in this collection are generated correctly, but they are not listed in the default home page (that's what we want) and are therefore difficult to access(that's not what we want).
 
-=== Attributs nécessaires sur les articles
+=== Necessary attributes on articles
 
-Pour lier les différentes traductions d'un même article, nous allons utiliser 2 attributs _frontmatter_ :
+To link the different translations of the same article, we will use 2 _frontmatter_ attributes:
 
-* `key`: C'est l'_identifiant_ de l'article qui nous permet d'identifier les différentes versions d'un même article.
-* `lang`: C'est -vous l'aurez deviné- l'attribut qui me permet de déterminer la langue de l'article.
+* `key`: This is the _identifier_ of the article which allows us to identify the different versions of the same article.
+* `lang`: This is - you guessed it - the attribute that allows me to determine the language of the article.
 
-=== Affichage
+=== Display
 
-Pour afficher le switch nous allons créer un tag _qute_ dédié:
+To display the switch we will create a dedicated _qute_ tag:
 
 [source, html]
 .templates/tags/i18n.html
@@ -63,15 +63,15 @@ Pour afficher le switch nous allons créer un tag _qute_ dédié:
 </div>
 {/if}
 ----
-<1> S'il y a des traductions pour cette pages
-<2> Pour chaque traduction
-<3> On affiche le lien
+<1> If there are translations for this page
+<2> For each translation
+<3> We display the link
 
-La logique de séparation de responsabilité me commande de créer un tag avec très peu de responsabilité, de l'affichage seulement. Toute la logique est porté par une `TemplateExtension` qui nous permet d'ajouter des méthodes virtuelles sur l'objet `io.quarkiverse.roq.frontmatter.runtime.model.Page`: `hasTranslations`, `translations`
+The separation of concerns commands me to create a tag with very little responsibility, only display. All the logic is carried `TemplateExtensions` which allows us to add virtual methods on the `io.quarkiverse.roq.frontmatter.runtime.model.Page` object: `hasTranslations`, `translations`
 
-=== Les `TemplateExtension's`
+=== The `TemplateExtensions`
 
-Nous allons commencer par modéliser une _traduction_:
+We will start by modeling a _translation_:
 
 [source, java]
 ----
@@ -83,11 +83,11 @@ public record Translation(String languageCode, String flag, RoqUrl url) {<1><2><
     }
 }
 ----
-<1> Une traduction c'est donc le code du langage, ie: `fr`, `en`
-<2> Un drapeau: 🇫🇷 par exemple
-<3> L'url du document portant cette traduction.
+<1> A translation is composed of a language code, ie: `fr`, `en`
+<2> A flag: 🇫🇷 for example
+<3> The `url` of the document carrying this translation.
 
-Les 2 `TemplateExtensions` sont définies comme suit :
+The 2 `TemplateExtensions` are defined as follows:
 
 [source, java]
 ----
@@ -105,10 +105,10 @@ public static List<Translation> translations(Page page) {<2>
             .toList();
 }
 ----
-<1> Celle-ci est triviale
-<2> Récupère toutes les pages liées et les transforme en une liste de `Translation`s
+<1> This one is trivial
+<2> Retrieves all related pages and transforms them into a list of `Translation`s
 
-Et pour finir le seul code qui vous intéresse vraiment, la méthode `getRelatedPages`:
+And finally the only code that really interests you, the `getRelatedPages` method:
 
 [source, java]
 ----
@@ -124,13 +124,13 @@ private static Stream<Page> getRelatedPages(Page page) {
             .filter(distinctByKey(Page::id)); <5>
 }
 ----
-<1> Si il n'y a pas de clef de jointure, pas la pein de continuer
-<2> Itère sur TOUTES les pages du site
-<3> On ne conserve que les pages dont la clef correspond
-<4> On rejete la page sur laquelle on est déjà en train de naviguer
-<5> Et on dédoublonne.
+<1> If there is no join key, no point continuing
+<2> Iterate over ALL pages of the site
+<3> We keep only the pages whose key corresponds
+<4> We reject the page on which we are already navigating
+<5> And we deduplicate
 
-.Le code de la classe complète
+.The complete class code
 [%collapsible]
 ====
 [source, java]
@@ -215,14 +215,12 @@ public class I18NTemplateExtension {
 
 === URL
 
-J'ai choisi de _pimper_ l'URL des articles en anglais. L'idée c'est qu'ils soient publiés sous l'url suivante :
+I've choosen to customize the translated post urls. By default, they would have been `https://<url_du_blog>/post-en/<article>` (following the collection name).
 
-    https://<url_du_blog>/post/en/<article>
-
-Rien de plus simple, grâce aux attributs _frontmatter_: `link: /posts/en/:slug/`
+I'd rather have `https://<url_du_blog>/post/<lang>/<article>`, and that's really easy using frontmatter attibutes: `link: /posts/en/:slug/`
 
 == Wrap up
 
-Comme vous le constatez, ce n'est pas très compliqué, mais pour que cela fonctionne, cela demande de dupliquer vos images, ou alors de toutes les placer sur le dossier `public`.
+As you can see, it's not very complicated, but for it to work, it requires duplicating your images, or placing them all in the `public` folder.
 
-Avec un peu de chance tout cela sera bientôt inclus directement dans https://iamroq.com[ROQ] 😉.
+With a little bit of chance, all of this will soon be directly included in https://iamroq.com[ROQ] 😉.
