@@ -3,7 +3,7 @@ include::../../../../../includes/attributes-fr.adoc[]
 :description: "How-to change the menu layout of your Roq powered blog"
 :page-date: 2025-05-19
 :page-key: roq-changing-the-menu-layout
-:page-image: Panopticon.jpg
+:page-image: Panopticon.webp
 :page-tags: roq,theme,layout,*-as-code,HowTos
 :page-series: ROQ
 :qute:
@@ -31,7 +31,7 @@ Whate we're going to do in this blog post is to move the menu from the left side
 As below :
 
 [.center]
-image:previous.png[Before,align="center"] -> image:after.png[After,align="center"]
+image:previous.webp[Before,align="center"] -> image:after.webp[After,align="center"]
 
 == Inheritance
 

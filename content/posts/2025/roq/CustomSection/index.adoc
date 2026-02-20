@@ -5,7 +5,7 @@ include::../../../../../includes/attributes-fr.adoc[]
 :page-author: jtama
 :page-date: 2025-06-30
 :page-key: roq-creating-a-custom-section-helper
-:page-image: photo-1581116536636-deb9983bc943.jpg
+:page-image: photo-1581116536636-deb9983bc943.webp
 :page-series: ROQ
 :qute:
 :toc:
