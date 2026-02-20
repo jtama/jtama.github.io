@@ -29,7 +29,7 @@
     --asciidoc-body-font-size--asciidoc-print: 0.9375em; /* 15px */
     --asciidoc-body-line-height: 1.15;
     --asciidoc-body-font-color: var(--asciidoc-color-jet-80);
-    --asciidoc-body-font-family: "Roboto", sans-serif;
+    --asciidoc-body-font-family: "Inter", sans-serif;
     --asciidoc-body-font-weight-bold: 600;
     --asciidoc-monospace-font-family: "Roboto Mono", monospace;
     --asciidoc-monospace-font-weight-bold: 600;
@@ -187,7 +187,7 @@ h1, h2, h3, .serif {
 .art-nouveau-frame {
     border-style: solid;
     border-width: 80px; /* Épaisseur du cadre */
-    border-image-source: url("/images/background.png");
+    border-image-source: url("/images/background.webp");
     border-image-slice: 100; /* Ajuste la portion de l'image utilisée pour les coins */
     border-image-repeat: round;
     background-color: white;
@@ -210,16 +210,6 @@ h1, h2, h3, .serif {
         border-width: 20px;
         border-image-slice: 100;
     }
-}
-
-.dropcap::first-letter {
-    float: left;
-    font-family: 'Playfair Display', serif;
-    font-size: 5rem;
-    line-height: 4rem;
-    padding-right: 1rem;
-    color: #F87171;
-    font-weight: 900;
 }
 
 .hljs {

@@ -1,9 +1,19 @@
 ---
 layout: main
 asciidoc-attributes:
-    notitle: true
+  notitle: true
 ---
 {@io.quarkiverse.roq.frontmatter.runtime.model.DocumentPage page}
+
+<!-- Forces css class bundle start -->
+<div class="hidden">
+    <span class="text-orange-500"></span>
+    <span class="text-violet-400"></span>
+    <span class="text-green-600"></span>
+    <span class="text-blue-600"></span>
+    <span class="text-red-400"></span>
+</div>
+<!-- Forces css class bundle start -->
 
 <div class="max-w-7xl mx-auto mb-20 px-4">
     <article class="art-nouveau-frame overflow-hidden">
@@ -15,6 +25,7 @@ asciidoc-attributes:
                 <h1 class="text-4xl md:text-6xl leading-snug md:leading-tight mb-8">
                     {page.title.asciidocify}
                 </h1>
+                <div class="text-xs font-bold uppercase tracking-widest text-red-400 mt-2">{page.description.asciidocify}</div>
                 <div class="flex items-center justify-center space-x-4 text-sm text-gray-400 italic">
                     <span>{page.date.format('dd MM yyyy')}</span>
                     <span class="w-1 h-1 bg-gray-300 rounded-full"></span>

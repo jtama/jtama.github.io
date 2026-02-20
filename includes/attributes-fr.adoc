@@ -1,5 +1,6 @@
 :sectanchors: true
 :toclevels: 2
+:toc-title: Table des matières
 :idprefix:
 :idseparator: -
 :page-layout: post

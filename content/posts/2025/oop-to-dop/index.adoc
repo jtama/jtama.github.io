@@ -2,7 +2,7 @@
 include::../../../../includes/attributes-fr.adoc[]
 :description: Fatiguée de la POO ? Passez à la DOP !
 :page-tags: java, data-oriented-programming, records, sealed-interfaces, pattern-matching
-:page-image: photo-1470342495351-a5f90c5011cd.jpg
+:page-image: photo-1470342495351-a5f90c5011cd.webp
 :page-author: jtama
 :page-date: 2025-07-24
 :page-key: de-la-programmation-orientee-objet-vers-la-programmation-orientee-donnees-un-guide-pratique
@@ -147,7 +147,7 @@ public static String advice(PlayingCard playingCard) {
 <4> Sinon, en fonction de son index
 <5> Sinon, c'est forcément que c'est un atout. Non ?
 
-"Ah, mais attention, ici on joue à la galloise, avec des Jokers ! Tout de suite, c'est un peu plus drôle."
+"Ah, mais attention, ici, on joue à la galloise, avec des Jokers ! Tout de suite, c'est un peu plus drôle."
 -- Perceval
 
 \{empty} +

@@ -2,7 +2,7 @@
 include::../../../../includes/attributes-en.adoc[]
 :description: How-to convert Markdown document to asciidoc
 :page-tags: markdown, asciidoc, HowTos
-:page-image: pexels-charlotte-may-5946786.jpg
+:page-image: pexels-charlotte-may-5946786.webp
 :page-author: jtama
 :page-date: 2025-06-04
 :page-key: even-if-you-dont-like-md-sometimes-you-dont-have-a-choice
@@ -26,7 +26,7 @@ Guess you would not be here if you hadn't.
 
 But there are some cases where you just don't have a choice and have to produce *Markdown*. 😢
 
-image::saaad.jpg[Saaad keanu crying about markdown flavours]
+image::saaad.webp[Saaad keanu crying about markdown flavours]
 
 == You are not doomed.
 

@@ -1,0 +1,46 @@
+= Vos articles en mode multilangue avec ROQ
+include::../../../../../includes/attributes-fr.adoc[]
+:description: Parce qu'écrire en français c'est bien, mais être lu en anglais, c'est pas mal aussi
+:page-tags: roq,i18n
+:page-image: photo-1533709475520-a0745bba78bf.webp
+:page-author: jtama
+:page-date: 2026-02-18
+:page-key: roq-i18n
+:toc:
+:toc-title: Table des matières
+
+Vous aurez pu le constater, ce blog comporte des articles en français et des articles en anglais.
+
+[quote, Lecteur passif/agressif,De l'autre côté du quatrième mur]
+Parce que faire un choix est trop difficile pour toi bichette ?
+
+Comme le laisse penser le sous-titre de cet article, j'aime écrire en français. D'abord parce que c'est ma langue maternelle, que je m'y sens à l'aise et précis, ensuite parce que je trouve qu'il n'y a pas assez de contenu français de qualité dans notre domaine.
+
+Mais je ne suis pas dupe, une très grande majorité des lecteurs ne lit pas le français. Difficile de le leur reprocher. Il faudrait donc trouver un moyen d'écrire des articles en plusieurs langues, mais sans dégrader l'expérience utilisateur :
+
+* Je ne veux donc pas qu'un article écrit en plusieurs langues apparaisse plusieurs fois dans la liste des articles.
+* Je veux que l'indexation, elle, prenne en compte toutes les versions de l'article.
+
+== Et c'est parti !
+
+Les articles n'étant écrit qu'en une seule langue le son dans la collection `post` par défaut.
+
+=== Une collection par langue
+
+Nous allons donc créer un deuxième collection (c'est-à-dire un deuxième dossier sous le répertoire `content`), dans mon cas, la deuxième collection sera `post-en`. Si vous voulez fournir une troisième langue, créez une troisième collection.
+
+Les articles présents dans cette collection sont bien générés, mais ils ne sont pas listés dans la page d'accueil par défaut et donc difficilement accessibles.
+
+=== Lier les articles
+
+Pour lier les différentes traductions d'un même article, nous allons utiliser 2 attributs _frontmatter_ :
+
+* `key`: C'est l'_identifiant_ de l'article qui nous permet d'identifier les différentes versions d'un même article.
+* `lang`: C'est -vous l'aurez deviné- l'attribut qui me permet de déterminer la langue de l'article.
+
+=== Détecter automatiquement la présence d'une autre langue sur un article
+
+Ce que j'aimerais, c'est de ne pas avoir à me poser la question et d'intégrer la détection et la fourniture d'un switch sur les posts. Comme ça :
+
+image::image-2026-02-20-14-07-24-877.webp[]
+

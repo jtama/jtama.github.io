@@ -2,7 +2,7 @@
 include::../../../../includes/attributes-fr.adoc[]
 :description: How to quickly find where your dependencied version comes from.
 :page-tags: java,maven,dependencies
-:page-image: photo-1621294465978-6b4198a5f2f7.jpg
+:page-image: photo-1621294465978-6b4198a5f2f7.webp
 :page-date: 2025-03-26
 :page-author: jtama
 :page-key: so-you-wanna-know-where-your-maven-dependency-version-comes-from

@@ -1,8 +1,8 @@
 = Vous allez finir par les aimer les `Optionals` ?
 include::../../../../includes/attributes-fr.adoc[]
 :description: Hein ?
-:page-tags: java,optional
-:page-image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/5f560xqwbgrev920b346.jpg
+:page-tags: java, optional
+:page-image: 5f560xqwbgrev920b346.webp
 :page-series: Java
 :page-author: jtama
 :page-date: 2023-03-23
@@ -69,7 +69,7 @@ Ces trois signatures indiquent trois intentions différentes :
 
 Nous allons illustrer plusieurs cas de traitement d'`optional` au travers de l'exemple d'une liste de course pour notre prochaine raclette.
 
-image::raclette_simple.png[]
+image::raclette_simple.webp[]
 
 === Des patates Bintjes, sinon des Amandines: `orElse()`
 
@@ -149,7 +149,7 @@ On aurait pu faire un `orElseThrow()` qui prend directement en paramètre une in
 
 Désolé, je n'ai pas trouvé d'exemple dans ma liste de course..
 
-image::todolist.png[Todolist]
+image::todolist.webp[Todolist]
 
 === Si on trouve le prix du cadeau on donne le prix, sinon on donne 20€ : `.map().orElse()`
 

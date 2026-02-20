@@ -2,7 +2,7 @@
 include::../../../../includes/attributes-fr.adoc[]
 :description: Comment continuer à ecrire avec AsciiDoc et _transpiler_ en Markdown
 :page-tags: markdown, asciidoc, Tutoriels
-:page-image: pexels-charlotte-may-5946786.jpg
+:page-image: pexels-charlotte-may-5946786.webp
 :page-author: jtama
 :page-date: 2025-06-04
 :page-key: even-if-you-dont-like-md-sometimes-you-dont-have-a-choice
@@ -26,7 +26,7 @@ J'imagine que vous ne seriez pas là si ce n'était pas le cas.
 
 Et alors que tout va pour le mieux dans le meilleur des mondes arrive ce jour où les planètes se désalignent. Le jour où l'on vous dit que vous n'avez tout simplement pas le choix et devez produire du *Markdown*. 😢
 
-image::saaad.jpg[Saaad keanu pleurant sur les _markdown flavors_]
+image::saaad.webp[Saaad keanu pleurant sur les _markdown flavors_]
 
 == Vous n'êtes pas condamnés.
 

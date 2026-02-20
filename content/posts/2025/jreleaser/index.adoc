@@ -2,7 +2,7 @@
 include::../../../../includes/attributes-fr.adoc[]
 :description: Arrêtez de penser au comment et préoccupez-vous du quoi !
 :page-tags: Tutoriels
-:page-image: jreleaser-duke.png
+:page-image: jreleaser-duke.webp
 :page-author: jtama
 :page-date: 2025-11-18
 :page-key: tout-publier-avec-jreleaser
@@ -23,7 +23,7 @@ JReleaser est un outil qui effectue les étapes les plus courantes liées à la 
 
 Publier un projet ce n'est pas seulement pousser un paquet vers un dépôt centralisé. Cela peut aussi signifier signer et générer les artefacts, produire un _SBOM_, assembler et publier un _changelog_, annoncer la publication sur votre _hub_ git favori, et même faire le dire sur Zulip, Bluesky et encore bien d'autres choses.
 
-image:jreleaser-workflow.png[Flux de travail JReleaser, link=https://jreleaser.org/guide/latest/concepts/workflow.html,window=_blank]
+image:jreleaser-workflow.webp[Flux de travail JReleaser, link=https://jreleaser.org/guide/latest/concepts/workflow.html,window=_blank]
 
 Dans cet article, nous nous concentrerons sur la publication d'une application Java.
 
@@ -116,7 +116,7 @@ Connectez-vous à https://central.sonatype.com/[maven central], cliquez sur l'é
 
 Vous pouvez spécifier son nom et sa date d'expiration. Personnellement, j'ai choisi de faire une folie pour celui-ci :
 
-image::sonatype_token.png[Le nom du jeton est JReleaser]
+image::sonatype_token.webp[Le nom du jeton est JReleaser]
 
 === Installer JReleaser
 

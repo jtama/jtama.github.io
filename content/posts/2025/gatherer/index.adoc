@@ -2,7 +2,7 @@
 include::../../../../includes/attributes-fr.adoc[]
 :description: Et si on codait des Gatherer ?
 :page-tags: java,gatherer,preview
-:page-image: photo-1530210124550-912dc1381cb8.jpg
+:page-image: photo-1530210124550-912dc1381cb8.webp
 :page-author: jtama
 :page-date: 2025-03-20
 :page-key: to-gather-or-not-to-gather-that-is-the-question
@@ -22,7 +22,7 @@ Arrivés en _preview_ en Java 22, ils le sont toujours en Java 24.
 
 Même si on ne va pas faire une revue complète de l'_API_ `java.util.Streams`, je vous propose de commencer par un petit quizz, _tranquilles, posés_.
 
-image::quizz.png[Shakespeare posant une question]
+image::quizz.webp[Shakespeare posant une question]
 
 === Quiz 1/3
 
@@ -550,7 +550,7 @@ Il n'est pas possible, simplement, à ce jour de fusionner des `stream`. Ce que 
 
 Mais en plus strict.
 
-image::fusion.png[Illustration du résultat souhaité]
+image::fusion.webp[Illustration du résultat souhaité]
 
 Voilà comme ça.
 
@@ -632,4 +632,4 @@ https://github.com/jtama/to-gather-or-not-to-gather[To gather or not to Gather]
 
 Et surtout n'oubliez pas :
 
-image::restez-curieux.jpg[Rester curieux]
+image::restez-curieux.webp[Rester curieux]

@@ -3,7 +3,6 @@ import io.quarkiverse.roq.frontmatter.runtime.model.RoqUrl;
 import io.quarkus.qute.TemplateExtension;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -19,19 +18,6 @@ public class I18NTemplateExtension {
     // Frontmatter property names
     private static final String LANG = "lang";
     private static final String DOCUMENT_KEY = "key";
-
-    /**
-     * Language flag mapping for nice display.
-     */
-    private static final Map<String, String> LANGUAGE_FLAG_MAP = Map.ofEntries(
-            Map.entry("fr", "🇫🇷"), // French -> France
-            Map.entry("en", "🇬🇸") // English -> United States
-    );
-
-    /**
-     * Default flag emoji used when no mapping is found for a language code.
-     */
-    private static final String DEFAULT_FLAG = "🌐";
 
     /**
      * Checks if the given page has translations available.
@@ -84,7 +70,7 @@ public class I18NTemplateExtension {
                 .stream()
                 .filter(doc -> translationId.equals(doc.data(DOCUMENT_KEY)))
                 .filter(doc -> !doc.equals(page));
-                //.filter(distinctByKey(Page::id));
+        //.filter(distinctByKey(Page::id));
     }
 
     private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
@@ -97,8 +83,7 @@ public class I18NTemplateExtension {
             String languageCode = page.data().getString(LANG, "fr")
                     .toLowerCase()
                     .trim();
-            String flag = LANGUAGE_FLAG_MAP.getOrDefault(languageCode, DEFAULT_FLAG);
-            return new Translation(languageCode, flag, page.url());
+            return new Translation(languageCode, Language.fromCode(languageCode).flag(), page.url());
         }
     }
 }

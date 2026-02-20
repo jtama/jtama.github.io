@@ -2,7 +2,7 @@
 include::../../../../includes/attributes-en.adoc[]
 :description: Stop thinking about how to do it, and start thinking about what to do
 :page-tags: HowTos
-:page-image: jreleaser-duke.png
+:page-image: jreleaser-duke.webp
 :page-author: jtama
 :page-date: 2025-11-18
 :page-key: tout-publier-avec-jreleaser
@@ -22,7 +22,7 @@ JReleaser is a tool that performs the most common steps related to releasing you
 
 Releasing is not just about publishing a package to an artifact repository. It could also mean signing and generating artifacts, assembling and publishing a changelog, announcing the release on your favorite hub, and even making some noise about it through mail, Zulip, or whatever you want.
 
-image:https://jreleaser.org/guide/latest/concepts/_images/jreleaser-workflow.png[JReleaser workflow, link=https://jreleaser.org/guide/latest/concepts/workflow.html,window=_blank]
+image:https://jreleaser.org/guide/latest/concepts/_images/jreleaser-workflow.webp[JReleaser workflow, link=https://jreleaser.org/guide/latest/concepts/workflow.html,window=_blank]
 
 In this post, we will focus on releasing a Java application.
 
@@ -114,7 +114,7 @@ Login to https://central.sonatype.com/[maven central], click on the top right me
 
 You can specify its name and expiration date. Personally, I chose to go crazy for this :
 
-image::sonatype_token.png[The name of the token is JReleaser]
+image::sonatype_token.webp[The name of the token is JReleaser]
 
 === Install JReleaser
 

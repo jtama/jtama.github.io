@@ -1,0 +1,703 @@
+= OpenRewrite: Refactoring as code
+include::../../../../includes/attributes-fr.adoc[]
+:description: Introduction à OpenRewrite
+:page-image: photo-1589152144820-692b189e0b34.webp
+:page-tags: java, tools, *-as-code
+:page-author: jtama
+:page-slug: openrewrite-refactoring-as-code
+:page-series: openrewrite
+:page-date: 2024-11-27
+:toc:
+:toc-title: Table des matières
+
+image:logo.svg[Logo d'openrewrite]
+
+{empty} +
+{empty} +
+icon:lightbulb[]
+_Mieux vaut prévenir que guérir_, je n'utiliserai pas le mot _reusiner_, et certainement pas non plus le mot _refactoriser_. Cette note sera donc pleine d'anglicismes. La vie.
+
+
+Alors comme ça vous voulez _refactor_ code ? Voici les différentes options qui s'offrent habituellement à vous (je sais, il y en a d'autres) :
+
+* Pour commencer le fameux (ou l'infâme) *Chercher/Remplacer*, plus connu sous le nom de `Ctrl+F/Ctrl+R`.
+* La technique un peu plus avancée de l'expression régulière, aussi connue sour le nom de _Les regexps c'est illisible 15 jours après les avoir écrites_.
+* Mais de façon plus probable, vous utiliserez le menu _click droit_ de votre IDE, ou un bon paquet de raccourcis clavier, technique également connue sous le nom de _tu peux toujours courir, jamais tu reproduiras ce que j'ai fait_.
+
+Si vous êtes dans le cas d'un refactoring qui nécessite plus d'une étape et/ou qui touche à de nombreux fichiers, vous êtes très probablement condamné à suivre un guide de migration, aussi triste qu'un long dimanche de pluie.
+
+
+Disons que vous vouliez par exemple migrer de `JUnit 4` à `JUnit 5`, ou bien de `Spring Boot 2` à `Spring Boot 4`, ou  d'`Hibernate 4` à `Hibernate 6`, ou encore de `Java 8` à `Java 21`. Il vous faudrait pour cela :
+
+. Faire les monter de versions dans vos fichiers de configuration `Maven` ou `Gradle`
+. Changer vos imports
+. Changer vos annotations
+. Changer vos invocations de méthodes
+. Peut-être changer vous signature de méthodes
+. Changer les noms de propriété
+. Je ne sais quoi encore
+
+C'est chronophage, lourd, sujet aux erreurs et aux oublis.
+
+Mais il y a un petit nouveau dans le monde du refactoring : *OpenRewrite*.
+
+== The big picture icon:camera[]
+
+OpenRewrite est un outil de refactoring qui a été créé par https://www.moderne.ai[Moderne].
+
+C'est un projet open source sous licence Apache 2.0, et il fait maintenant partie de la https://www.commonhaus.org/[Fondation Commonhaus] pour une gouvernance plus ouverte.
+
+Il a commencé avec un fort accent sur Java (et ses fichiers de configuration : properties et yaml), mais il s'étend maintenant à d'autres langages et formats de fichiers :
+
+* Langages de programmation : Java, Kotlin, Groovy
+* Formats de données : XML, Properties, YAML, JSON, Protobuf
+* Outils de build : Maven, Gradle
+
+Je me concentrerai uniquement sur l'écosystème Java dans cet article.
+
+== Les concepts
+
+Les principaux concepts d'OpenRewrite que vous devez garder à l'esprit sont les suivants.
+
+=== _Lossless Syntax Tree_
+
+Le code source que vous souhaitez consulter et transformer est rendu accessible via un *_LST_*. C'est un arbre de syntax abstrait (*AST*) contenant en plus des information de formatage. Une représentation asbtraite du code source pour le rendre plus facile à comprendre, à interroger ou à manipuler.
+
+=== Recette icon:utensils[]
+
+Ou _recipe_ dans la langue de Shakespear est l'élément atomique pour travailler sur le code. Elle peut contenir chacun des éléments suivants (tous étant optionnels):
+
+* Un/des paramètre(s) pour personnaliser le comportement de la recette.
+* Une liste de pré-conditions, lui permettant de savoir si elle doit traiter un fichier source.
+* Un _visitor_ qui permet d'effectuer ou non des modifications sur le code source.
+* Une liste de recettes
+
+Ce dernier point signifie que la façon d'implémenter un refactoring complexe est de composer des _recettes_, et à la fin, cela s'appelle aussi une recette.
+
+¯\\_(ツ)_/¯ Ne blâmez pas le messager.
+
+=== Le pattern visitor icon:spaghetti-monster-flying[]
+
+Je l'ai mentionné juste au dessus, mais letraitement d'un recette passe par le pattern visitor. Chaque rencontre d'un élément du _lst_ va généré un __événement__ qui sera transmis à tous les visiteurs déclarés. Pour vous donner une idée, il y a actuellement 73 type d'événements différent associé à la _visite_ pour de code java, chacun associé à des méthodes avec des signatures différentes.
+
+
+== Qu'y a-t-il dans la boîte icon:gift[] ?
+
+OpenRewrite est plus qu'un framework monolithique. Ces différents composants sont :
+
+* Un module _core_, qui contient toute la représentation générique d'un LST et la logique de refactoring commune.
+* Un module pour chaque langage, avec des API et SDK dédiés pour une cible spécifique (Java, XML, Yaml, etc).
+* De nombreux modules contenant des recettes pour un sous-ensemble d'intérêt spécifique, telles que les recettes de frameworks de test, les recettes de Spring, les recettes de Quarkus, l'identification et la correction des problèmes d'analyse statique, etc.
+
+== Le catalogue icon:book-open[]
+
+La grande puissance d'Openrewrite est la mise à disposition recette déjà disponible pour traiter un très grand nombre de cas sans que l'on ait à produire la moindre ligne de code.
+Il y a actuellement plus de 500 recettes disponibles pour Java, et il y en a probablement plus pour les autres langages et formats de fichiers.
+
+Le catalogue est disponible en ligne à l'adresse suivante : https://docs.openrewrite.org/recipes
+
+Il contient toutes les recettes produites par l'équipe de Moderne, triées par catégories, documentées et avec des exemples d'utilisation. Mais il contient également d'autres sections intéressantes. On y trouve par exemple une liste des recettes https://docs.openrewrite.org/popular-recipe-guides[les plus populaires], comme un accélérateur de recherche, mais aussi une page dédiée https://docs.openrewrite.org/reference/community-recipes[aux recettes écrites par d'autre], comme _Apache Camel_, _AWS_, _Quarkus_, _Morphia_ et bien d'autres.
+
+== Execution d'une recette icon:cogs[]
+
+Attaquons-nous à la partie la plus simple de cette article : l'exécution d'une recette. Petit prérequis: vous devez avoir `Maven` ou `Gradle` installé sur votre machine. Que vous voulier exécuter une recette qui concerne _Java_ ou _Kubernetes_, la procédure est la même. Désolé.
+
+Pour exécuter une recette, vous avez deux options.
+
+=== En modifiant vos descripteurs de build
+
+Je vais prendre l'exemple d'un projet _Maven_, mais les étapes à suivre sont les mêmes pour un projet _Gradle_.
+
+Pour commencer, vous devez ajouter le plugin `rewrite-maven-plugin` à votre fichier `pom.xml` :
+
+[source,xml]
+----
+<build>
+  <plugins>
+    <plugin><1>
+      <groupId>org.openrewrite.maven</groupId>
+      <artifactId>rewrite-maven-plugin</artifactId>
+      <version>5.46.1</version><2>
+    </plugin>
+  </plugins>
+</build>
+----
+<1> Déclaration du plugin
+<2> Adapter le numéro pour utiliser la version la plus à jour
+
+Ensuite, vous devez déclarer la recette que vous voulez exécuter. Ici par exemple la suppression de _Cobertura_ qui n'est plus compatible avec un projet _Java_ dont la version est supérieure à _Java 11_ :
+
+[source,xml]
+----
+<build>
+  <plugins>
+    <plugin>
+      <groupId>org.openrewrite.maven</groupId>
+      <artifactId>rewrite-maven-plugin</artifactId>
+      <version>5.46.1</version>
+      <configuration> <1>
+          <activeRecipes>
+            <recipe>org.openrewrite.java.migrate.cobertura.RemoveCoberturaMavenPlugin</recipe> <2>
+          </activeRecipes>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
+----
+<1> Configuration du plugin
+<2> Activation de la recette
+
+Ajout de la dépendance dans laquelle se trouve la recette (si elle n'est pas dans le module core), ce qui donne la configuration complète suivante :
+
+[source,xml]
+----
+<build>
+  <plugins>
+    <plugin>
+      <groupId>org.openrewrite.maven</groupId>
+      <artifactId>rewrite-maven-plugin</artifactId>
+      <version>5.46.1</version>
+      <configuration>
+        <activeRecipes>
+          <recipe>org.openrewrite.java.migrate.cobertura.RemoveCoberturaMavenPlugin</recipe>
+        </activeRecipes>
+      </configuration>
+      <dependencies>
+        <dependency>
+          <groupId>org.openrewrite.recipe</groupId>
+          <artifactId>rewrite-migrate-java</artifactId>
+          <version>2.30.1</version>
+        </dependency>
+      </dependencies>
+    </plugin>
+  </plugins>
+</build>
+----
+
+Pour exécuter la recette, il suffit de lancer la commande suivante :
+
+[source,console]
+----
+$ mvn rewrite:run
+----
+
+Mais on ne veut pas modifier nos fichiers de build, n'est-ce pas ? Et on ne se trouve peut-être même pas dans un projet _Maven_ ou _Gradle_.
+
+=== Sans modifier vos descripteurs de build
+
+Dans ce cas il est possible de préciser directement tout dans la ligne de commande, mais celle-ci deviendra forcément plus complexe :
+
+[source,console]
+----
+$ mvn -U org.openrewrite.maven:rewrite-maven-plugin:run	\ <1>
+   -Drewrite.recipeArtifactCoordinates=org.openrewrite.recipe:rewrite-java:2.30.1 \ <2>
+   -Drewrite.activeRecipes=org.openrewrite.java.migrate.cobertura.RemoveCoberturaMavenPlugin <3>
+----
+<1> Déclaration du plugin
+<2> Ajout de la dépendance de la recette
+<3> Activation de la recette
+
+== Concevoir ses propres recettes
+
+Les façons de faire décrites ci-dessus ne sont valables que si les recettes ne prennent pas de paramètres. Si telle n'est pas le cas il va falloir passer à l'étape suivante : la conception de recettes.
+
+Pour concevoir ses propres recettes, le guide de bonne pratique d'Openrewrite nous dit que tout ce qui peut être faît de manière déclarative doit l'être. Oui, je sais, c'est dur. Vous êtes des développeurs, vous voulez écrire du code. Mais c'est comme ça.
+
+Openrewrite nous offre pour cela un format de déclaration de recette en _YAML_. Oh oui youpiiiii 💃 icon:dancer[].
+
+== Recette déclarative (_Declarative recipe_)
+
+Le format proposé par Openrewrite pour recette déclarative permet d'assigner une sous partie de ce qui est possible en Java. Il n'est notamment pas possible d'ajouter des paramètres, ni de renvoyer un visiteur dans une recette déclarative.
+
+Voici un exemple de recette déclarative qui supprime la dépendance `com.github.jtama:toxic` d'un projet _Maven_. La recette doit-être écrite dans un fichier s'appelant `rewrite.yml` et se trouvant soit à la racine du projet, soit dans le répertoire `META-INF/rewrite` :
+
+[source,yaml,highlight="3|4..10|11..13|14..17|23..24|26..34"]
+----
+---
+type: specs.openrewrite.org/v1beta/recipe <1>
+name: com.github.jtama.openrewrite.RemovesThatToxicDependency <2>
+displayName: Removes that toxic dependency <3>
+description: |
+  Migrate from AcmeToxic ☠️ to AcmeHealthy 😇,
+  removes dependencies and migrates code.  <4>
+tags: <5>
+  - acme
+  - toxic
+recipeList: <6>
+  - org.openrewrite.java.ChangeMethodTargetToStatic: <7>
+      methodPattern: com.github.jtama.toxic.toxic.BigDecimalUtils valueOf(..)
+      fullyQualifiedTargetTypeName: java.math.BigDecimal
+  - org.openrewrite.maven.RemoveUnusedProperties:
+      properties: .*toxic\.version
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: com.github.jtama
+      artifactId: toxic-library
+  - com.github.jtama.openrewrite.VousAllezVoirCeQueVousAllezVoir
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.github.jtama.openrewrite.VousAllezVoirCeQueVousAllezVoir
+displayName: Ça va vous épater
+description: |
+  Rech. proj. pr proj. priv. Self Dem. Brt. Poss. S’adr. à l’hô. Mart
+tags:
+  - acme
+preconditions:
+  - org.openrewrite.text.Find: <8>
+      find: com.github.jtama
+recipeList:
+  - com.github.jtama.openrewrite.RemoveFooBarUtilsIsEmpty
+  - com.github.jtama.openrewrite.RemoveFooBarUtilsStringFormatted
+  - com.github.jtama.openrewrite.UseObjectsCompare
+----
+<1> Déclaration du type de recette
+<2> Nom de la recette
+<3> Nom affiché lors de l'exécution de la recette
+<4> Description de la recette
+<5> Tags pour faciliter la recherche
+<6> Liste des recettes à exécuter
+<7> Passage de paramètre à une recette
+<8> Un exemple de précondition. icon:warning[] Attention cette précondition va s'exécuter pour toutes les recettes de la liste.
+
+Comme nous l'avons vu dans l'exemple précédent, permet de construire des recettes complexes en les composant les unes avec les autres.
+
+Deux points d'attention sont à noter :
+
+. Le fichier doit s'appeler `rewrite.yml`, pas `rewrite.yaml`. 🙄
+. Pour que cette recette puisse s'exécuter, les 3 recettes filles doivent être accessibles dans le _classpath_
+
+[source, console]
+----
+$ mvn -U org.openrewrite.maven:rewrite-maven-plugin:run	\
+   -Drewrite.recipeArtifactCoordinates=com.github.jtama:toxic-library-remover:1.0.0 \
+   -Drewrite.activeRecipes=com.github.jtama.openrewrite.RemovesThatToxicDependency
+----
+
+=== Distribution
+
+Vous êtes heureux de ce que vous avez fait, vous voulez partager votre recette avec le monde entier. Pour cela, il vous suffit de créer un module _Maven_ ou _Gradle_ et de le publier. Chacun pourra dès lors utilisez à loisir votre recette.
+
+Le projet devra comprendre le fichier `rewrite.yml` et les dépendances nécessaires pour que la recette puisse s'exécuter.
+
+== On code nos recettes icon:pencil[]
+
+Pour les chapitres suivants, nous partons du principe que vous voulez vous débarasser d'une dépendance toxique (`com.github.jtama:toxic-library:19.666.45-RC18-FINAL`) qui comprend les classes suivantes :
+
+[source,java]
+----
+package com.github.jtama.toxic;
+
+import java.util.Comparator;
+import java.util.List;
+
+public class FooBarUtils {
+
+    public String stringFormatted(String template, Object... args) {
+        return String.format(template, args);
+    }
+
+    public static boolean isEmpty(String value) {
+        if (value == null) return true;
+        return value.isEmpty();
+    }
+
+    public static <T> boolean isEmpty(List<T> value) {
+        if (value == null) return true;
+        return value.isEmpty();
+    }
+
+    public <T> int compare(T o1, T o2, Comparator<T> comparator) {
+        return comparator.compare(o1, o2);
+    }
+}
+----
+
+[source,java]
+----
+package com.github.jtama.toxic;
+
+import java.math.BigDecimal;
+
+public class BigDecimalUtils {
+
+    public static BigDecimal valueOf(Long value) {
+        return new BigDecimal(value);
+    }
+}
+----
+
+On ne se pose pas de question le code en lui même, dîtes-vous c'est axiome.
+
+Nous allons mettre en oeuvre 2 types de recettes :
+
+* `Refaster template recipes`, ou recettes _refaster_. Simples, mais limitées.
+* Full custom java recipes (Bam ! Pas un seul mot français).
+
+
+=== Refaster template recipes icon:bolt[]
+
+Ces patrons de recettes utilisent https://errorprone.info/docs/refaster[_refaster_].
+
+Elles permettent de décrire simplement des templates recettes via du code. L'outillage _OpenRewrite_ génère ensuite les recettes complètes à partir de ces templates.
+
+Pour les utiliser il vous faut ajouter les dépendances suivantes à votre projet. Le code suivant est un copier/coller https://docs.openrewrite.org/authoring-recipes/refaster-recipes#update-your-dependencies[de la documentation officielle] :
+
+[%collapsible]
+[source,xml]
+----
+<dependencies>
+    <!-- Refaster style recipes need the rewrite-templating annotation processor and dependency for generated recipes -->
+    <dependency>
+        <groupId>org.openrewrite</groupId>
+        <artifactId>rewrite-templating</artifactId>
+    </dependency>
+
+    <!-- If you are developing recipes in Java, you'll need to bring in rewrite-java -->
+    <dependency>
+        <groupId>org.openrewrite</groupId>
+        <artifactId>rewrite-java</artifactId>
+    </dependency>
+
+    <!-- The `@BeforeTemplate` and `@AfterTemplate` annotations are needed for refaster style recipes -->
+    <dependency>
+        <groupId>com.google.errorprone</groupId>
+        <artifactId>error_prone_core</artifactId>
+        <version>2.19.1</version>
+        <scope>provided</scope>
+        <exclusions>
+            <exclusion>
+                <groupId>com.google.auto.service</groupId>
+                <artifactId>auto-service-annotations</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+</dependencies>
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.12.1</version>
+            <configuration>
+                <source>17</source>
+                <target>17</target>
+                <compilerArgs>
+                    <arg>-parameters</arg>
+                </compilerArgs>
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok</artifactId>
+                        <version>1.18.32</version>
+                    </path>
+                    <path>
+                        <groupId>org.openrewrite</groupId>
+                        <artifactId>rewrite-templating</artifactId>
+                        <version>1.19.1</version>
+                    </path>
+                </annotationProcessorPaths>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+----
+
+Nous pouvons maintenant créer une classe qui va supprimer les invocations des méthodes `FooBarUtils.isEmpty` :
+
+[source,java]
+----
+@RecipeDescriptor(
+            name = "Replace `FooBarUtils.isEmptyString(String)` with standard equivalent",
+            description = "Replace `FooBarUtils.isEmptyString(String)` with ternary 'value == null || value.isEmpty()'."
+    ) <1>
+    public static class RemoveStringIsEmpty {
+
+        @BeforeTemplate
+        boolean before(String value) {
+            return FooBarUtils.isEmpty(value);
+        }
+
+        @AfterTemplate
+        boolean after(String value) {
+            return value == null || value.isEmpty();
+        }
+
+    }
+----
+<1> Le nom et la description de la recette
+
+Les annotations @BeforeTemplate et @AfterTemplate permettent de marquer les méthodes qui seront utilisées pour générer respectivement le template permettant de trouver les invocations à modifier et le template permettant de générer le code de remplacement.
+
+Le deux méthodes doivent avoir le même nombre de paramètres avec les mêmes types et noms.
+
+Il est possible de grouper les templates de recettes refaster comme suit.
+
+[source,java]
+----
+package com.github.jtama.openrewrite;
+
+import com.github.jtama.toxic.FooBarUtils;
+import com.google.errorprone.refaster.annotation.AfterTemplate;
+import com.google.errorprone.refaster.annotation.BeforeTemplate;
+import org.openrewrite.java.template.RecipeDescriptor;
+
+import java.util.List;
+
+@RecipeDescriptor(
+        name = "Remove `FooBarUtils.isEmpty` methodes usages",
+        description = "Replace any usage of `FooBarUtils.isEMpty` method by standards equivalent.")
+public class RemoveFooBarUtilsIsEmpty {
+
+    @RecipeDescriptor(
+            name = "Replace `FooBarUtils.isEmptyString(String)` with standard equivalent",
+            description = "Replace `FooBarUtils.isEmptyString(String)` with ternary 'value == null || value.isEmpty()'."
+    )
+    public static class RemoveStringIsEmpty {
+
+        @BeforeTemplate
+        boolean before(String value) {
+            return FooBarUtils.isEmpty(value);
+        }
+
+        @AfterTemplate
+        boolean after(String value) {
+            return value == null || value.isEmpty();
+        }
+    }
+
+
+    @RecipeDescriptor(
+            name = "Replace `FooBarUtils.isEmptyList(List)` with standard equivalent",
+            description = "Replace `FooBarUtils.isEmptyList(List)` with ternary 'value == null || value.isEmpty()'."
+    )
+    public static class RemoveListIsEmpty {
+
+        @BeforeTemplate
+        public boolean before(List value) {
+            return FooBarUtils.isEmpty(value);
+        }
+
+        @AfterTemplate
+        public boolean after(List value) {
+            return value == null || value.isEmpty();
+        }
+    }
+}
+----
+
+Dans ce cas, la recette `RemoveFooBarUtilsIsEmptyRecipes` générée contiendra une liste de recette comprenant les recettes `RemoveStringIsEmptyRecipe` et `RemoveListIsEmptyRecipe`.
+
+
+Dans les faits ce type de recette est relativement restreint. Le code ciblé doit pouvoir s'exprimer dans le bloc d'une méthode, et il sera toujours relativement simple et non paramètrable. Il ne pourra pas non plus retenir le style de formatage du code source d'origine.
+
+
+=== Full custom java recipes icon:code[]
+
+_Toujours pas de français_
+
+La recette suivante va remplacer les invocations de `FooBarUtils.stringFormatted(String, Object varargs)` par des invocations de `String.format(Object varargs)`. Celle-ci ne peut pas être réalisée avec un template, parce que le nombre de paramètres de ces méthodes ne peut être connu à l’avance.
+
+Nous allons donc devoir passer à l’étape supérieure.
+
+Toute recette doit étendre la classe `org.openrewrite.Recipe`. Nous allons la construire petit à petit.
+
+[source,java]
+----
+import ... <1>
+
+public class RemoveFooBarUtilsStringFormatted extends Recipe {
+
+    @Override
+    public String getDisplayName() { <2>
+        return "Remove `FooBarUtils.stringFormatted`";
+    }
+
+    @Override
+    public String getDescription() { <3>
+        return "Replace any usage of `FooBarUtils.stringFormatted` with `String.formatted` method.";
+    }
+}
+----
+<1> Il y a évidemment beaucoup d’imports...
+<2> Le nom affiché lors de l’exécution de la recette
+<3> La description de la recette. Celle-ci DOIT finir par un point
+
+Ajoutons maintenant la méthode qui retourne le visiteur.
+
+[source,java,linenums]
+----
+import ...
+
+public class RemoveFooBarUtilsStringFormatted extends Recipe {
+
+    @Override
+    public String getDisplayName() { ... }
+
+    @Override
+    public String getDescription() { ...}
+
+    @Override
+    public TreeVisitor<?, ExecutionContext> getVisitor() {
+        return new Preconditions.Check(
+                new UsesType<>("com.github.jtama.toxic.FooBarUtils", true),<1>
+                new ToStringFormattedVisitor());<2>
+    }
+}
+----
+<1> La classe `Preconditions.Check` étend la classe `TreeVisitor` et permet de vérifier si une condition est remplie avant de lancer le visiteur. Ici, je valide que le type `com.github.jtama.toxic.FooBarUtils` est utilisé par une classe avant même de la _visiter_
+<2> La classe `ToStringFormattedVisitor` que nous allons créer pour effectuer les modifications sur le code source.
+
+Il est maintenant temps de créer la classe `ToStringFormattedVisitor` qui va effectuer les modifications sur le code source.
+
+[source,java]
+----
+private static class ToStringFormattedVisitor extends JavaIsoVisitor<ExecutionContext> { <1>
+
+        private final MethodMatcher toxicStringFormatted = new MethodMatcher("com.github.jtama.toxic.FooBarUtils stringFormatted(String,..)"); <2>
+        private final JavaTemplate stringFormatted = JavaTemplate.builder("#\{any(java.lang.String)}.formatted()").build(); <3>
+}
+----
+<1> Ce visiteur va étendre la classe `JavaIsoVisitor` qui va nous fournir tous les points d’extension pour du code `java`, c’est une bonne base pour tout refactoring java.
+<2> Le `MethodMatcher` va permettre de matcher les invocations de la méthode `FooBarUtils#stringFormatted`. Ici, il ne s’agit pas d’une simple expression régulière. Le framework va faire des comparaisons au niveau sémantique.
+<3> Le `JavaTemplate` va permettre de générer l’invocation attendue.
+
+Il est en effet possible de créer des éléments de source programmatiquement, mais créer de l'**AST** à la main est long et sujet à erreur, c’est possible, mais à vos risques et périls. Il est donc fortement déconseillé de le faire. Dans notre cas, je crée le template d’invocation minimal d’une méthode pour pouvoir le modifier ensuite.
+
+Comme je veux remplacer une invocation de méthode par une autre, je vais surcharger la méthode `JavaIsoVisitor#visitMethodInvocation`.
+
+Commençons petit.
+
+[source,java]
+----
+private static class ToStringFormattedVisitor extends JavaIsoVisitor<ExecutionContext> {
+
+    @Override
+    public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
+        J.MethodInvocation methodInvocation = super.visitMethodInvocation(method, ctx);
+        if (!toxicStringFormatted.matches(methodInvocation)) {
+            return methodInvocation;
+        }
+        maybeRemoveImport("com.github.jtama.toxic.FooBarUtils");
+        return methodInvocation;
+    }
+}
+----
+
+Le premier paramètre représente l’invocation de méthode courante. Nous commençons par laisser le `JavaIsoVisitor` faire son travail. Si l’invocation en cours ne correspond pas à ce que nous voulons modifier, nous la retournons sans faire de modification aucune.
+
+Sinon, c’est le début de l’action. Tout d’abord, nous utilisons une méthode utilitaire fournie par la classe `JavaVisitor` qui nous permet de dire que si l’import `com.github.jtama.toxic.FooBarUtils` n’est plus utile, il peut être supprimé.
+
+Et maintenant, nous allons générer le code  voulu.
+
+[source,java]
+----
+private static class ToStringFormattedVisitor extends JavaIsoVisitor<ExecutionContext> {
+
+    @Override
+    public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
+
+        List<Expression> arguments = methodInvocation.getArguments();
+        J.MethodInvocation mi = stringFormatted.apply(
+                getCursor(),
+                methodInvocation.getCoordinates().replace(),
+                arguments.get(0));
+        mi = mi.withArguments(ListUtils.mapFirst(
+                arguments.subList(1, arguments.size()),
+                expression -> expression.withPrefix(Space.EMPTY)));
+        return mi;
+    }
+}
+----
+
+Je commence par capter la liste des arguments de l’invocation de la méthode `FooBarUtils#stringFormatted`. Je vais ensuite appliquer le template java avec le premier argument: c’est l’instance de `String` qui contient le template de formattage.
+
+Le premier argument, le _curseur_, peut-être vu comme un pointeur vers le code en cours de traitement dans l’arbre. Le deuxième argument, les _coordonnées_ permettent d’indiquer si on veut remplacer le code, en ajouter avant ou après.
+
+Enfin, je complète l’invocation de méthode en lui passant la liste des arguments restants. J’apporte néanmoins une petite modification, j’enlève tout espace au premier argument (c’est plus joli 😇).
+
+== Tester ses recettes 🧪
+
+Le framework Openrewrite nous offre tout le nécessaire pour tester nos recettes. Parmi les bonnes pratiques d’écriture que je n’ai pas suivies dans cet article, il est d’ailleurs précisé qu’une fois le squelette de la recette écrit, il est préférable de commencer par écrire le test. Oui, on parle bien **Test Driven Development Refactoring As Code - TDDRAC**.
+
+Les classes de tests doivent implémenter l’interface `RewriteTest`. Et c’est tout. Il existe une méthode `default` que l’on peut surcharger et qui est l’équivalent d’un `beforeEach`.
+
+[source,java]
+----
+class RemoveFooBarUtilsStringFormattedTest implements RewriteTest {
+
+    @Override
+    public void defaults(RecipeSpec spec) {
+        spec.recipe(new RemoveFooBarUtilsStringFormatted()) <1>
+          .parser(JavaParser.fromJavaVersion() <2>
+              .logCompilationWarningsAndErrors(true)
+              .classpath("toxic-library") <3>
+           );
+    }
+}
+----
+<1> La recette que je veux exécuter
+<2> La version de Java inférée à partir de la configuration du projet
+<3> J’ajoute la dépendance `toxic-library` au classpath du parser du test.
+
+Et le code du test en lui-même est si clair, qu’il peut servir à documenter l’intention de la recette.
+
+[source,java]
+----
+@Test
+void removeStringFormattedInvocation() {
+    rewriteRun(
+      //language=java <1>
+      java(
+            """
+          import com.github.jtama.toxic.FooBarUtils;
+
+          public class FullDriftCar {
+
+              public String foo() {
+                  return new FooBarUtils().stringFormatted("Hello %s %s %s", 2L,
+                     "tutu" +
+                     "tata",
+                     this.getClass()
+                          .getName());
+              }
+          }
+          """,
+        """
+          public class FullDriftCar {
+
+              public String foo() {
+                  return "Hello %s %s %s".formatted(2L,
+                     "tutu" +
+                     "tata",
+                     this.getClass()
+                          .getName());
+              }
+          }
+          """));
+}
+----
+<1> Pour aider votre IDE avec la coloration syntaxique
+
+La méthode `java` prend deux paramètres, le code sur lequel on va exécuter la recette, et celui qui doit être produit.
+
+Comme vous le voyez, rédiger les tests ne pose aucune complexité. Et si certain cas sont un peu plus complexes, avec de la persévérance on y arrive.
+
+== Conclusion
+
+Il est temps de s’arrêter, et même si je n’ai fait que gratter la surface, j’espère vous avoir donné l’envie de prendre votre pelle pour aller plus loin.
+
+Comme toujours en informatique, OpenRewrite n’est pas la solution à tous les refactorings, et il serait très certainement exagéré de l’utiliser pour renommer une méthode d’une classe non distribuée à des tiers...
+
+Mais pour des migrations, du code framework, ou n’importe quel code distribué, il sera certainement votre meilleur ami, et surtout celui de vos consommateurs.
+
+== Le dépôt
+
+Vous pouvez retrouver le code complet de cet article sur le dépôt https://github.com/jtama/openrewrite-refactoring-as-code[Openrewrite: Refactoring as Code]
+
+
+
+
+
+
+
+

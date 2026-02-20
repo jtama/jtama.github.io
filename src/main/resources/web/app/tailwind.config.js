@@ -2,33 +2,18 @@
 module.exports = {
   content: [
     "./content/**/*.html",
-    "./src/main/java/**/*Extension.java",
     "./templates/**/*.html",
+    "./src/**/*Extension.java",
     "./src/main/resources/web/**/*.js"
   ],
   darkMode: 'class', // Enable class-based dark mode
-  theme: {
-    extend: {
-      colors: {
-        mucha: {
-          bg: 'var(--mucha-bg)',
-          'card-bg': 'var(--mucha-card-bg)',
-          text: 'var(--mucha-text)',
-          gold: 'var(--mucha-gold)',
-          sage: 'var(--mucha-sage)',
-          rose: 'var(--mucha-rose)',
-          mauve: 'var(--mucha-mauve)',
-          blue: 'var(--mucha-blue)',
-          border: 'var(--mucha-border)',
-          shadow: 'var(--mucha-shadow)',
-        }
-      },
-      fontFamily: {
-        heading: ['"Glass Antiqua"', 'cursive'],
-        body: ['"Cormorant Garamond"', 'serif'],
-      },
-    },
-  },
+  safelist: [
+    'text-green-600',
+    'text-blue-600',
+    'text-red-400',
+    'text-orange-500',
+    'text-violet-400'
+  ],
   plugins: [
     require('@tailwindcss/typography'),
   ],

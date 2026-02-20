@@ -2,7 +2,7 @@
 include::../../../../../includes/attributes-fr.adoc[]
 :description: Quand un simple visiteur ne suffit plus, il faut sortir l'artillerie lourde. Analyser plusieurs fichiers, générer du code ? Place aux _scanning recipes_ !
 :page-tags: openrewrite
-:page-image: panoramic-dental-xray.jpg
+:page-image: panoramic-dental-xray.webp
 :page-author: jtama
 :page-date: 2025-10-19
 :page-key: technique-avancee-dopenrewrite-orchestrer-des-refactorings-complexes-avec-les-scanningrecipe
