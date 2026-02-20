@@ -15,7 +15,6 @@ import java.util.stream.Stream;
  */
 public class I18NTemplateExtension {
 
-    // Frontmatter property names
     private static final String LANG = "lang";
     private static final String DOCUMENT_KEY = "key";
 
@@ -27,7 +26,7 @@ public class I18NTemplateExtension {
      */
     @TemplateExtension
     public static boolean hasTranslations(Page page) {
-        return getMultilingualData(page).findAny().isPresent();
+        return getRelatedPages(page).findAny().isPresent();
     }
 
     /**
@@ -38,21 +37,10 @@ public class I18NTemplateExtension {
      * @return a list of language instance, or an empty list if no multilingual data is available
      */
     @TemplateExtension
-    public static List<Translation> languages(Page page) {
-        return getMultilingualData(page)
+    public static List<Translation> translations(Page page) {
+        return getRelatedPages(page)
                 .map(Translation::fromPage)
                 .toList();
-    }
-
-    /**
-     * Returns the current language code for the given page.
-     *
-     * @param page the page to get the current language for
-     * @return the current language code, or null if no multilingual data is available
-     */
-    @TemplateExtension
-    public static String currentLanguage(Page page) {
-        return page.data().getString(LANG);
     }
 
     /**
@@ -61,7 +49,7 @@ public class I18NTemplateExtension {
      * @param page the page to extract data from
      * @return the multilingual data object, or null if not available
      */
-    private static Stream<Page> getMultilingualData(Page page) {
+    private static Stream<Page> getRelatedPages(Page page) {
         String translationId = page.data().getString(DOCUMENT_KEY);
         if (translationId == null) {
             return Stream.of();
@@ -69,8 +57,8 @@ public class I18NTemplateExtension {
         return page.site().allPages()
                 .stream()
                 .filter(doc -> translationId.equals(doc.data(DOCUMENT_KEY)))
-                .filter(doc -> !doc.equals(page));
-        //.filter(distinctByKey(Page::id));
+                .filter(doc -> !doc.equals(page))
+                .filter(distinctByKey(Page::id));
     }
 
     private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
@@ -80,9 +68,7 @@ public class I18NTemplateExtension {
 
     public record Translation(String code, String flag, RoqUrl url) {
         static Translation fromPage(Page page) {
-            String languageCode = page.data().getString(LANG, "fr")
-                    .toLowerCase()
-                    .trim();
+            String languageCode = page.data().getString(LANG, "fr").toLowerCase().trim();
             return new Translation(languageCode, Language.fromCode(languageCode).flag(), page.url());
         }
     }
