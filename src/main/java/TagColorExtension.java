@@ -13,8 +13,8 @@ public class TagColorExtension {
             "text-green-600",
             "text-blue-600",
             "text-red-400",
-            "text-orange-500",
-            "text-violet-400"
+            "text-violet-400",
+            "text-orange-500"
     );
 
     @TemplateExtension
