@@ -7,6 +7,22 @@ module.exports = {
     "./src/main/resources/web/**/*.js"
   ],
   darkMode: 'class', // Enable class-based dark mode
+  theme: {
+    extend: {
+      colors: {
+        cream: '#FDF8E1',
+        primary: {
+          DEFAULT: '#F87171',
+          hover: '#ef4444'
+        },
+        body: '#2D2424'
+      },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        serif: ['Playfair Display', 'serif'],
+      }
+    }
+  },
   safelist: [
     'text-green-600',
     'text-blue-600',

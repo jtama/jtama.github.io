@@ -1,0 +1,138 @@
+- title: Expérience
+  items:
+    - logo:
+        label: Logo Onepoint
+        imageUrl: onepoint_logo.jpg
+      header: Novembre 2016 - À ce jour
+      title: Techlead / Architecte
+      collapsible: false
+      subItems:
+        - header: mai 2024 - dec. 2024
+          title: ICDC
+          collapsible: true
+          collapsed: false
+          content: |
+            Industrialisation & Craft: Mise en place de pratiques OpenRewrite, Helm-lint et Doc-as-code (Antora/Asciidoc) pour une TMA de grande envergure.
+            
+            Coaching technique: Animation globale et formation des Techleads sur les architectures Microservices
+        - header: juin 2021 - mai. 2024
+          title: Provoly
+          collapsible: true
+          collapsed: false
+          content: |
+            Cloud & Observabilité: Conception d'architectures résilientes sur Kubernetes (OVH Cloud) avec mise en place d'une stack complète d'observabilité (Prometheus, Grafana, OpenTelemetry).
+  
+            Coaching technique
+
+            Modern Stack: Développement et déploiement de solutions basées sur Java 22, Quarkus et Kafka Stream.
+        - header: janv. 2018 - dec. 2021
+          title: ICDC
+          collapsible: true
+          collapsed: false
+          content: |
+            TMA portant sur une cinquantaine de projets et une quinzaine de développeurs, ma mission était :
+            - D'assurer une montée en compétance technique globale des développeurs.
+            - D'aider à la résolution d'anomalies complexes.
+            - De guider et valider les propositions de gestion de la dette techniques.
+            - D'assurer la bonne conception de nos propositions de réécriture …
+        - header: janv. 2017 - dec. 2018
+          title: Xerox
+          collapsible: true
+          collapsed: false
+          content: |
+            Pour le client Xerox
+            
+            Assainissement Technique : Pilotage de la gestion de la dette technique et de l'obsolescence sur le projet HubcomX.
+            
+            Culture Qualité : Instauration de cycles CI/CD et coaching d'équipe pour promouvoir le Software Craftsmanship.
+
+        - header: nov. 2014 - janv. 2017
+          title: Ministère de la justice
+          collapsible: true
+          collapsed: false
+          content: |
+            Gestion de la chaine pénale
+    - logo:
+        label: Logo SLQI
+        imageUrl: sqli_logo.jpg
+      header: Juin 2008 - Octobre 2016
+      title: SQLI
+      collapsible: false
+      subItems:
+        - header: août. 2014 - oct. 2016
+          title: Architecte technique
+          collapsible: true
+          collapsed: false
+          ruler: true
+          content: |
+            Participation à la cellule d'architecture applicative du département
+        - logo:
+            label: Societe Générale
+            imageUrl: societe_generale_logo.jpg
+          header: oct. 2013 - juil. 2014
+          title: Architecte technique
+          collapsible: true
+          collapsed: false
+          content: |
+            Participation à la cellule d'architecture applicative du département
+        - logo:
+            label: BNP
+            imageUrl: bnp_paribas_logo.jpg
+          header: févr. 2010 - juil. 2013
+          title: Architecte technique
+          collapsible: true
+          collapsed: false
+          content: |
+            IT Architect at BNP Securities Services (BP2S) for several J2EE applications. An AutoForex application in link with RET/RMDS (Reuters), Kondor+ and swifts network. A pricer engine linked with Reuters Market Data Services, and an Risk auto-hedging application.
+        - logo:
+            label: Coface
+            imageUrl: coface_logo.jpg
+          header: aout 2008 - janv. 2010
+          title: Expert technique
+          collapsible: false
+    - header: mars 2005 - mai 2008
+      title: Groupe Lapeyre
+      collapsible: false
+      logo:
+        imageUrl: lapeyre_logo.jpg
+        label: log Lapeyre
+      content: |
+        *Ingénieur d'étude*
+    - header: mai 2004 - février 2005
+      title: AM2 Systems
+      collapsible: false
+      content: |
+        *Software Engineer*
+- title: Projets
+  items:
+    - header: "Quarkus minio"
+      title: "Minio (https://min.io) Client Quarkus Extension"
+      logo:
+        link: https://github.com/quarkiverse/quarkus-minio
+        label: Quarkiverse logo
+        imageUrl: quarkiverse.png
+      content: Integrate minio sdk for jdk and native build modes.
+    - header: "quarkus-roq"
+      title: "Static site generator"
+      content: |
+        Roq is a static site generator that makes it easy to build websites and blogs(such as Roq's blog. It’s built with Java and Quarkus under the hood—but you don’t need to know them to get started.
+      logo:
+        link: https://github.com/quarkiverse/quarkus-roq
+        label: Roq logo
+        imageUrl: roq-icon.svg
+- title: Langue
+  items:
+   - header: "English"
+     title: "C1"
+   - header: "Français"
+     title: "Bilingue ou langue natale"
+- title: Education
+  items:
+    - header: "2003"
+      title: "Diplôme d'étude secondaire spécialisé (_Master_) Génie Logiciel Applicatif"
+      content: |
+        Bac S, _Mention assez bien_, Spécialisation Physique/Chimie
+    - header: "1999"
+      title: "Baccalauréat"
+      content: |
+        Bac S, _Mention assez bien_, Spécialisation Physique/Chimie
