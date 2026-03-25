@@ -1,3 +1,52 @@
 [tools]
 java = "23.0.1"
 "npm:downdoc" = "latest"
+
+[tasks.generate]
+env= {"QUARKUS_ROQ_GENERATOR_BATCH" = "true"}
+run="./mvnw package quarkus:run -Dsite.future=true -Dsite.draft=true"
+
+[tasks.convert-images]
+description = "Cherche et convertit toutes les images du projet en format AVIF, puis met à jour les liens."
+run = """
+#!/usr/bin/env bash
+set -e
+
+# Vérification de l'installation d'un outil de conversion (sips sur Mac, ou ffmpeg)
+if ! command -v cwebp &> /dev/null; then
+    echo "❌ Erreur : cwep n'est pas installé. Veuillez 'brew install webp'"
+    exit 1
+fi
+
+echo "🔍 Recherche des images à convertir..."
+find content src/main/resources public/images -type f \\( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" \\) | while read -r img; do
+    dir=$(dirname "$img")
+    base=$(basename "$img")
+    name="${base%.*}"
+    webp="${dir}/${name}.webp"
+
+    success=false
+    if [ ! -f "$webp" ]; then
+        echo "🔄 Conversion : $img -> $webp"
+        if cwebp "$img" -o "$webp" > /dev/null 2>&1; then
+            success=true
+        else
+            echo "❌ Erreur lors de la conversion de $img avec cwebp"
+        fi
+    else
+        echo "✅ Déjà converti : $img"
+        success=true
+    fi
+
+    # Remplacement dans les fichiers sources (.adoc, .html, .css, .md)
+    # Uniquement si l'image AVIF a été générée avec succès !
+    if [ "$success" = true ]; then
+        find content src -type f \\( -name "*.adoc" -o -name "*.md" -o -name "*.html" -o -name "*.css" \\) -exec grep -l "$base" {} \\+ | while read -r file; do
+            echo "  -> 📝 Mise à jour de la référence dans : $file ($base -> ${name}.webp)"
+            sed -i.bak "s/$base/${name}.webp/g" "$file"
+            rm -f "${file}.bak"
+        done
+    fi
+done
+echo "✨ Opération terminée ! Les fichiers originaux ont été conservés."
+"""

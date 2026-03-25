@@ -1,0 +1,147 @@
+= Générer une vue aérienne de votre projet avec OpenRewrite
+include::../../../../includes/attributes-fr.adoc[]
+:description: Découvrez comment utiliser le scanner OpenRewrite pour générer une vue de l'architecture de votre projet et exporter les données avec Datatables.
+:page-tags: openrewrite, Tutoriels
+:page-image: graph.webp
+:page-author: jtama
+:page-date: 2026-03-24
+:page-key: generer-vue-aerienne-projet-openrewrite
+:page-series: openrewrite
+:qute:
+
+Dans l'article précédent, nous parlions (enfin _je parlais, vous lisiez_) des link:{site.page('posts/2025/openrewrite/scanning-recipes/index.adoc').url}[Scanning Recipes] quand on a besoin d'une information complète pour prendre une décision, ou bien pour générer du code _ex nihilo_. Je vous avais promis un petit joujou à la fin... Le moment est venu de vous le présenter : le *Project Graph Generator*.
+
+image::project-graph-preview.gif[Vue aérienne de l'architecture générée par l'outil, link=https://github.com/jtama/project-graph-generator,window=_blank]
+
+\{empty} +
+
+== Le besoin : cartographier son code
+
+Il est parfois difficile d'avoir une vision globale des dépendances au sein de son propre code. Est-ce que ce package est trop couplé aux autres ? Quelle est la classe centrale de mon domaine ? Mon merveilleux design initial a-t-il résisté aux affres du temps ?
+
+
+Puisqu'link:https://docs.openrewrite.org/[OpenRewrite] construit déjà le *LST* complet de votre base de code, il n'est pas _exactement_ compliqué de le parcourir pour en déduire des relations.
+
+C'est exactement le but du projet https://github.com/jtama/project-graph-generator[project-graph-generator] : scanner vos sources pour en déduire un graphe de dépendances et produire une simple page HTML utilisant link:https://d3js.org/[D3.js] pour l'afficher.
+
+== TL;DR;
+
+> Oh toi, qui ne veut pas en savoir plus, mais seulement faire joujou avec le graphe, ne va pas plus loin que ce chapitre, tu pourrais engranger de la connaissance !
+
+Le projet est facilement utilisable via le plugin `rewrite-maven-plugin`https://docs.openrewrite.org/running-recipes[ou tout autre moyen permettant d'exécuter une recette OpenRewrite]. Voici la commande pour lancer une analyse complète de votre projet :
+
+[source,console]
+----
+mvn -U org.openrewrite.maven:rewrite-maven-plugin:run \
+-Drewrite.recipeArtifactCoordinates=io.github.jtama:project-graph-generator:RELEASE \ <1>
+-Drewrite.activeRecipes=io.github.jtama.openrewrite.ProjectAerialViewGenerator \
+-Drewrite.exportDatatables=true
+----
+<1> `RELEASE` = `latest`
+
+Une fois l'analyse terminée, le plugin génère une page HTML _tient toute seule_ avec les données et la visualisation. Il vous suffit d'ouvrir le fichier `class-diagram.html` à la racine de votre projet dans votre navigateur pour explorer la toile de votre architecture.
+
+Vous pouvez également passer des options supplémentaires pour filtrer les nœuds en fonction de votre besoin :
+
+[horizontal]
+`maxNodes=20`:: Filtre sur les classes ayant le plus grand nombre de connexions entrantes.
+`basePackages=com.monentreprise`:: Force le package de base cible
+`includeTests=true`:: Inclure aussi les classes de tests.
+
+Pour en savoir plus 👉 https://github.com/jtama/project-graph-generator[Voici le dépôt du projet]. Allez-y c'est open source, utilisez-le, fourchettez-le, faîtes donc des tickets et des demandes de tirage!
+
+image::{site.image('please.gif')}[]
+
+
+== La mécanique : l'analyse sans modification
+
+Sous le capot, l'outil se base sur le concept de *ScanningRecipe* que nous avons vu précédemment. La différence majeure ici, c'est que la phase de *génération* génère du **HTML** et la phase de *modification* (`visit`) ne fait rien, nada, nichts. L'[.line-through]#objectif entier# de la recette est concentré dans le premier passage : le scan du *LST*. Enfin, non du coup, pas l'objectif, plutôt l'intelligence (non pas celle avec un A).
+
+\{empty} +
+
+Tout commence par un accumulateur -notre fameux graph- qui va stocker les classes (Nœuds) et leurs relations (Liens) au fur et à mesure du scan :
+
+[source,java]
+----
+public static class GraphScanAccumulator {
+    public List<Node> nodes = new ArrayList<>(); // <1>
+    public List<Link> links = new ArrayList<>();
+    
+    // ... méthodes de recherche findNode() et findLink()
+}
+----
+<1> Non, mais vous avez sérieusement pensé que j'allais expliquer cette ligne ?
+
+\{empty} +
+
+Pour remplir ce graphe, nous allons parcourir le *LST* à l'aide d'un `JavaIsoVisitor`.
+D'abord, nous identifions chaque composant de notre architecture en surchargeant la méthode `visitClassDeclaration`. Chaque nouvelle classe rencontrée devient un "Nœud" :
+
+[source,java]
+----
+@Override
+public J.ClassDeclaration visitClassDeclaration(J.ClassDeclaration classDecl, ExecutionContext ctx) {
+    if (includeTests() || not(isTestClass()).test(getCursor())) { // <1>
+        
+        if (classDecl.getType() != null) {
+            String fqn = classDecl.getType().getFullyQualifiedName();
+            graph.findNode(fqn).orElseGet(() -> { // <2>
+                Node newNode = new Node(fqn, classDecl.getType().getPackageName());
+                graph.nodes.add(newNode);
+                return newNode;
+            });
+        }
+        return super.visitClassDeclaration(classDecl, ctx); // <3>
+    }
+    return classDecl;
+}
+----
+<1> On ne regarde que les classes de test si c'est explicitement demandé
+<2> On utilise notre accumulateur `graph` pour enregistrer la classe courante si elle n'a pas déjà été vue.
+<3> On n'oublie pas d'appeler `super` pour que le visiteur continue de descendre dans l'arbre. +
+*_Si et seulement si_* la classe nous intéresse, sinon, on ne perd pas notre temps
+
+Ensuite, il faut tisser la toile. Comment savoir qu'une classe `A` dépend d'une classe `B` ? Il suffit de capter les utilisations de types (appels de méthodes, accès aux champs, instanciations). Par exemple, dès que le LST nous signale l'invocation d'une méthode:
+
+[source,java]
+----
+@Override
+public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
+    var mi = super.visitMethodInvocation(method, ctx); // <1>
+    
+    JavaType.FullyQualified targetType = mi.getMethodType() != null ? mi.getMethodType().getDeclaringType() : null; // <2>
+    
+    if (targetType != null) {
+        addLink(targetType); // <3>
+    }
+    return mi;
+}
+----
+<1> On laisse le visiteur visiter.
+<2> On extrait l'information de type (`JavaType`) portée par la méthode invoquée pour savoir à quelle classe elle appartient. Le type peut-être `null` notamment si Openrewrite n'a pas réussi à le déterminer.
+<3> On invoque la méthode `addLink`.
+
+La méthode `addLink` contient toute la logique nous permettant de déterminer si le `targetType` nous intéresse, c'est à dire s'il fait partie des packages cibles. Le cas échéant on crée un nouveau lien ou on renforce un lien existant? .
+
+La même logique est évidemment appliquée https://github.com/jtama/project-graph-generator/blob/main/src/main/java/io/github/jtama/openrewrite/ProjectAerialViewGenerator.java#L118[aux références de membres, aux champs de classes, invocations de constructeurs, etc].
+
+C'est là toute la beauté du modèle d'OpenRewrite : le LST est déjà parfaitement typé par le compilateur lors du _parsing_. Nous n'avons pas besoin de deviner à qui appartient une méthode invoquée, l'information de type nous le dit de manière certaine.
+
+== Pour aller plus loin : l'export brut avec les Datatables
+
+Générer une page HTML, c'est bien. Mais que faire si vous voulez croiser ces données, réaliser vos propres rendus dans un outil comme https://gephi.org/[Gephi], ou même les fournir en contexte à un LLM pour auditer votre architecture ?
+
+C'est là qu'interviennent les https://docs.openrewrite.org/authoring-recipes/data-tables[Datatables] d'OpenRewrite. En plus de la vue, `project-graph-generator` peut exporter les métadonnées sous forme de fichiers CSV facilement exploitables :
+
+`target/rewrite/datatables/io.github.jtama.openrewrite.model.NodesReport.csv` ::
+Contient toutes les classes trouvées avec leur package et leur nombre de connexions entrantes/sortantes.
+`target/rewrite/datatables/io.github.jtama.openrewrite.model.LinksReport.csv` ::
+Liste exhaustive des liens entre classes avec un poids associé.
+`target/rewrite/datatables/io.github.jtama.openrewrite.model.JavaSourceFileExcludedReport.csv` ::
+Toutes les classes qui ont été écartées du résultat final (souvent en raison d'un filtrage par package).
+
+Maintenant, à vous de jouer. Lancez le scanner sur votre _legacy_, et contemplez (ou effrayez-vous devant) l'étendue de la toile !
+
+---
+
+*P.S.*: Vous l'aurez peut-être remarqué, ce plugin est distribué sur Maven Central (`io.github.jtama:project-graph-generator`). Si vous vous demandez comment automatiser facilement toute la chaîne de publication sans vous arracher les cheveux. Je vous recommande de jeter un œil à link:{site.page('posts/2025/jreleaser/index.adoc').url}[mon tutoriel sur JReleaser].
