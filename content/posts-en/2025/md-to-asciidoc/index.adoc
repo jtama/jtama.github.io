@@ -26,7 +26,7 @@ Guess you would not be here if you hadn't.
 
 But there are some cases where you just don't have a choice and have to produce *Markdown*. 😢
 
-image::saaad.webp[Saaad keanu crying about markdown flavours]
+image::saaad.avif[Saaad keanu crying about markdown flavours]
 
 == You are not doomed.
 
