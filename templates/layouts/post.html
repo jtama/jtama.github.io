@@ -10,21 +10,21 @@ asciidoc-attributes:
         <div class="p-8 md:p-20 bg">
             <header class="text-center mb-16">
                 <!-- Responsive height for image to save space on mobile (Accessibility: Perceivable) -->
-                <img src="{page.image}" class="w-full h-48 md:h-80 object-cover rounded-lg my-12 shadow-lg" alt="Illustration de l'article">
+                <img src="{=page.image}" class="w-full h-48 md:h-80 object-cover rounded-lg my-12 shadow-lg" alt="Illustration de l'article">
                 <!-- Changed leading-tight to md:leading-tight for better line spacing on mobile titles (Accessibility: Perceivable) -->
                 <h1 class="text-4xl md:text-6xl leading-snug md:leading-tight mb-8">
-                    {page.title.asciidocify}
+                    {=page.title.asciidocify}
                 </h1>
-                <div class="text-xs font-bold uppercase tracking-widest text-red-400 mt-2">{page.description.asciidocify}</div>
+                <div class="text-xs font-bold uppercase tracking-widest text-red-400 mt-2">{=page.description.asciidocify}</div>
                 <div class="flex items-center justify-center space-x-4 text-sm text-gray-400 italic">
-                    <span>{page.date.format('dd MM yyyy')}</span>
+                    <span>{=page.date.format('dd MM yyyy')}</span>
                     <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-                    <span>{page.readTime} min de lecture</span>
+                    <span>{=page.readTime} min de lecture</span>
                 </div>
                 <div class="page-tag">
                     {#for tag in page.data.tags.asStrings}
                     {#let tagSlug = tag.slugify}
-                    <a href="{site.url('/posts/tag', tagSlug)}" class="tag"><span class="text-xs font-bold uppercase tracking-widest {tag_index.tagColor}">&#35; {tagSlug}</span></a>
+                    <a href="{=site.url('/posts/tag', tagSlug)}" class="tag"><span class="text-xs font-bold uppercase tracking-widest {=tag_index.tagColor}">&#35; {=tagSlug}</span></a>
                     {/for}
                 </div>
             </header>
@@ -38,10 +38,10 @@ asciidoc-attributes:
                 {#let author=cdi:authors.get(page.data.author)}
                 {#if author}
                 <div class="flex items-center space-x-4">
-                    <img src="{site.image(author.avatar)}" class="size-24 rounded-full" alt="author-{page.data.author}"/>
+                    <img src="{=site.image(author.avatar)}" class="size-24 rounded-full" alt="author-{=page.data.author}"/>
                     <div>
-                        <p class="font-bold">{author.name}</p>
-                        <p class="text-xs text-gray-500 uppercase">{author.job}</p>
+                        <p class="font-bold">{=author.name}</p>
+                        <p class="text-xs text-gray-500 uppercase">{=author.job}</p>
                     </div>
                 </div>
             </div>

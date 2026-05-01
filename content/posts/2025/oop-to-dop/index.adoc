@@ -6,13 +6,11 @@ include::../../../../includes/attributes-fr.adoc[]
 :page-author: jtama
 :page-date: 2025-07-24
 :page-key: de-la-programmation-orientee-objet-vers-la-programmation-orientee-donnees-un-guide-pratique
-:qute:
-:toc:
-:toc-title: Table des matières
+:qute: true
 
 == Introduction
 
-La programmation orientée données (Data-Oriented Programming) représente un paradigme émergent qui privilégie la manipulation des données plutôt que l'encapsulation des comportements. Ce guide pratique explore les étapes clés pour transformer du code Java traditionnel orienté objet vers une approche orientée données, en s'appuyant sur l'exemple concret du dépôt https://github.com/jtama/crazy-data-oriented-programming.
+La programmation orientée données (Data-Oriented Programming) représente un paradigme émergent qui privilégie la manipulation des données plutôt que l'encapsulation des comportements. Ce guide pratique explore les étapes clés pour transformer du code Java traditionnel orienté objet vers une approche orientée données, en s'appuyant sur l'exemple concret du dépôt https://github.com/jtama/crazy-data-oriented-programming[crazy-data-oriented-programming].
 
 
 Le dépôt `crazy-data-oriented-programming` illustre cette transformation à travers l'exemple d'un système de cartes à jouer. La branche `main` présente une implémentation orientée objet classique, tandis que la branche `expected` montre l'évolution vers une approche orientée données utilisant les fonctionnalités modernes de Java.

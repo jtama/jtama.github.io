@@ -100,7 +100,8 @@
     --asciidoc-doc-margin: 0 auto;
     --asciidoc-doc-margin--asciidoc-desktop: 0 2rem;
     --asciidoc-heading-font-color: var(--asciidoc-color-jet-80);
-    --asciidoc-heading-font-weight: normal;
+    --asciidoc-heading-font-weight: calc(var(--asciidoc-body-font-weight-bold) + 200);
+    --asciidoc-heading-font-size: 2em; /* 17px */
     --asciidoc-alt-heading-font-weight: var(--asciidoc-body-font-weight-bold);
     --asciidoc-section-divider-color: var(--asciidoc-panel-border-color);
     /*

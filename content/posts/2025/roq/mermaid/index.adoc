@@ -14,7 +14,6 @@ include::../../../../../includes/attributes-fr.adoc[]
 
 ++++
 {#mermaid}
-{|
 ---
 theme: base
 config:
@@ -31,7 +30,6 @@ Your co-workers, Not read till the end, 25
 Your co-workers, Will read till the end and share, 25
 
 Isn't this Beautiful?, Absolutely !, 100
-|}
 {/}
 
 ++++
@@ -92,7 +90,7 @@ In the `<root>/template/tags` folder, create a new file called `mermaid.html` an
 [source,html]
 ----
 <pre class="mermaid">
-    \{nested-content}
+    {nested-content}
 </pre>
 ----
 
@@ -103,7 +101,6 @@ In your blog post you can now use the new tag like this:
 [source,html]
 ----
 \{#mermaid}
-\{|
 ---
 theme: base
 config:
@@ -120,7 +117,6 @@ Your co-workers, Not reading till the end, 25
 Your co-workers, Will read till the end and share, 25
 
 Isn't this Beautiful?, Absolutely !, 100
-|}
 \{/}
 ----
 

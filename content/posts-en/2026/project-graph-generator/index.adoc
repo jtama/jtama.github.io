@@ -9,7 +9,7 @@ include::../../../../includes/attributes-en.adoc[]
 :page-series: openrewrite
 :qute:
 
-In the previous article, we discussed (well, _I wrote, you read_) link:{site.page('posts/2025/openrewrite/scanning-recipes/index.adoc').url}[Scanning Recipes] when you need complete information to make a decision, or to generate code _ex nihilo_.
+In the previous article, we discussed (well, _I wrote, you read_) link:{=site.page('posts/2025/openrewrite/scanning-recipes/index.adoc').url}[Scanning Recipes] when you need complete information to make a decision, or to generate code _ex nihilo_.
 
 I promised you a little toy at the end... The time has come for the reveal: the *Project Graph Generator*.
 
@@ -51,7 +51,7 @@ You can also pass additional options to filter the nodes according to your needs
 
 To learn more 👉 https://github.com/jtama/project-graph-generator[Here is the project repository]. Go ahead, it's open source, use it, fork it, make issues and pull requests!
 
-image::{site.image('please.gif')}[]
+image::{=site.image('please.gif')}[]
 
 
 == The Mechanics: Analysis Without Modification

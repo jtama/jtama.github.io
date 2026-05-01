@@ -9,7 +9,7 @@ include::../../../../includes/attributes-fr.adoc[]
 :page-series: openrewrite
 :qute:
 
-Dans l'article précédent, nous parlions (enfin _je parlais, vous lisiez_) des link:{site.page('posts/2025/openrewrite/scanning-recipes/index.adoc').url}[Scanning Recipes] quand on a besoin d'une information complète pour prendre une décision, ou bien pour générer du code _ex nihilo_. Je vous avais promis un petit joujou à la fin... Le moment est venu de vous le présenter : le *Project Graph Generator*.
+Dans l'article précédent, nous parlions (enfin _je parlais, vous lisiez_) des link:{=site.page('posts/2025/openrewrite/scanning-recipes/index.adoc').url}[Scanning Recipes] quand on a besoin d'une information complète pour prendre une décision, ou bien pour générer du code _ex nihilo_. Je vous avais promis un petit joujou à la fin... Le moment est venu de vous le présenter : le *Project Graph Generator*.
 
 image::project-graph-preview.gif[Vue aérienne de l'architecture générée par l'outil, link=https://github.com/jtama/project-graph-generator,window=_blank]
 

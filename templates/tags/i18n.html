@@ -7,7 +7,7 @@
     </div>
     <div class="language-switcher-options">
         {#for translation in page.translations()}
-        <a href="{translation.url}" class="language-link">{translation.flag} {translation.code.toUpperCase()}</a>
+        <a href="{=translation.url}" class="language-link">{=translation.flag} {=translation.code.toUpperCase()}</a>
         {/for}
     </div>
 </div>
