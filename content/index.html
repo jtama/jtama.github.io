@@ -16,7 +16,6 @@ layout: main
             <a href="#" class="text-sm font-bold border-b-2 border-black pb-1">VOIR TOUT</a>
         </div>
 
-        {#if site.collections.get('posts')}
         <div class="grid md:grid-cols-2 gap-12">
                 {#for post in site.collections.get('posts').paginated(page.paginator)}
                 <article class="group">
@@ -44,7 +43,6 @@ layout: main
                 {/for}
         </div>
         {#include partials/paginate/}
-        {/if}
     </div>
 </section>
 
