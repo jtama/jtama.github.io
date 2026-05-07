@@ -1,0 +1,79 @@
+= Generate first class citizen pages from your data with Roq
+include::../../../../../includes/attributes-en.adoc[]
+:description: You can now generate pages dynamically from data collections, perfect for catalogs, team pages, or any content driven by structured data files.
+:page-tags: roq,data
+:page-image: cogs.avif
+:page-author: jtama
+:page-date: 2026-05-06
+:page-key: roq-pages-from-data
+:page-lang: en
+:toc:
+
+You have all that nicely structured content in `yaml` ou `json`, and all you would like is to generate static pages out of it. May that be events, catalog or any type of roq collection really.
+
+However, if it was already possible to declare data using https://iamroq.dev[Roq] via https://iamroq.dev/docs/basics/# global-data[roq-data], for which it is even possible to have https://docs.quarkiverse.io/quarkus-roq/dev/quarkus-roq-data.html#_data_mapping[strong typing], it was not possible to extract pages directly from them.
+One could create pages _by hand_ that used the data, or, as https://philippart-s.github.io/blog/[Stéphane Philippart] did, generate pages programmatically from these...
+
+The first solution is useful if you only want a single page containing all the content. This is the case, for example, in this blog for https://jtama.github.io/talks/[the list of talks] that I gave. However, it is not possible to send a specific link to a particular talk.
+
+Since Roq https://iamroq.dev/posts/roq-2-1-is-here/[version 2.1], it is possible to automatically generate a page for each collection item simply by declaring it.
+
+In my configuration file:
+
+[source]
+.application.properties
+----
+site.collections.talks.layout=talk <1>
+site.collections.talks.from-data.id-key=title <2>
+----
+<1> Every collection item will be rendered using the `talk` layout, which source can be found under <root_dir>\templates\layouts\talk.html.
+<2> The property name to be used as _identifiant_
+
+In this case one item of this collection would be found under the `https://<root_blog_url>/talks/<slugified form of the title>`.
+
+And that's all. There is NOTHING else to do. Ok, maybe the _layout_ is still work to do. Ok. A minor peculiarity, for the moment item will be made available for the templating through the page `data`, even you have specified `@DataMapping`.
+
+To access it in your **__Qute__** template you will have to use `{page.data.title}` (or if you use the alternative syntax `\{=page.data.title}`).
+
+.A small part of the talk
+[%collapsible]
+====
+[source]
+----
+<section>
+                <div class="max-w-none doc">
+                    <div class="relative z-10 bg-white/90 p-6 shadow-sm border border-stone-200 rounded-lg">
+                        \{=page.data.description.asciidocify}<1>
+
+                        \{#if page.data.containsKey('slides')}<a href="" \{=page.data.slides}" target="_blank"><i class="fa-solid fa-film"></i> Les
+                        slides</a>\{/if}
+
+                        \{#if page.data.containsKey('code')}<a href="" \{=page.data.code}" target="_blank"><i
+                            class="fa-brands fa-square-github"></i>
+                        Le dépôt git</a>\{/if}
+
+                        \{#if page.data.containsKey('post')}<a href="\{=page.data.post}" target="_blank"><i class="fa-solid fa-pen-fancy"></i>
+                        L'article</a>\{/if}
+
+                        <h3>Presented at the following conferences :</h3>
+                        <ul>
+                            \{#for conference in page.data.conferences}
+                            <li>
+                                <div class="event-conference">
+                                    <strong>"\{=conference.name}</strong> <span>\{#if conference.containsKey('video')}<a
+                                        href="\{=conference.video}" target="_blank"><i
+                                        class="fa-brands fa-youtube"></i> La captation</a>\{/if}</span>
+                                </div>
+                            </li>
+                            \{/for}
+                        </ul>
+                    </div>
+                </div>
+            </section>
+----
+<1> As seen here, the `yaml` can contains asciidoc or MD content for more control over the rendering.
+====
+
+The feature is beeing particularly usefull in this AI era where LLM are so keen to generate structured output.
+
+Illustration par https://unsplash.com/@_staticvoid[Lucas Santos]

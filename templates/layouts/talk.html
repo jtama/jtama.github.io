@@ -1,0 +1,52 @@
+---
+layout: main
+---
+
+<main class="max-w-7xl mx-auto mb-20 px-4">
+    <article class="art-nouveau-frame overflow-hidden">
+        <div class="p-8 md:p-20 bg">
+            <header class="text-center mb-16">
+                {#if page.data.containsKey('image')}
+                <img src="{=site.image(page.data.image)}"
+                     class="w-full h-48 md:h-80 object-cover rounded-lg my-12 shadow-lg" alt="Illustration du talk">
+                {#else}
+                <img src="{=site.image('no_image.jpg')}"
+                     class="w-full h-48 md:h-80 object-cover rounded-lg my-12 shadow-lg" alt="Illustration du talk">
+                {/if}
+                <h1 class="text-4xl md:text-6xl leading-snug md:leading-tight mb-8">
+                    {=page.data.title.asciidocify}
+                </h1>
+            </header>
+            <section>
+                <div class="max-w-none doc">
+                    <div class="relative z-10 bg-white/90 p-6 shadow-sm border border-stone-200 rounded-lg">
+                        {=page.data.description.asciidocify}
+
+                        {#if page.data.containsKey('slides')}<a href="" {=page.data.slides}" target="_blank"><i class="fa-solid fa-film"></i> Les
+                        slides</a>{/if}
+
+                        {#if page.data.containsKey('code')}<a href="" {=page.data.code}" target="_blank"><i
+                            class="fa-brands fa-square-github"></i>
+                        Le dépôt git</a>{/if}
+
+                        {#if page.data.containsKey('post')}<a href="{=page.data.post}" target="_blank"><i class="fa-solid fa-pen-fancy"></i>
+                        L'article</a>{/if}
+
+                        <h3>Donné dans les conférences suivantes :</h3>
+                        <ul>
+                            {#for conference in page.data.conferences}
+                            <li>
+                                <div class="event-conference">
+                                    <strong>"{=conference.name}</strong> <span>{#if conference.containsKey('video')}<a
+                                        href="{=conference.video}" target="_blank"><i
+                                        class="fa-brands fa-youtube"></i> La captation</a>{/if}</span>
+                                </div>
+                            </li>
+                            {/for}
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </article>
+</main>

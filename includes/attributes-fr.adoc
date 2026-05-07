@@ -5,3 +5,4 @@
 :idseparator: -
 :page-layout: post
 :page-lang: fr
+:qute: true

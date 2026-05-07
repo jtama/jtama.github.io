@@ -1,0 +1,79 @@
+= Générer vos pages à partir de vos _data_ dans Roq
+include::../../../../../includes/attributes-fr.adoc[]
+:description: Quand son contenu est très structuré, on a pas toujours besoin d'en faire des caisses
+:page-tags: roq,data
+:page-image: cogs.avif
+:page-author: jtama
+:page-date: 2026-05-06
+:page-key: roq-pages-from-data
+:page-lang: fr
+:toc:
+
+Il m'est arrivé à plusieurs reprises de vouloir générer du contenu static à partir de documents `yaml` ou `json`.
+
+Hors s'il était déjà possible de déclarer de la donnée avec https://iamroq.dev[Roq] grace au https://iamroq.dev/docs/basics/#global-data[roq-data], pour lesquels il est même possible d'avoir https://docs.quarkiverse.io/quarkus-roq/dev/quarkus-roq-data.html#_data_mapping[du typage fort], il n'était pas possible d'en extraire directement des pages.
+On pouvait créer des pages _à la main_ qui exploitait la donnée, ou comme l'a fait https://philippart-s.github.io/blog/[Stéphane Philippart] générer programmatiquement des pages à partir de ces données.
+
+La première solution est intéressante si on ne veut qu'un page avec tout le contenu sur une seule page. C'est par exemple le cas dans ce blog pour https://jtama.github.io/talks/[la liste de talks] que j'ai donné. Mais il est impossible d'envoyer un lien spécifique vers une conférence.
+
+Depuis la https://iamroq.dev/posts/roq-2-1-is-here/[version 2.1] de Roq, il est possible de générer automatiquement une page par item de collection uniquement via déclaration.
+
+Dans mon fichier de configuration :
+
+[source]
+.application.properties
+----
+site.collections.talks.layout=talk <1>
+site.collections.talks.from-data.id-key=title <2>
+----
+<1> Chaque item de cette collection sera rendu en utilisant le layout `talk` dont les sources se trouvent dans <root_dir>\templates\layouts\talk.html
+<2> Le nom de la propriété qui doit être utilisé comme _identifiant_
+
+Dans ce cas l'url d'un item de cette collection sera `https://<root_blog_url>/talks/<version _slugifiée_ du titre>`.
+
+Et c'est tout. Il n'y a RIEN d'autre à faire. Oui bon le _layout_, il faut faire le _layout_. Petite spécificité, les données seront accessibles pour le templating sous la forme de `data`.
+
+Pour y accéder dans le template qute, il faudra donc utiliser la forme `{page.data.title}` (ou si vous utilisez la syntaxe alternative `\{=page.data.title}`).
+
+.Une partie du template de rendu d'un talk
+[%collapsible]
+====
+[source]
+----
+<section>
+                <div class="max-w-none doc">
+                    <div class="relative z-10 bg-white/90 p-6 shadow-sm border border-stone-200 rounded-lg">
+                        \{=page.data.description.asciidocify}<1>
+
+                        \{#if page.data.containsKey('slides')}<a href="" \{=page.data.slides}" target="_blank"><i class="fa-solid fa-film"></i> Les
+                        slides</a>\{/if}
+
+                        \{#if page.data.containsKey('code')}<a href="" \{=page.data.code}" target="_blank"><i
+                            class="fa-brands fa-square-github"></i>
+                        Le dépôt git</a>\{/if}
+
+                        \{#if page.data.containsKey('post')}<a href="\{=page.data.post}" target="_blank"><i class="fa-solid fa-pen-fancy"></i>
+                        L'article</a>\{/if}
+
+                        <h3>Donné dans les conférences suivantes :</h3>
+                        <ul>
+                            \{#for conference in page.data.conferences}
+                            <li>
+                                <div class="event-conference">
+                                    <strong>"\{=conference.name}</strong> <span>\{#if conference.containsKey('video')}<a
+                                        href="\{=conference.video}" target="_blank"><i
+                                        class="fa-brands fa-youtube"></i> La captation</a>\{/if}</span>
+                                </div>
+                            </li>
+                            \{/for}
+                        </ul>
+                    </div>
+                </div>
+            </section>
+----
+<1> Comme on le voit ici, le yaml peut contenir du texte au format asciidoc ou MD pour plus de rendu.
+====
+
+Cette fonctionnalité s'avère particulièrement utile à l'ère de l'IA, où les LLM aiment tellement générer du contenu structuré, par exemple pour vos wikis ou votre veille technique.
+
+Illustration par https://unsplash.com/@_staticvoid[Lucas Santos]

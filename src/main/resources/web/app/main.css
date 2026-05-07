@@ -1,4 +1,19 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme inline {
+    --color-cream: #FDF8E1;
+    --color-primary-DEFAULT: #F87171;
+    --color-primary-hover: #ef4444;
+    --color-body: #2D2424;
+    --color-text-green-600: var(--color-text-green-600);
+    --color-text-blue-600: var(--color-text-blue-600);
+    --color-text-red-400: var(--color-text-red-400);
+    --color-text-orange-500: var(--color-text-orange-500);
+    --color-text-violet-400: var(--color-text-violet-400);
+    --fontFamily-serif: ['Playfair Display', 'serif'];
+    --fontFamily-sans: ['Inter', 'sans-serif'];
+}
 
 :root {
 
@@ -274,4 +289,8 @@ pre .hljs, pre.highlight code {
 .language-link:hover {
     background-color: #007bff;
     color: white;
+}
+
+.giscus {
+    padding: 1em;
 }
