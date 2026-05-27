@@ -1,5 +1,5 @@
 = Generating an aerial view of your project with OpenRewrite
-include::../../../../includes/attributes-en.adoc[]
+include::../../../../../includes/attributes-en.adoc[]
 :description: Discover how to use the OpenRewrite scanning recipes to generate an architectural view of your project.
 :page-tags: openrewrite
 :page-image: graph.webp
@@ -9,7 +9,7 @@ include::../../../../includes/attributes-en.adoc[]
 :page-series: openrewrite
 :qute:
 
-In the previous article, we discussed (well, _I wrote, you read_) link:{=site.page('posts/2025/openrewrite/scanning-recipes/index.adoc').url}[Scanning Recipes] when you need complete information to make a decision, or to generate code _ex nihilo_.
+In the previous article, we discussed (well, _I wrote, you read_) link:{=site.page('posts/2025/openrewrite/scanning-recipes/index.adoc').url}[Scanning Recipes(in french sorry)] when you need complete information to make a decision, or to generate code _ex nihilo_.
 
 I promised you a little toy at the end... The time has come for the reveal: the *Project Graph Generator*.
 

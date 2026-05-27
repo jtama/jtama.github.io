@@ -1,0 +1,115 @@
+= Petits tips pour implémenter des recettes
+include::../../../../../includes/attributes-fr.adoc[]
+:description: Zoomons sur quelques pratiques pour vous aider vous, ou vos utilisateurs
+:page-tags: openrewrite, tutoriels
+:page-image: tips.webp
+:page-author: jtama
+:page-date: 2026-05-24
+:page-key: tips-and-tricks-openrewrite-1
+:page-series: openrewrite
+:qute:
+
+J'ai déjà évoqué ici mon https://github.com/jtama/project-graph-generator[*Project Graph Generator*]. J'avais fait une page dédiée à l'utilisation de link:{=site.page('posts/2025/openrewrite/scanning-recipes/index.adoc').url}[Scanning Recipes], et à link:{=site.page('posts/2026/operenwrite/project-graph-generator/index.adoc').url}[ses cas d'usage].
+
+Il se trouve que j'ai été invité à discuter du sujet lors du https://www.youtube.com/watch?v=dpM4zT7E0ew&list=PLEiW5koUu02LDC5AzbcpIS6b6lydu5jxQ[*_Code Remix Weekly: Unlocking insights with your project LST graph_*].
+
+Au cours de celui-ci, nous avons discuté d'un autre cas d'usage des _scanning recipes_, et aussi des petits "trucs" que j'ai pu utiliser.
+
+Pour commencer par la bonne nouvelle, la 🎉 https://github.com/jtama/project-graph-generator/releases/tag/v1.0.7[*V1.0.7*] 🐲 est disponible et contient aussi la recette permettant de compter le nombre d'invocations de chacune de vos méthodes publiques.
+
+Pour la suite, cet article sera consacré à une série de petits tours de passe-passe appris lors du développement de recettes.
+
+\{empty} +
+
+== Prévoyez des valeurs par défaut
+
+Vous prévoyez une recette configurable ? Essayez au maximum de prévoir des valeurs par défaut.
+L'utilisateur doit pouvoir utiliser vos recettes sans avoir à ce poser un tas de question, il doit avoir le moins de travail à faire.
+
+== Vous pouvez accéder aux projets en cours de scan
+
+Dès que vous manipulez une instance de `org.openrewrite.Tree`, c'est-à-dire à peu près systématiquement si vous manipulez du java, vous pouvez via les méthodes `Tree#getMarkers#findFirst` ou `Tree#getMarkers#findAll`, retrouver le `JavaProject` en cours d'analyse. Celui-ci permet notamment de connaître le triplet <groupId, artifactId, version> du projet.
+
+Vous écririez probablement quelque chose comme ça:
+
+[source,java]
+----
+javaSourceFile.getMarkers().findFirst(JavaProject.class).ifPresent(jp -> { <1>
+    if (jp.getPublication() != null) {
+        var publication = jp.getPublication() ;
+        System.out.println("Your projet is <%s:%s:%>. Impressive, isn't it ?".formatted(
+                publication.getGroupId(),
+                publication.getArtifactId(),
+                publication.getVersion()
+        ))
+    }
+});
+----
+<1> La méthode `findFirst` prend une class en argument pour le _merker_ que vous recherchez. Ce qui signifie que le résultat est typé 🎉.
+
+== Connaitre les types utilisés par un fichier source
+
+La méthode `org.openrewrite.java.tree.JavaSourceFile#getTypesInUse` vous donne accès à tous les types utilisés par un fichier source donné.
+
+Par ailleurs, il existe aussi dans la classe `JavaVisitor`, la méthode `visitType` qui est invoqué à chaque fois qu'un type est utilisé dans votre code (déclaration de classe, de méthode, invocation de méthode, accès à une propriété, déclaration de variables ...).
+
+[NOTE]
+====
+Cela peut-être une optimisation super utile des performances lorsque c'est utilisé en tant que condition préalable à l'exécution d'un recette, car cela permet d'éviter le parcours de graphe en vérifiant l'utilisation d'un type. C'est ce que le visiteur `UsesType` utilise en arrière-plan.
+
+[source, java]
+----
+@Override
+    public TreeVisitor<?, ExecutionContext> getVisitor() {
+        return new Preconditions.Check(
+                new UsesType<>("bar.foo.fighter.dave.Grohl", true),
+                new ToStringFormattedVisitor());
+    }
+----
+====
+
+
+== Savoir où on en est dans le code.
+
+Il est possible de savoir exactement où dans le code votre recette est en cours de traitement. Il faut pour cela faire appel au `SourcePositionService`
+
+[source, java]
+----
+Span span = service(SourcePositionService.class).positionOf(getCursor());
+Sytem.out.println("C'est là qu'éest ton problème : début ligne %s, fin ligne %s"
+    .formatted(span.getStartLine(), span.getEndLine()));
+----
+
+Il y a évidemment d'autres méthodes disponibles. Allez fouiller.
+
+== Accéder au DataTable
+
+Si vous avec un `ExecutionContext` sous la main, et il est toujours possible d'accéder à toutes les data tables en cours d'utilisation.
+
+[source, java]
+----
+Stream<@NotNull Node> nodes = DataTableExecutionContextView
+    .view(executionContext)
+    .getDataTableStore()
+    .getRows(NodesReport.class);
+----
+
+
+[IMPORTANT]
+====
+Attention les _datatables_ sont remplies au fur et à mesure de la visite du la base de code, donc elles pourraient ne pas être présentes ou en tout cas complètes au moment de l'invocation de la méthode.
+
+Si vous voulez être certain que la donnée est complète, vous avez tout intérêt à invoquer cette méthode dans implémentation de la méthode `onComplete(ExecutionContext ctx)`.
+====
+
+== Nullable ou non
+
+Les équipes en charge d'OpenRewrite utilisent https://jspecify.dev/[JSpecify], ce qui signifie qu'il n'y a jamais aucune surprise. Vous savez systématiquement si votre utilisation de l'API est dangereuse ou non. Et ça, c'est youpi.
+
+== Pour conclure
+
+Implémentez les recettes qui vous règlent VOS problèmes si elles n'existent pas, mettez-les à disposition des autres si vous pensez qu'elles peuvent intéresser du monde.
+
+Essayez-le https://github.com/jtama/project-graph-generator[*Project Graph Generator*]. Donnez-moi votre avis, aidez-moi à l'enrichir !
+
+Illustration par https://unsplash.com/@sam_truong[Sam Truong]

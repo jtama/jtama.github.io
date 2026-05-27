@@ -1,5 +1,5 @@
 = Générer une vue aérienne de votre projet avec OpenRewrite
-include::../../../../includes/attributes-fr.adoc[]
+include::../../../../../includes/attributes-fr.adoc[]
 :description: Découvrez comment utiliser le scanner OpenRewrite pour générer une vue de l'architecture de votre projet et exporter les données avec Datatables.
 :page-tags: openrewrite, Tutoriels
 :page-image: graph.webp

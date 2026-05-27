@@ -6,7 +6,6 @@ include::../../../../../includes/attributes-en.adoc[]
 :page-author: jtama
 :page-date: 2026-02-18
 :page-key: roq-i18n
-:page-lang: en
 :toc:
 
 As you may have noticed, this blog contains articles (mostly in) French and some in English.

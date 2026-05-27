@@ -1,0 +1,109 @@
+= Small tips for implementing recipes
+include::../../../../../includes/attributes-en.adoc[]
+:description: Let's zoom in on a few practices to help you, or your users
+:page-tags: openrewrite, tutorials
+:page-image: tips.webp
+:page-author: jtama
+:page-date: 2026-05-24
+:page-key: tips-and-tricks-openrewrite-1
+:page-series: openrewrite
+:qute:
+
+I've previously talked about my https://github.com/jtama/project-graph-generator[*Project Graph Generator*] here. I wrote a dedicated post on using link:{=site.page('posts/2025/openrewrite/scanning-recipes/index.adoc').url}[Scanning Recipes], and another on link:{=site.page('posts-en/2026/openrewrite/project-graph-generator/index.adoc').url}[its use cases].
+
+It turns out I was invited to discuss the topic on the https://www.youtube.com/watch?v=dpM4zT7E0ew&list=PLEiW5koUu02LDC5AzbcpIS6b6lydu5jxQ[*_Code Remix Weekly: Unlocking insights with your project LST graph_*].
+
+During the show, we discussed other use cases for _scanning recipes_, as well as some neat tricks I picked up along the way.
+
+Starting with the good news, 🎉 https://github.com/jtama/project-graph-generator/releases/tag/v1.0.6[*V1.0.6*] 🐲 is out and includes a recipe to count the number of invocations for each of your public methods we talked about on the _Code Remix Weekly_.
+
+For the rest of this post, I'll share a few tricks and good practices I learned while developing recipes.
+
+{empty} +
+
+== Provide default values
+
+Building a configurable recipe? Try to provide default values wherever possible.
+Users should be able to run your recipes without asking themselves a ton of questions—minimize their workload.
+
+== Accessing the scanned project
+
+Whenever you handle a `org.openrewrite.Tree` instance—which is almost always the case when dealing with Java—you can use `Tree#getMarkers#findFirst` or `Tree#getMarkers#findAll` to retrieve the `JavaProject` currently being analyzed. This is particularly useful for finding the `<groupId, artifactId, version>` of the project.
+
+So you would write:
+
+[source,java]
+----
+javaSourceFile.getMarkers().findFirst(JavaProject.class).ifPresent(jp -> { <1>
+    if (jp.getPublication() != null) {
+        var publication = jp.getPublication() ;
+        System.out.println("Your projet is <%s:%s:%>. Impressive, isn't it ?".formatted(
+                publication.getGroupId(),
+                publication.getArtifactId(),
+                publication.getVersion()
+        ))
+    }
+});
+----
+<1> See that `findFirst` takes an argument class for the marker that you want to retrieve. Which means the result is typed.
+
+
+== Finding types used in a source file
+
+The `org.openrewrite.java.tree.JavaSourceFile#getTypesInUse` method gives you access to all the types used within a given source file.
+
+Furthermore, the `JavaVisitor` class features a `visitType` method, which is invoked every time a type is used in your code (class declarations, method declarations, method invocations, property accesses, variable declarations...).
+
+Please note, that it's a helpful performance optimization for preconditions, as it allows you to skip traversal when evaluating whether a type is used. Thats what's used under the hood by the `UsesType` visitor.
+
+[source, java]
+----
+@Override
+    public TreeVisitor<?, ExecutionContext> getVisitor() {
+        return new Preconditions.Check(
+                new UsesType<>("bar.foo.fighter.dave.Grohl", true),
+                new ToStringFormattedVisitor());
+    }
+----
+
+
+== Knowing your position in the code
+
+You can pinpoint exactly where your recipe is currently processing the code. To do this, use the `SourcePositionService`:
+
+[source, java]
+----
+Span span = service(SourcePositionService.class).positionOf(getCursor());
+Sytem.out.println("Your problem lies here : start line %s, end line %s"
+    .formatted(span.getStartLine(), span.getEndLine()));
+----
+
+There are obviously other methods available. Go dig around.
+
+== Accessing the DataTable
+
+If you have an `ExecutionContext` on hand, you can always access any data tables currently in use.
+
+[source, java]
+----
+Stream<@NotNull Node> nodes = DataTableExecutionContextView
+    .view(executionContext)
+    .getDataTableStore()
+    .getRows(NodesReport.class);
+----
+
+Be aware that datatables are completed during the graph traversal so they might not be here when you invoke that method.
+
+If you want to be sure the recipe has finished its job, you certainly want to invoke this in your `onComplete(ExecutionContext ctx)` method implementation.
+
+== Nullable or not
+
+The OpenRewrite maintainers use https://jspecify.dev/[JSpecify], meaning zero surprises. You always know whether your API calls are null-safe or not. And that's a joy.
+
+== Wrapping up
+
+Implement the recipes that solve _your_ problems if they don't exist yet, and share them if you think others might find them useful.
+
+Give the https://github.com/jtama/project-graph-generator[*Project Graph Generator*] a try. Let me know what you think, and help me improve it!
+
+Illustration par https://unsplash.com/@sam_truong[Sam Truong]
