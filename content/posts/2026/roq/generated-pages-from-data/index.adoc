@@ -74,6 +74,6 @@ Pour y accéder dans le template qute, il faudra donc utiliser la forme `{page.d
 <1> Comme on le voit ici, le yaml peut contenir du texte au format asciidoc ou MD pour plus de rendu.
 ====
 
-Cette fonctionnalité s'avère particulièrement utile à l'ère de l'IA, où les LLM aiment tellement générer du contenu structuré, par exemple pour vos wikis ou votre veille technique.
+Cette fonctionnalité s'avère particulièrement utile à l'ère de l'IA, où les LLM aiment tellement générer du contenu structuré, par exemple pour vos wikis ou votre veille technique. Car même si je déteste le contenu intégralement généré par IA, les LLMs se révèlent diablement efficace pour filtrer et organiser de grande quantité de contenu !
 
 Illustration par https://unsplash.com/@_staticvoid[Lucas Santos]
