@@ -94,7 +94,7 @@
         <dependency>
             <groupId>org.mvnpm</groupId>
             <artifactId>mermaid</artifactId>
-            <version>11.15.0</version>
+            <version>11.16.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
