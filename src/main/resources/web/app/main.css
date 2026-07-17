@@ -1,22 +1,18 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-@theme inline {
+/*@source inline("text-green-600,text-blue-600,text-red-400,text-orange-500,text-violet-400");*/
+
+@theme inline{
     --color-cream: #FDF8E1;
     --color-primary-DEFAULT: #F87171;
     --color-primary-hover: #ef4444;
     --color-body: #2D2424;
-    --color-text-green-600: var(--color-text-green-600);
-    --color-text-blue-600: var(--color-text-blue-600);
-    --color-text-red-400: var(--color-text-red-400);
-    --color-text-orange-500: var(--color-text-orange-500);
-    --color-text-violet-400: var(--color-text-violet-400);
     --fontFamily-serif: ['Playfair Display', 'serif'];
     --fontFamily-sans: ['Inter', 'sans-serif'];
 }
 
 :root {
-
     --background-color-cream: #FDF8E1;
     /* colors */
     --asciidoc-color-brand-primary: #e40046;
@@ -243,6 +239,45 @@ pre .hljs, pre.highlight code {
 }
 
 
+/* Plantuml higlighter */
+
+.entity,.cluster {
+    cursor: pointer;
+    transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+.link {
+    transition: opacity 0.3s ease;
+}
+
+/* When an entity is selected, dim everything else */
+svg.has-selection .entity:not(.highlighted),
+svg.has-selection .cluster:not(.highlighted),
+svg.has-selection .link:not(.highlighted) {
+    opacity: 0.15;
+}
+
+/* Keep highlighted elements fully visible */
+svg.has-selection .entity.highlighted,
+svg.has-selection .cluster.highlighted,
+svg.has-selection .link.highlighted {
+    opacity: 1;
+}
+
+/* Add a subtle highlight effect to the active clicked node */
+svg.has-selection .entity.active-root,
+svg.has-selection .cluster.active-root{
+    filter: drop-shadow(0px 0px 8px rgba(0, 118, 255, 0.6));
+}
+
+/* Add a subtle hover effect to entities when no selection is active */
+svg:not(.has-selection) .entity:hover,
+svg:not(.has-selection) .cluster:hover {
+    filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.3));
+    opacity: 0.9;
+}
+
+/* I18n */
 .language-switcher {
     display: flex;
     align-items: center;

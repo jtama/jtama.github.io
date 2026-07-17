@@ -6,7 +6,7 @@ asciidoc-attributes:
 ---
 
 
-<header class="max-w-7xl mx-auto px-8 pt-12 pb-24 grid md:grid-cols-2 gap-12 items-center">
+<header class="max-w-9/10 mx-auto px-8 pt-12 pb-24 grid md:grid-cols-2 gap-12 items-center">
     <div>
         <h1 class="text-7xl lg:text-8xl leading-none mb-8">
             Ils sont là les tags, tous beaux, tous chauds.
@@ -17,7 +17,7 @@ asciidoc-attributes:
 
 {#if site.collections.get('posts')}
 <section id="articles" class="bg-cream py-24 border-t border-gray-100">
-    <div class="max-w-7xl mx-auto px-8 flex flex-wrap gap-4">
+    <div class="max-w-9/10 mx-auto px-8 flex flex-wrap gap-4">
     {#for tag in site.collections.get('posts').tagsCount}
         <a href="{=site.url('/posts/tag', tag.name)}" class="inline-flex items-center whitespace-nowrap px-4 py-2 bg-white border border-gray-200 rounded-md shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 text-base font-bold uppercase tracking-widest {=tag_index.tagColor}">
             &#35; {=tag.name} <span class="text-gray-500 font-normal normal-case text-sm ml-2">({=tag.count} articles)</span>
