@@ -3,6 +3,7 @@
 :toc-title: Table des matières
 :idprefix:
 :idseparator: -
+:icons: font
 :page-layout: post
 :page-lang: fr
 :qute: true
