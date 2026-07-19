@@ -15,8 +15,6 @@ Il y a un peu plus d'un an, je vous avais donné une astuce link:{=site.page('po
 Alors cette fois, j'ai fait les choses _comme il faut_ : un vrai outil, avec une représentation en arbre dynamique, une recherche, un panneau de détail. En Java. Dans un terminal. Spéciale kassdédi https://www.linkedin.com/in/thierrychantier/[Thierry Chantier]. +
 Voilà, vous avez le prétexte -un explorateur de dépendances Maven-. Le vrai sujet, c'est *TamboUI*.
 
-image::title.webp[]
-
 == TL;DR;
 
 https://tamboui.dev/[TamboUI] c'est bien. Si vous avez une TUI à implémenter, donnez-lui sa chance.
@@ -45,7 +43,7 @@ Immediate Mode:: Pour les durs qui veulent un contrôle absolu. On contrôle dir
 TuiRunner:: La boucle est gérée pour vous, et vous traitez les événements via des callbacks. `List`, `Table`, `Tree`... chacun avec son état externe à threader vous-même (`ListState`, `TreeState`...). Puissant, verbeux.
 DSL Toolkit:: une couche déclarative par-dessus, où chaque élément gère son propre état. C'est le chemin le plus court et c'est celui utilisé dans cet article.
 
-[IMPORTANT]
+[NOTE]
 ====
 Quoiqu'il arrive, le _fwk_ offre une bibliothèque de _widgets_, des primitives de layout (qui ressemblent très fort à une table html), du styling avec une expérience très proche de celle du CSS (et c'est une bonne chose, en cas de méprise sur le sens de ma phrase).
 Vous avez aussi en cadeaux l'adaptation à la taille du terminal même sur du resizing.
@@ -67,7 +65,7 @@ public class HelloTamboUI extends ToolkitApp {
 }
 ----
 
-Il y a les widgets, l'approche déclarative, le styling _css_.
+Vous avez tout: les widgets, l'approche déclarative, le styling _css_.
 
 Point d'attention, la méthode `render()` est rappelée à chaque frame (pas de calculs lourds attention), et retourne la description de ce qu'il faut afficher *maintenant*. Gardez cette phrase sous le coude, elle va nous servir.
 
@@ -75,7 +73,7 @@ Pour plus que deux mots : https://tamboui.dev/docs/main/[la doc est très bien f
 
 == Construire l'arbre : séparation modèle / vue
 
-Premier bon réflexe de TamboUI : son widget `TreeElement<T>` sépare franchement les données de leur représentation. D'un côté, un `record` qui ne connaît rien à l'affichage :
+Bon design de TamboUI : son widget `TreeElement<T>` sépare franchement les données de leur représentation. D'un côté, un `record` qui ne connaît rien à l'affichage :
 
 [source,java]
 ----

@@ -2,6 +2,7 @@
 :toclevels: 2
 :idprefix:
 :idseparator: -
+:icons: font
 :page-layout: post
 :page-lang: en
 :page-link: /posts/en/:slug/
