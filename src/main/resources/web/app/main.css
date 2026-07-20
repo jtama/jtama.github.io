@@ -234,6 +234,18 @@ pre .hljs, pre.highlight code {
     }
 }
 
+/* Le cadre décoratif prend trop de place utile sur petit écran : on le masque
+   et on garde juste une carte propre (fond + ombre) */
+@media (max-width: 640px) {
+    .art-nouveau-frame {
+        border-style: none;
+        border-width: 0;
+        border-image-source: none;
+        box-shadow: none;
+        border-radius: 0.5rem;
+    }
+}
+
 .hljs {
     background-color: #f7f7f8;
 }
