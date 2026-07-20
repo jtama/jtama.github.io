@@ -1,0 +1,388 @@
+= Des diagrammes dynamiques avec ROQ
+include::../../../../../includes/attributes-fr.adoc[]
+:description: Dans le svg, la force réside.
+:page-tags: roq,diagram
+:page-author: jtama
+:page-date: 2026-06-22
+:page-key: dynamic-diag
+:page-lang: fr
+:page-image: Bitmap_VS_SVG_Fr.svg.webp
+:toc:
+
+Depuis la release v2.1.5 de https://iamroq.dev/[ROQ], si vous choisissez le _SVG_ comment format de rendu, le https://iamroq.dev/plugin/diagram/[plugin diagram] injecte directement le SVG produit dans la page. +
+Et le _SVG_, ce n'est pas juste une image qui zoom bien.
+
+Non le _Scalable Vector Graphics_ est un format de donnée fondé sur XML, qui a le bon goût de pouvoir être stylisé via CSS, ET manipulé directement depuis le DOM.
+
+Ci-dessous on peut par exemple voir une vue du pipeline de traitement de construction de vos sites statics pas ROQ. +
+Vous remarquerez qu'il est clickable, en effet, au clique sur une boite, toutes ses filles et leurs liens seront mises en avant.
+
+Ce traitement repose sur du styling CSS et un bout de code JS pour détecter le click et assignée les classes CSS idoines.
+
+==  Et woilà \o/ !
+
+{#diagram asciidoc=true language="plantuml" alt="Diagramme de classes" width=500 height=500 diagramOutputFormat="svg"}
+@startuml
+skinparam actorStyle awesome
+skinparam shadowing false
+skinparam nodesep 25
+skinparam ranksep 60
+hide stereotype
+
+<style>
+document {
+BackgroundColor #FFFFFF
+FontName "Helvetica Neue", Helvetica, Arial, sans-serif
+FontColor #333333
+}
+title {
+FontSize 18
+FontColor #1A1A1A
+FontStyle bold
+}
+cloud {
+BackgroundColor #F8F9FA
+LineColor #DDE1E5
+LineThickness 1.5
+RoundCorner 12
+FontColor #495057
+FontSize 13
+FontStyle bold
+}
+rectangle {
+BorderRadius 10
+LineThickness 1.5
+FontSize 12
+FontColor #212529
+}
+arrow {
+LineColor #868E96
+LineThickness 1.2
+}
+
+.source {
+    BackgroundColor #E3F2FD
+    LineColor #42A5F5
+    LineThickness 2
+    FontColor #1565C0
+}
+.processor {
+    BackgroundColor #EDE7F6
+    LineColor #7E57C2
+    LineThickness 2
+    FontColor #4527A0
+}
+.builditem {
+    BackgroundColor #E0F7F4
+    LineColor #47C8B6
+    LineThickness 2
+    FontColor #1F6E63
+}
+.runtime {
+    BackgroundColor #F3E5F5
+    LineColor #AB47BC
+    LineThickness 2
+    FontColor #4A148C
+}
+</style>
+
+title Pipeline de Build de Roq FrontMatter (roq-frontmatter)
+
+' Sources & Configuration
+cloud "Sources & Configuration" {
+rectangle "Fichiers de Contenu\n(.md, .html, .adoc)" as content_files<<source>>
+rectangle "Gabarits de Layouts\n(templates/layouts/)" as layout_files<<source>>
+rectangle "Fichiers de Données\n(.yaml, .json)" as data_files<<source>>
+rectangle "Fichiers Statiques\n(public/, static/)" as static_files<<source>>
+rectangle "RoqSiteConfig\n& QuteConfig" as site_config<<source>>
+}
+
+' Steps (Processors)
+rectangle "Step 0: Setup\n(RoqFrontMatterStep0SetupProcessor)" as step0 <<processor>> {
+rectangle "Initialisation des règles" as step0_desc
+}
+
+rectangle "Step 1: Scan\n(RoqFrontMatterStep1ScanProcessor)" as step1 <<processor>> {
+rectangle "Scan et classification\ndes fichiers" as step1_desc
+}
+
+rectangle "Step 2: Assemble\n(RoqFrontMatterStep2AssembleProcessor)" as step2 <<processor>> {
+rectangle "Application des modifiers\net génération intermédiaire" as step2_desc
+}
+
+rectangle "Step 3: Data\n(RoqFrontMatterStep3DataProcessor)" as step3 <<processor>> {
+rectangle "Résolution des URLs, dates\net héritage des layouts" as step3_desc
+}
+
+rectangle "Step 4: Publish\n(RoqFrontMatterStep4PublishProcessor)" as step4 <<processor>> {
+rectangle "Pagination et traitement\ndes collections" as step4_desc
+}
+
+rectangle "Step 5: Record\n(RoqFrontMatterStep5RecordProcessor)" as step5 <<processor>> {
+rectangle "Enregistrement des CDI Beans\net initialisation des routes Vert.x" as step5_desc
+}
+
+rectangle "Step 6: Bind\n(RoqFrontMatterStep6BindProcessor)" as step6 <<processor>> {
+rectangle "Écriture des templates Qute\net validation de types" as step6_desc
+}
+
+' Build Items flowing (Teal / turquoise nodes)
+rectangle "RoqFrontMatterDataModificationBuildItem\nRoqFrontMatterHeaderParserBuildItem" as build_items_step0 <<builditem>>
+rectangle "RoqFrontMatterScannedContentBuildItem\nRoqFrontMatterScannedLayoutBuildItem" as build_items_step1 <<builditem>>
+rectangle "RoqFrontMatterRawPageBuildItem\nRoqFrontMatterRawLayoutBuildItem" as build_items_step2 <<builditem>>
+rectangle "RoqFrontMatterPageTemplateBuildItem\nRoqFrontMatterLayoutTemplateBuildItem\nRoqFrontMatterDocumentBuildItem\nRoqFrontMatterPaginatePageBuildItem\nRoqFrontMatterStaticFileBuildItem" as build_items_step3 <<builditem>>
+rectangle "RoqFrontMatterPublishDocumentPageBuildItem\nRoqFrontMatterPublishNormalPageBuildItem" as build_items_step4 <<builditem>>
+rectangle "RoqFrontMatterOutputBuildItem\nSyntheticBeanBuildItem (Site, Sources)" as build_items_step5 <<builditem>>
+
+' Downstream Integration
+cloud "Downstream Integration (Runtime / Export)" <<runtime>> {
+rectangle "Moteur de Template Qute" as qute_engine
+rectangle "Routeur Vert.x HTTP" as vertx_router
+rectangle "Générateur Roq (SSG)" as roq_generator
+}
+
+' Flow Connections
+site_config --> step0
+content_files --> step1
+layout_files --> step1
+data_files --> step1
+static_files --> step1
+
+step0 --> build_items_step0
+build_items_step0 --> step1 : "Parser YAML"
+build_items_step0 --> step2 : "Modifications (Drafts, Escape)"
+
+step1 --> build_items_step1
+build_items_step1 --> step2
+
+step2 --> build_items_step2
+build_items_step2 --> step3
+
+step3 --> build_items_step3
+build_items_step3 --> step4
+build_items_step3 --> step5 : "Pages Statiques & Normales"
+
+step4 --> build_items_step4
+build_items_step4 --> step5
+
+step5 --> build_items_step5
+build_items_step5 --> step6
+
+' Downstream connections
+build_items_step5 --> qute_engine : "Injection CDI de 'site' et 'sources'"
+step5 --> vertx_router : "Routes HTTP du site"
+step6 --> qute_engine : "Fichiers de gabarits & validation de types"
+step6 --> roq_generator : "Sélection de chemins & ressources statiques"
+
+@enduml
+{/diagram}
+
+== Mais comment ça marche ??
+
+Il s'agit d'un processus en 2 étape.
+
+Au chargement de la page :
+
+[source, javascript]
+----
+const entities = document.querySelectorAll('.entity,.cluster');<1>
+const links = document.querySelectorAll('.link');<2>
+
+// Build entity IDs set for quick existence check
+const entityIds = new Set(Array.from(entities).map(e => e.id));
+
+// Build the directed adjacency graph list (only outgoing: from data-entity-1 to data-entity-2)
+const adj = {};
+links.forEach(link => {<3>
+    const ent1 = link.getAttribute('data-entity-1');
+    const ent2 = link.getAttribute('data-entity-2');
+    if (ent1 && ent2 && entityIds.has(ent1) && entityIds.has(ent2)) {
+        if (!adj[ent1]) adj[ent1] = [];
+        // Only follow outgoing links
+        adj[ent1].push({ neighborId: ent2, linkElement: link });
+    }
+});
+----
+<1> Les classes assignées par plantuml dans un diagramme d'activité.
+<2> Les classes de liens.
+<3> Constitution de la représentation interne.
+
+Dans le cour de la lecture :
+
+[source, javascript]
+----
+ svg.addEventListener('click', (event) => {
+        let entityEl = event.target.closest('.entity');
+        if(!entityEl) {
+            entityEl = event.target.closest('.cluster');
+        }
+
+        if (entityEl) { <1>
+            // We clicked on an entity
+            event.stopPropagation(); // prevent document-level click handler
+            const clickedId = entityEl.id;
+
+            if (activeRootId === clickedId) { <2>
+                // Clicking the already active root deselects it
+                clearSelection();
+            } else {
+                // Otherwise highlight its network
+                highlightNetwork(clickedId);
+            }
+        } else {
+            // Clicking on the SVG background (or other non-entity element) clears selection
+            clearSelection(); <3>
+        }
+    });
+----
+<1> Si le click a eu lieu sur une boîte du diagramme.
+<2> On assigne les classes CSS à tous les éléments nécessaires.
+<3> Sinon on reaffiche tout normalement.
+
+Et 8 lignes de CSS:
+
+[source, css]
+----
+/* When an entity is selected, dim everything else */
+svg.has-selection .entity:not(.highlighted),
+svg.has-selection .cluster:not(.highlighted),
+svg.has-selection .link:not(.highlighted) {
+    opacity: 0.15;
+}
+
+/* Keep highlighted elements fully visible */
+svg.has-selection .entity.highlighted,
+svg.has-selection .cluster.highlighted,
+svg.has-selection .link.highlighted {
+    opacity: 1;
+}
+----
+
+
+== Références
+
+.Fichier à placer dans le dossier `scr/main/resources/web/app`
+[%collapsible]
+====
+[source,javascript]
+.diagram.js
+----
+document.addEventListener('DOMContentLoaded', () => {
+    const svg = document.querySelector('svg');
+    if (!svg) return;
+
+    const entities = document.querySelectorAll('.entity,.cluster');
+    const links = document.querySelectorAll('.link');
+
+    // Build entity IDs set for quick existence check
+    const entityIds = new Set(Array.from(entities).map(e => e.id));
+
+    // Build the directed adjacency graph list (only outgoing: from data-entity-1 to data-entity-2)
+    const adj = {};
+    links.forEach(link => {
+        const ent1 = link.getAttribute('data-entity-1');
+        const ent2 = link.getAttribute('data-entity-2');
+        if (ent1 && ent2 && entityIds.has(ent1) && entityIds.has(ent2)) {
+            if (!adj[ent1]) adj[ent1] = [];
+            // Only follow outgoing links
+            adj[ent1].push({ neighborId: ent2, linkElement: link });
+        }
+    });
+
+    let activeRootId = null;
+
+    // Helper to clear all selection states
+    function clearSelection() {
+        svg.classList.remove('has-selection');
+        entities.forEach(ent => {
+            ent.classList.remove('highlighted', 'active-root');
+        });
+        links.forEach(lnk => {
+            lnk.classList.remove('highlighted');
+        });
+        activeRootId = null;
+    }
+
+    // Helper to perform BFS and highlight connected elements
+    function highlightNetwork(startNodeId) {
+        // Clear previous state
+        entities.forEach(ent => ent.classList.remove('highlighted', 'active-root'));
+        links.forEach(lnk => lnk.classList.remove('highlighted'));
+
+        const visitedNodes = new Set();
+        const visitedLinks = new Set();
+        const queue = [startNodeId];
+        visitedNodes.add(startNodeId);
+
+        while (queue.length > 0) {
+            const current = queue.shift();
+            const connections = adj[current] || [];
+            for (const conn of connections) {
+                if (!visitedLinks.has(conn.linkElement)) {
+                    visitedLinks.add(conn.linkElement);
+                }
+                if (!visitedNodes.has(conn.neighborId)) {
+                    visitedNodes.add(conn.neighborId);
+                    queue.push(conn.neighborId);
+                }
+            }
+        }
+
+        // Apply highlighted class
+        visitedNodes.forEach(nodeId => {
+            const nodeEl = document.getElementById(nodeId);
+            if (nodeEl) {
+                nodeEl.classList.add('highlighted');
+            }
+        });
+
+        visitedLinks.forEach(linkEl => {
+            linkEl.classList.add('highlighted');
+        });
+
+        // Mark the active root
+        const rootEl = document.getElementById(startNodeId);
+        if (rootEl) {
+            rootEl.classList.add('active-root');
+        }
+
+        svg.classList.add('has-selection');
+        activeRootId = startNodeId;
+    }
+
+    // Add click listeners
+    svg.addEventListener('click', (event) => {
+        let entityEl = event.target.closest('.entity');
+        if(!entityEl) {
+            entityEl = event.target.closest('.cluster');
+        }
+
+        if (entityEl) {
+            // We clicked on an entity
+            event.stopPropagation(); // prevent document-level click handler
+            const clickedId = entityEl.id;
+
+            if (activeRootId === clickedId) {
+                // Clicking the already active root deselects it
+                clearSelection();
+            } else {
+                // Otherwise highlight its network
+                highlightNetwork(clickedId);
+            }
+        } else {
+            // Clicking on the SVG background (or other non-entity element) clears selection
+            clearSelection();
+        }
+    });
+
+    // Also support clicking outside the SVG to clear selection
+    document.addEventListener('click', (event) => {
+        if (!svg.contains(event.target)) {
+            clearSelection();
+        }
+    });
+});
+----
+====
+
+. Image d'illustration: https://fr.wikipedia.org/wiki/Scalable_Vector_Graphics
