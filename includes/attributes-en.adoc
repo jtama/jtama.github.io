@@ -6,3 +6,4 @@
 :page-layout: post
 :page-lang: en
 :page-link: /posts/en/:slug/
+:qute: true

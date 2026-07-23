@@ -1,27 +1,26 @@
-= Des diagrammes dynamiques avec ROQ
-include::../../../../../includes/attributes-fr.adoc[]
-:description: Dans le svg, la force réside.
+= Dynamic diagrams with ROQ
+include::../../../../../includes/attributes-en.adoc[]
+:description: In SVG, the force resides.
 :page-tags: roq,diagram
 :page-author: jtama
 :page-date: 2026-07-22
 :page-key: dynamic-diag
-:page-lang: fr
-:page-image: Bitmap_VS_SVG_Fr.svg.webp
+:page-lang: en
+:page-image: Bitmap_VS_SVG.svg.webp
 :toc:
 
-Depuis la release v2.1.5 de https://iamroq.dev/[ROQ], si vous choisissez le _SVG_ comment format de rendu, le https://iamroq.dev/plugin/diagram/[plugin diagram] injecte directement le SVG produit dans la page. +
-Et le _SVG_, ce n'est pas juste une image qui zoom bien.
+Since the https://iamroq.dev/[ROQ] v2.1.5 release, if you choose _SVG_ as the rendering format, the https://iamroq.dev/plugin/diagram/[plugin diagram] injects the generated SVG directly into the page (when it used to do it through _datauri_). +
+That's very good new because _SVG_ isn’t just an image that zooms well.
 
-Non le _Scalable Vector Graphics_ est un format de donnée fondé sur XML, qui a le bon goût de pouvoir être stylisé via CSS, ET manipulé directement depuis le DOM.
+No, _Scalable Vector Graphics_ is a data format based on XML, which has the nice properties of being able to be styled via CSS, AND manipulated directly from the DOM.
 
-Ci-dessous on peut par exemple voir une vue du pipeline de traitement de construction de vos sites statics pas ROQ. +
-Vous remarquerez qu'il est clickable, en effet, au clique sur une boite, toutes ses filles et leurs liens seront mises en avant.
+Below you can see, for example, a view of the ROQ processing pipeline for building your static sites. +
+You will notice that it is clickable; indeed, when you select on a box, all its children and their links will be highlighted.
 
-Ce traitement repose sur du styling CSS et un bout de code JS pour détecter le click et assignée les classes CSS idoines.
 
-==  Et woilà \o/ !
+==  Here you are \o/ !
 
-{#diagram asciidoc=true language="plantuml" alt="Diagramme de classes" width=500 height=500 diagramOutputFormat="svg"}
+{#diagram asciidoc=true language="plantuml" alt="Processing pipeline" width=500 height=500 diagramOutputFormat="svg"}
 @startuml
 skinparam actorStyle awesome
 skinparam shadowing false
@@ -86,7 +85,7 @@ LineThickness 1.2
 }
 </style>
 
-title Pipeline de Build de Roq FrontMatter (roq-frontmatter)
+title Roq FrontMatter processing pipeline (roq-frontmatter)
 
 ' Sources & Configuration
 cloud "Sources & Configuration" {
@@ -177,11 +176,11 @@ step6 --> roq_generator : "Sélection de chemins & ressources statiques"
 @enduml
 {/diagram}
 
-== Mais comment ça marche ??
+== How the hell does this work ?
 
-Il s'agit d'un processus en 2 étape.
+It's a 2 step process.
 
-Au chargement de la page :
+On page load, the following script is executed :
 
 [source, javascript]
 ----
@@ -203,11 +202,11 @@ links.forEach(link => {<3>
     }
 });
 ----
-<1> Les classes assignées par plantuml dans un diagramme d'activité.
-<2> Les classes de liens.
-<3> Constitution de la représentation interne.
+<1> Classes used by plantuml for activity diagrams.
+<2> Link classes.
+<3> Internal representation.
 
-Dans le cour de la lecture :
+Then when for later use :
 
 [source, javascript]
 ----
@@ -235,11 +234,11 @@ Dans le cour de la lecture :
         }
     });
 ----
-<1> Si le click a eu lieu sur une boîte du diagramme.
-<2> On assigne les classes CSS à tous les éléments nécessaires.
-<3> Sinon on reaffiche tout normalement.
+<1> If a diagram box is clicked
+<2> Else every element is reset to it's _normal_ design
+<3> CSS classes a reassigned to each element to highlight or dim them
 
-Et 8 lignes de CSS:
+And we have 8 lines of CSS to affect display
 
 [source, css]
 ----
@@ -259,9 +258,9 @@ svg.has-selection .link.highlighted {
 ----
 
 
-== Références
+== References
 
-.Fichier à placer dans le dossier `scr/main/resources/web/app`
+.The all javascript file to be placed in `scr/main/resources/web/app`
 [%collapsible]
 ====
 [source,javascript]
@@ -385,4 +384,4 @@ document.addEventListener('DOMContentLoaded', () => {
 ----
 ====
 
-. Image d'illustration: https://fr.wikipedia.org/wiki/Scalable_Vector_Graphics
+. Blog post image: https://en.wikipedia.org/wiki/SVG
