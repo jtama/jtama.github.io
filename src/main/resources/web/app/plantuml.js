@@ -35,18 +35,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Helper to perform BFS and highlight connected elements
-    function highlightNetwork(startNodeId) {
+    function highlightNetwork(startNodeIds) {
         // Clear previous state
         entities.forEach(ent => ent.classList.remove('highlighted', 'active-root'));
         links.forEach(lnk => lnk.classList.remove('highlighted'));
 
         const visitedNodes = new Set();
         const visitedLinks = new Set();
-        const queue = [startNodeId];
-        visitedNodes.add(startNodeId);
+        startNodeIds.forEach(id => visitedNodes.add(id));
 
-        while (queue.length > 0) {
-            const current = queue.shift();
+        while (startNodeIds.length > 0) {
+            const current = startNodeIds.shift();
             const connections = adj[current] || [];
             for (const conn of connections) {
                 if (!visitedLinks.has(conn.linkElement)) {
@@ -54,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 if (!visitedNodes.has(conn.neighborId)) {
                     visitedNodes.add(conn.neighborId);
-                    queue.push(conn.neighborId);
+                    startNodeIds.push(conn.neighborId);
                 }
             }
         }
@@ -72,13 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Mark the active root
-        const rootEl = document.getElementById(startNodeId);
+        const rootEl = document.getElementById(startNodeIds[startNodeIds.length - 1]);
         if (rootEl) {
             rootEl.classList.add('active-root');
         }
 
         svg.classList.add('has-selection');
-        activeRootId = startNodeId;
+        activeRootId = startNodeIds[startNodeIds.length - 1];
     }
 
     // Add click listeners
@@ -91,6 +90,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (entityEl) {
             // We clicked on an entity
             event.stopPropagation(); // prevent document-level click handler
+            let linkedEntities = [];
+            if (entityEl.className.baseVal === 'cluster') {
+                linkedEntities = Array.from(entities)
+                    .filter(ent => ent.getAttribute('data-qualified-name').startsWith(entityEl.getAttribute('data-qualified-name')))
+                    .map(ent => ent.id);
+            }
             const clickedId = entityEl.id;
 
             if (activeRootId === clickedId) {
@@ -98,7 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearSelection();
             } else {
                 // Otherwise highlight its network
-                highlightNetwork(clickedId);
+                linkedEntities.push(clickedId)
+                highlightNetwork(linkedEntities);
             }
         } else {
             // Clicking on the SVG background (or other non-entity element) clears selection

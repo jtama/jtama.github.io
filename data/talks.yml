@@ -11,8 +11,8 @@
     🏹 Armez vos arcs de nouvelles cordes et repartez avec un kata à faire en équipe.
   code: https://github.com/jtama/crazy-data-oriented-programming
   image: oop_to_dop.webp
-  post: http://localhost:8081/posts/de-la-programmation-orient-e-objet-vers-la-programmation-orient-e-donn-es-un-guide-pratique/
-  tags: [knowyourjava]
+  post: https://dev.to/onepoint/de-la-programmation-orientee-objet-vers-la-programmation-orientee-donnees-un-guide-pratique-4bh2
+  tags: [java]
   conferences:
     - name: Touraine Tech 2026
 - title: "OpenRewrite: Refactoring as code"

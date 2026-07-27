@@ -22,10 +22,10 @@ layout: main
                     <div class="relative z-10 bg-white/90 p-6 shadow-sm border border-stone-200 rounded-lg">
                         {=page.data.description.asciidocify}
 
-                        {#if page.data.containsKey('slides')}<a href="" {=page.data.slides}" target="_blank"><i class="fa-solid fa-film"></i> Les
+                        {#if page.data.containsKey('slides')}<a href="{=page.data.slides}" target="_blank"><i class="fa-solid fa-film"></i> Les
                         slides</a>{/if}
 
-                        {#if page.data.containsKey('code')}<a href="" {=page.data.code}" target="_blank"><i
+                        {#if page.data.containsKey('code')}<a href="{=page.data.code}" target="_blank"><i
                             class="fa-brands fa-square-github"></i>
                         Le dépôt git</a>{/if}
 

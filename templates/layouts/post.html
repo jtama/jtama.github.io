@@ -8,8 +8,12 @@ asciidoc-attributes:
     <article class="art-nouveau-frame overflow-hidden">
         <div class="p-4 sm:p-8 md:p-20 bg">
             <header class="text-center mb-16">
+                {#if page.data.title-contains.or(false)}
                 <!-- Responsive height for image to save space on mobile (Accessibility: Perceivable) -->
+                <img src="{=page.image}" class="w-full h-48 md:h-80 object-contain rounded-lg my-12 shadow-lg" alt="Illustration de l'article">
+                {#else}
                 <img src="{=page.image}" class="w-full h-48 md:h-80 object-cover rounded-lg my-12 shadow-lg" alt="Illustration de l'article">
+                {/if}
                 <!-- Changed leading-tight to md:leading-tight for better line spacing on mobile titles (Accessibility: Perceivable) -->
                 <h1 class="text-4xl md:text-6xl leading-snug md:leading-tight mb-8">
                     {=page.title.asciidocify}

@@ -25,8 +25,12 @@ layout: main
                             class="rounded-2xl absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-multiply">
                             <div class="rounded-2xl relative z-10 bg-white/90 p-6 shadow-sm border border-stone-200 rounded-lg w-full">
                                 {#if post.image}
+                                {#if page.data.title-contains.or(false)}
                                 <!-- Reduce fixed height on mobile to prevent content overflow (Accessibility: Perceivable) -->
+                                <img src='{=post.image}' class="w-full h-48 md:h-80 object-fit rounded-lg mb-6 md:my-12 shadow-lg"/>
+                                {#else}
                                 <img src='{=post.image}' class="w-full h-48 md:h-80 object-cover rounded-lg mb-6 md:my-12 shadow-lg"/>
+                                {/if}
                                 {/if}
                                 <!-- Use leading-snug to prevent overlapping lines on mobile (Accessibility: Perceivable) -->
                                 <h3 class="text-2xl mt-2 leading-snug mb-2">{=post.title.asciidocify}</h3>
