@@ -1,0 +1,133 @@
+.post-layout {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 2.5rem;
+    padding: 2rem;
+    max-width: 1600px;
+    margin-inline: auto;
+
+    @media screen and (max-width: 1400px) {
+        grid-template-columns: 300px 1fr;
+    }
+    @media screen and (max-width: 1200px) {
+        grid-template-columns: 1fr;
+    }
+    @media screen and (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.tocwrapper {
+    display: flex;
+}
+
+.toc {
+    position: sticky;
+    top: 1rem;
+    padding: 1rem 0.5rem 1rem 0;
+    margin: 1rem;
+    background-color: var(--sec-background-color);
+    word-wrap: break-word;
+    max-height: 90vh;
+    overflow-y: auto;
+    align-self: start;
+
+    scrollbar-color: var(--sec-border-color) var(--sec-background-color);
+    scrollbar-width: thin;
+    scrollbar-gutter: stable;
+
+    ul {
+        list-style: none;
+        padding-right: 0.8rem;
+    }
+    a {
+        text-decoration: none;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    &:empty {
+        display: none;
+    }
+
+    .roq-toc {
+        float: none;
+        font-size: inherit;
+        padding: 2rem 0.5rem 1rem 2rem;
+        margin: 0;
+
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        li {
+            float: none;
+            margin: 0 !important;
+            margin-bottom: 0 !important;
+            padding: 0.3rem 0;
+        }
+        > ul > li {
+            padding: 0.2rem 0;
+        }
+        ul ul {
+            padding-left: 1rem;
+        }
+        a {
+            display: block;
+            padding: 0;
+            line-height: inherit;
+            font-size: inherit;
+            text-decoration: none;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+.post-toc-wrapper {
+    align-self: start;
+    position: sticky;
+    top: 1rem;
+
+    @media screen and (max-width: 1200px) {
+        display: none;
+    }
+
+    .toc {
+        position: static;
+        margin: 0;
+        padding: 0.5rem;
+        overflow-x: hidden;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+
+        // Accordion behaviour driven by guide-toc-scroll.js. Each top-level item's
+        // sub-list is collapsed by default (in CSS, keyed off the server-rendered
+        // structure so there is no expand-then-collapse flash on load) and only the
+        // current group's sub-list is revealed while reading. guide-toc-scroll.js
+        // toggles `is-open` on the top-level <li> of the active group.
+        .roq-toc > ul > li > ul {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease;
+            padding-left: .8rem;
+        }
+
+        .roq-toc > ul > li.is-open > ul {
+            // Generous upper bound; guide sub-sections never approach this height.
+            max-height: 100rem;
+            padding-top: 0.5rem;
+        }
+
+        a.is-active {
+            font-weight: 600;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+    }
+}

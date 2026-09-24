@@ -7,7 +7,6 @@ include::../../../../../includes/attributes-fr.adoc[]
 :page-date: 2026-02-18
 :page-key: roq-i18n
 :page-lang: fr
-:toc:
 
 Vous aurez pu le constater, ce blog comporte des articles en français et des articles en anglais.
 

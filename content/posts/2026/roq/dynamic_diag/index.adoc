@@ -8,7 +8,6 @@ include::../../../../../includes/attributes-fr.adoc[]
 :page-lang: fr
 :page-image: Bitmap_VS_SVG_Fr.svg.webp
 :page-title-contains: true
-:toc:
 
 Depuis la release v2.1.5 de https://iamroq.dev/[ROQ], si vous choisissez le _SVG_ comme format de rendu, le https://iamroq.dev/plugin/diagram/[plugin diagram] injecte directement le SVG produit dans la page. +
 Et le _SVG_, ce n'est pas juste une image qui zoom bien.

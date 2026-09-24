@@ -1,5 +1,4 @@
 :sectanchors: true
-:toclevels: 2
 :idprefix:
 :idseparator: -
 :icons: font

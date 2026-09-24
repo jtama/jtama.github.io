@@ -5,8 +5,6 @@ include::../../../../includes/attributes-fr.adoc[]
 :page-author: jtama
 :page-date: 2023-12-22
 :page-image: cover.webp
-:toc:
-:toc-title: Table des matières
 
 So you heard of _**Quarkus**_ and how it's blazingly fast, and you want to take your share of the cake.
 

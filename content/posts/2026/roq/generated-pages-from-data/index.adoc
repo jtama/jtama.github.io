@@ -7,7 +7,6 @@ include::../../../../../includes/attributes-fr.adoc[]
 :page-date: 2026-05-06
 :page-key: roq-pages-from-data
 :page-lang: fr
-:toc:
 
 Il m'est arrivé à plusieurs reprises de vouloir générer du contenu static à partir de documents `yaml` ou `json`.
 

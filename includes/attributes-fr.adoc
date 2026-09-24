@@ -1,9 +1,8 @@
 :sectanchors: true
-:toclevels: 2
-:toc-title: Table des matières
 :idprefix:
 :idseparator: -
 :icons: font
 :page-layout: post
 :page-lang: fr
 :qute: true
+:content-toc: true

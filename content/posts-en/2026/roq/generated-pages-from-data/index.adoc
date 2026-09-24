@@ -7,7 +7,6 @@ include::../../../../../includes/attributes-en.adoc[]
 :page-date: 2026-05-06
 :page-key: roq-pages-from-data
 :page-lang: en
-:toc:
 
 You have all that nicely structured content in `yaml` ou `json`, and all you would like is to generate static pages out of it. May that be events, catalog or any type of roq collection really.
 

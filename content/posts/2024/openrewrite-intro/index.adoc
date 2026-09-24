@@ -7,8 +7,6 @@ include::../../../../includes/attributes-fr.adoc[]
 :page-slug: openrewrite-refactoring-as-code
 :page-series: openrewrite
 :page-date: 2024-11-27
-:toc:
-:toc-title: Table des matières
 
 image:logo.svg[Logo d'openrewrite]
 

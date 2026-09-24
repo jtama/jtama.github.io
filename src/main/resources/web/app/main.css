@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+
 /*@source inline("text-green-600,text-blue-600,text-red-400,text-orange-500,text-violet-400");*/
 
 @theme inline{

@@ -6,8 +6,6 @@ include::../../../../includes/attributes-fr.adoc[]
 :page-author: jtama
 :page-date: 2025-03-20
 :page-key: to-gather-or-not-to-gather-that-is-the-question
-:toc:
-:toc-title: Table des matières
 
 == Mais de quoi va-t-on parler ?
 

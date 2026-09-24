@@ -6,8 +6,6 @@ include::../../../../includes/attributes-en.adoc[]
 :page-author: jtama
 :page-date: 2025-11-18
 :page-key: tout-publier-avec-jreleaser
-:toc:
-
 
 [quote, Official tag line]
 ____
