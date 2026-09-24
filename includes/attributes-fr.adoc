@@ -6,3 +6,4 @@
 :page-lang: fr
 :qute: true
 :content-toc: true
+:page-toc: Table des matières

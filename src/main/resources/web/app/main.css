@@ -244,6 +244,7 @@ pre .hljs, pre.highlight code {
         border-image-source: none;
         box-shadow: none;
         border-radius: 0.5rem;
+        overflow: hidden;
     }
 }
 

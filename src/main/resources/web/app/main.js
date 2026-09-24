@@ -8,6 +8,7 @@ import '@fortawesome/fontawesome-free/scss/regular.scss';
 import '@fortawesome/fontawesome-free/scss/brands.scss';
 import '@fortawesome/fontawesome-free/scss/solid.scss';
 import './_post.scss';
+import './guide-toc-scroll.js';
 
 hljs.addPlugin(
     new CopyButtonPlugin({

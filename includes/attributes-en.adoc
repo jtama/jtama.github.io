@@ -6,3 +6,4 @@
 :page-lang: en
 :page-link: /posts/en/:slug/
 :qute: true
+:page-toc: Table of contents
