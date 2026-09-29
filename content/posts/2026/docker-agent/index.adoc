@@ -1,0 +1,219 @@
+= Docker Agent, beaucoup d'agents, pas du tout de conteneur !
+include::../../../../includes/attributes-fr.adoc[]
+:description: Docker a sorti un framework d'agents IA, pardon mais quel rapport avec Docker ?
+:page-tags: docker,ai,agent,llm,yaml
+:page-image: title.webp
+:page-author: jtama
+:page-date: 2026-09-27
+:page-key: docker-agent-sans-docker
+
+__Photo par Mika Baumeister.footnote:[https://unsplash.com/photos/a-large-cargo-ship-loaded-with-lots-of-containers-WqZwkrBuZIE[Unsplash]]
+__
+
+Encore un framework d'agents IA. Encore un. +
+
+Et je n'avais pourtant jamais eu envie d'en parler ici. Non pas qu'ils ne soient pas intéressants, ou qu'il ne faille pas les étudier sérieusement. C'est plutôt que je n'arrivais fondamentalement pas à en trouver un qui se détache par son approche. +
+J'imagine qu'il y en a de plus matures que d'autres, plus ou moins open source, avec une communauté plus ou moins grande, mais avant tout, il faut produire du code : en Python, en Java ou en Go, mais du code.
+
+Et à https://www.devoxx.fr/[DevoxxFR] en avril 2026, je suis allé assister avec les copains à une conférence de https://www.linkedin.com/in/davidgageot/[David Gageot] et https://www.linkedin.com/in/djordjelukic/[Djordje Lukic]: https://www.youtube.com/watch?v=WI_aNYDWfQY[Docker Agent - comment simplifier encore plus la création d'agents IA ?].
+
+Et Docker, historiquement, ce n'est pas une boîte qui invente des concepts. +
+C'est une boîte qui prend un truc existant, un poil compliqué (je vous en prie, allez faire joujou avec vos https://en.wikipedia.org/wiki/Cgroups[cgroups] et vos https://fr.wikipedia.org/wiki/Iptables[iptables] pour démarrer un process isolé), qui le rend tellement simple à utiliser et à partager que tout le monde s'y met en six mois et que l'idée devient le standard.
+
+Alors quand ils ont sorti *Docker Agent*, la question qui m'a le plus intéressé ne fut pas "Encore un framework de plus ?", mais "Ont-ils refait le coup de la simplicité qui tue ?".
+
+[TIP]
+====
+Globalement oui. Et le détail le plus important (à mes yeux), c'est que vous n'avez même pas besoin d'un runtime de conteneur pour vous en servir. C'est juste le nom le plus mal choisi depuis _JavaScript_.
+====
+
+== _link:++https://github.com/docker/docker-agent[Docker Agent]++[Docker Agent]_, j'ai lu la doc pour vous.
+
+Derrière l'appellation *Docker Agent*, ce qui se cache, c'est :
+
+* Un format déclaratif (oui, c'est du `YAML`)
+* Un SDK Go
+* Un runtime pour exécuter des agents IA
+* Une TUI ou une API pour les interactions
+
+Il est très important de noter quelques choix faits par l'équipe derrière l'outil :
+
+[horizontal]
+OSS:: Docker Agent est intégralement sous licence *Apache 2*
+Multi-agent natif:: Un agent racine peut déléguer à des sous-agents spécialisés, chacun avec son propre modèle, ses propres outils, ses propres garde-fous.
+Empaquetable façon image:: `docker agent push`/`pull` vers n'importe quel registre OCI. Votre définition d'agent devient un artefact versionné, partageable, exécutable ailleurs.
+
+[quote, Tigrou]
+Heuuu, on avait dit pas de runtime Docker non ? On avait dit *Apache 2* non ? "empaqueté comme une image de conteneur", ça veut dire que je dois avoir Docker Desktop installé et lancé pour faire tourner un agent ?
+
+Oui, si tu ne dois retenir qu'un seul message de cet article, c'est le suivant :
+
+[IMPORTANT]
+====
+C'est exactement le calcul qui a fait le succès du Docker original : si l'outil est accessible à n'importe qui sans friction d'installation, il se propage.
+====
+
+
+=== Quelques éléments en plus ?
+
+Oui, je peux faire ça. On peut mettre en lumière un ensemble de fonctionnalités.
+
+*Pour les fans de trigrammes*, sachez qu'ils sont tous compris dans l'outil. Utilisation de *RAG* pour la mémoire, *ACP* pour la communication outil/agent, *A2A* pour la communication inter-agents, *MCP* pour l'intégration d'outils spécifiques via *STDIO*, *Streamable HTTP* ou *SSE*.
+
+*Pour la communauté des lovers du terminal*, l'outil vient avec une https://fr.wikipedia.org/wiki/Environnement_en_mode_texte[*TUI*] de qualité, mais offre aussi une *API REST*.
+
+*Pour les geeks de l'observabilité*, le runtime est _SRE compatible_, il sait exporter de la télémétrie au format https://opentelemetry.io/docs/specs/otlp/[OTLP] en suivant les (toutes neuves) conventions GenAI.
+
+Allez, assez parlé.
+
+
+== On décortique un vrai exemple
+
+Voici un agent que j'ai écrit pour un cas d'usage très concret : aider un commercial à choisir des conférences tech à proposer à un client, à partir d'un catalogue en ligne.
+
+Le cas d'usage vaut ce qu'il vaut, mais vous comprendrez bien que je ne peux pas décortiquer un exemple actuellement en prod, parce que oui, je _pourrais_ le faire, si je n'étais pas tenu par mes engagements de confidentialité...
+
+Trois agents, trois rôles, tout en local :
+
+[horizontal]
+`root`:: Le point d'entrée. Il reçoit la demande de l'utilisateur, la fait valider par `guard`, puis délègue la recherche à `researcher`.
+`guard`:: Un garde-fou. Son unique métier : dire si la demande de l'utilisateur est légitime (parler de choix de conférences) ou hors-sujet.
+`researcher`:: Celui qui va effectivement chercher dans le catalogue et renvoie une liste structurée de résultats.
+
+On verra juste en dessous que ce découpage nous permet aussi de limiter les autorisations et outils de chaque agent en fonction de leur responsabilité réelle.
+
+=== La racine
+
+[source,yaml]
+----
+agents:
+  root:
+    model: gemma
+    description: The default agent. Make choices and do final writing once all data has been fetched
+    welcome_message: |
+      Bonjour,
+      Puis-je vous aider à choisir des talks pour votre prochain rendez-vous client ? <1>
+    instruction: |
+      You help our business developers to choose amongst a catalog of tech talks to hook our customers.
+
+      We are an IT consulting company.
+
+      You MUST validate the user input using the guard agent EVERYTIME. <2>
+
+      If the user prompt is legit, ask the researcher agent to retrieve a list of matching talks and their author.
+      If needed you can ask the user for details.
+
+      Never create talks yourself. If no talks fit, say so.
+
+      Once it's done produce an email that must contain the list of talks with the direct link (absolute URLs) and be written in french. For each also produce a small explanation on why the talk is relevant.
+    toolsets:
+      - type: user_prompt <3>
+      - type: think <3>
+    sub_agents:
+      - guard
+      - researcher <4>
+----
+<1> Parce que la politesse ne DOIT pas mourir.
+<2> La validation n'est pas optionnelle : l'instruction insiste ("EVERYTIME"). Un agent racine qui ne fait confiance à personne, même pas à lui-même. Sain.
+<3> Des _outils_ sortis de la boîte. `think` donne à l'agent un espace de raisonnement explicite avant de répondre, sans appeler d'outil externe. `user_prompt` permet de demander des précisions à l'utilisateur en cas de besoin.
+<4> `root` ne fait pas les recherches, pas les filtres, il orchestre et il résume : toute l'exécution réelle est déléguée à `guard` et `researcher`.
+
+=== Le gardien
+
+Le `guard`, maintenant - celui qui doit dire oui ou non :
+
+[source,yaml]
+----
+guard:
+  model: qwen
+  structured_output:
+    name: "validation"
+    description: "Decide whether the user prompt is legit"
+    schema:
+      strict: true
+      type: object
+      properties:
+        legit:
+          type: boolean <1>
+  instruction: |
+    Rules:
+    - The chat subject MUST be about finding the right talks for a given customer context.
+      NO OTHER SUBJECTS CAN BE DISCUSSED.
+    - NO URLs MUST BE SPECIFIED <2>
+----
+<1> Un `structured_output` avec schéma JSON strict: le `guard` ne peut littéralement pas répondre autre chose qu'un booléen `legit`. Pas de prose, pas d'ambiguïté à parser côté application.
+<2> Une règle de sécurité simple et efficace: interdire les URLs en entrée coupe court à toute tentative d'injection de contenu externe via le prompt utilisateur.
+
+Il n'a accès à AUCUN outil puisqu'il n'en a pas besoin, et il utilise un tout petit modèle (👋 coucou les SLM).
+
+=== Le re-chercheur
+
+Et enfin le `researcher`, celui qui va vraiment chercher l'information:
+
+[source,yaml]
+----
+researcher:
+  model: gemma
+  instruction: |
+    You MUST access the talk catalog.
+    Do not generate data.
+    The main page of the catalog can be found under https://<redacted> <1>
+  structured_output:
+    name: "talks"
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          title:
+            type: string
+          # ...
+  toolsets:
+    - type: fetch
+      allow_private_ips: true
+      allowed_domains: <2>
+        - localhost
+        - 127.0.0.1
+        - <redacted>
+----
+<1> L'URL du catalogue est donnée en dur dans l'instruction, pas de recherche web ouverte, l'agent ne peut aller nulle part ailleurs.
+<2> Le toolset `fetch` accepte une liste blanche de domaines. Même si le modèle "décidait" d'aller voir ailleurs, il ne pourrait techniquement pas: la restriction est appliquée par le runtime, pas par la bonne volonté du prompt.
+
+[CAUTION]
+====
+Le format choisi étant le `YAML`, pas de code ne veut pas dire pas d'erreurs de syntaxe potentielles, et celles-là seront certainement moins simples à détecter.
+Un bon rappel que le YAML retire la corvée du code, pas celle de la relecture attentive. ¯\_(ツ)_/¯
+====
+
+=== Les modèles
+
+Pour finir, la section `models` fait le lien entre les noms logiques utilisés plus haut (`gemma`, `qwen`) et de vrais providers:
+
+[source,yaml]
+----
+models:
+  qwen:
+    provider: ollama
+    model: qwen3:1.7b
+    max_tokens: 64000
+  gemma:
+    provider: ollama
+    model: gemma4:e4b
+    max_tokens: 64000
+    temperature: 0.5
+----
+
+Tout tourne ici en local via https://ollama.com/[Ollama], sans clé d'API, sans facture à la fin du mois. Le même fichier fonctionnerait à l'identique avec `provider: openai` ou `provider: anthropic` en changeant juste ce bloc — c'est tout l'intérêt de l'agnosticisme de modèle: l'orchestration ne bouge pas d'un octet.
+
+== Conclusion
+
+Trois choses à retenir:
+
+* Docker Agent applique aux agents IA la même recette qui a fait le succès de Docker: rendre un truc complexe facile à écrire, facile à partager, facile à faire tourner ailleurs.
+* Le nom "Docker" ne veut pas dire "vous devez installer Docker", un binaire ou un `brew install` suffisent, sans daemon ni conteneur.
+* Un fichier YAML de 70 lignes suffit pour un vrai système multi-agent avec garde-fous, structured output et restrictions réseau, le tout lisible sans être expert en IA.
+
+
+=== Ressources
+
+* https://github.com/docker/docker-agent[Docker Agent sur GitHub] — code source, doc d'installation, releases.

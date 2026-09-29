@@ -144,4 +144,4 @@ Maintenant, à vous de jouer. Lancez le scanner sur votre _legacy_, et contemple
 
 ---
 
-*P.S.*: Vous l'aurez peut-être remarqué, ce plugin est distribué sur Maven Central (`io.github.jtama:project-graph-generator`). Si vous vous demandez comment automatiser facilement toute la chaîne de publication sans vous arracher les cheveux. Je vous recommande de jeter un œil à link:{site.page('posts/2025/jreleaser/index.adoc').url}[mon tutoriel sur JReleaser].
+*P.S.*: Vous l'aurez peut-être remarqué, ce plugin est distribué sur Maven Central (`io.github.jtama:project-graph-generator`). Si vous vous demandez comment automatiser facilement toute la chaîne de publication sans vous arracher les cheveux. Je vous recommande de jeter un œil à link:{=site.page('posts/2025/jreleaser/index.adoc').url}[mon tutoriel sur JReleaser].
