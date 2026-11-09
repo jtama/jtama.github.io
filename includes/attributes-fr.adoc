@@ -4,6 +4,6 @@
 :icons: font
 :page-layout: post
 :page-lang: fr
-:qute: true
-:content-toc: true
 :page-toc: Table des matières
+:page-series-here: vous êtes ici
+:qute:

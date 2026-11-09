@@ -152,3 +152,101 @@
         }
     }
 }
+
+// Series block (overrides the roq-series plugin partial, see templates/partials/roq-series.html)
+.series {
+    max-width: 1600px;
+    margin: 0 auto 1rem;
+    padding: 0.25rem 0 0.25rem 0.9rem;
+    font-size: 0.85rem;
+    color: var(--asciidoc-color-gray-70);
+
+    summary {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.4rem;
+        cursor: pointer;
+        list-style: none;
+
+        &::-webkit-details-marker {
+            display: none;
+        }
+
+        &::before {
+            content: "▸";
+            font-size: 0.75rem;
+            color: var(--asciidoc-color-gray-30);
+            transition: transform 0.2s ease;
+        }
+
+        &:hover .series-title {
+            color: var(--asciidoc-color-brand-primary);
+        }
+    }
+
+    &[open] {
+        border-left-color: #F87171;
+
+        summary::before {
+            transform: rotate(90deg);
+        }
+    }
+
+    .series-intro::after {
+        content: " ·";
+    }
+
+    .series-title {
+        font-weight: 600;
+        color: var(--asciidoc-body-font-color);
+        transition: color 0.2s ease;
+    }
+
+    ol {
+        list-style: none;
+        margin: 0.5rem 0 0.25rem;
+        padding: 0 0 0 1rem;
+    }
+
+    li {
+        margin: 0;
+        padding: 0.15rem 0;
+        line-height: 1.5;
+    }
+
+    li > a,
+    li.current {
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+
+        &:hover .title {
+            color: var(--asciidoc-color-brand-primary);
+            text-decoration: underline;
+        }
+    }
+
+    .index {
+        flex: none;
+        font-size: 0.75rem;
+        color: #F87171;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .current .title {
+        font-weight: 600;
+        color: var(--asciidoc-body-font-color);
+    }
+
+    .here {
+        font-size: 0.75rem;
+        font-style: italic;
+        color: var(--asciidoc-color-gray-30);
+    }
+}

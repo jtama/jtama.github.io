@@ -6,7 +6,6 @@ include::../../../../../includes/attributes-fr.adoc[]
 :page-image: Panopticon.webp
 :page-tags: roq,theme,layout,*-as-code,HowTos
 :page-series: ROQ
-:qute:
 
 Roq, as many other static site generators, uses a template engine to generate the final HTML. The template engine used by Roq is https://quarkus.io/guides/qute[Qute]. It's a powerful engine that -amongst other things- leverages template inheritance.
 

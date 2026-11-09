@@ -6,6 +6,7 @@ include::../../../../includes/attributes-en.adoc[]
 :page-author: jtama
 :page-date: 2026-09-27
 :page-key: docker-agent-sans-docker
+:page-series: Docker not Docker Inc
 
 __Photo by Mika Baumeister.footnote:[https://unsplash.com/photos/a-large-cargo-ship-loaded-with-lots-of-containers-WqZwkrBuZIE[Unsplash]]
 __

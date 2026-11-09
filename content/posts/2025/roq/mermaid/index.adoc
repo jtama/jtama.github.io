@@ -7,7 +7,6 @@ include::../../../../../includes/attributes-fr.adoc[]
 :page-date: 2025-05-14
 :page-key: roq-adding-mermaid-to-your-blog
 :page-series: ROQ
-:qute:
 
 == Having wunderbar diagrams in your blog
 

@@ -4,6 +4,7 @@
 :icons: font
 :page-layout: post
 :page-lang: en
-:page-link: /posts/en/:slug/
-:qute: true
 :page-toc: Table of contents
+:page-series-here: you are here
+:page-link: /posts/en/:slug/
+:qute:

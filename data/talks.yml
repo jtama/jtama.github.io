@@ -14,6 +14,8 @@
   post: https://dev.to/onepoint/de-la-programmation-orientee-objet-vers-la-programmation-orientee-donnees-un-guide-pratique-4bh2
   tags: [java]
   conferences:
+    - name: Devquest 2026
+      video: https://www.youtube.com/watch?v=VUpaGwp4zZo
     - name: Touraine Tech 2026
 - title: "OpenRewrite: Refactoring as code"
   description: |
@@ -38,6 +40,9 @@
   code: https://github.com/jtama/openrewrite-refactoring-as-code
   post: https://dev.to/onepoint/openrewrite-refactoring-as-code-2p48
   conferences:
+    - name: BDX I/O 2026
+    - name: Devquest 2026
+      video: https://www.youtube.com/watch?v=Kwp_vylButQ
     - name: BDX Jug (Mars 2026)
     - name: DevoxxFR 2025
       video: https://youtu.be/aYHb7sLhsoQ?si=8qyI-LAf1nTnMOzp

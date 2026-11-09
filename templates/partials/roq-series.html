@@ -1,0 +1,31 @@
+{@io.quarkiverse.roq.frontmatter.runtime.model.Page page}
+
+{#if cdi:series}
+{#let series=cdi:series.get(page)}
+{#if series}
+<details class="series">
+  <summary>
+    <span class="series-title">{=series:header(series.title, series.documents.size)}</span>
+  </summary>
+  <ol>
+    {#for doc in series.documents}
+    {#if doc.id == page.id}
+    <li class="current" aria-current="page">
+      <span class="index">{#if doc_count < 10}0{/if}{=doc_count}</span>
+      <span class="title">{=doc.title}</span>
+      <span class="here">← {=page.data.series-here}</span>
+    </li>
+    {#else}
+    <li>
+      <a href="{=doc.url}">
+        <span class="index">{#if doc_count < 10}0{/if}{=doc_count}</span>
+        <span class="title">{=doc.title}</span>
+      </a>
+    </li>
+    {/if}
+    {/for}
+  </ol>
+</details>
+{/if}
+{/let}
+{/if}

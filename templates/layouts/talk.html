@@ -22,22 +22,27 @@ layout: main
                     <div class="relative z-10 bg-white/90 p-6 shadow-sm border border-stone-200 rounded-lg">
                         {=page.data.description.asciidocify}
 
-                        {#if page.data.containsKey('slides')}<a href="{=page.data.slides}" target="_blank"><i class="fa-solid fa-film"></i> Les
-                        slides</a>{/if}
+                        <h3>Ressources :</h3>
+                        <ul>
+                        {#if page.data.containsKey('slides')}
+                            <li><a href="{=page.data.slides}" target="_blank"><i class="fa-solid fa-film"></i> Les slides</a></li>
+                        {/if}
 
-                        {#if page.data.containsKey('code')}<a href="{=page.data.code}" target="_blank"><i
-                            class="fa-brands fa-square-github"></i>
-                        Le dépôt git</a>{/if}
+                        {#if page.data.containsKey('code')}
+                            <li><a href="{=page.data.code}" target="_blank"><i class="fa-brands fa-square-github"></i> Le dépôt git</a></li>
+                            {/if}
 
-                        {#if page.data.containsKey('post')}<a href="{=page.data.post}" target="_blank"><i class="fa-solid fa-pen-fancy"></i>
-                        L'article</a>{/if}
+                        {#if page.data.containsKey('post')}
+                            <li><a href="{=page.data.post}" target="_blank"><i class="fa-solid fa-pen-fancy"></i> L'article</a></li>
+                            {/if}
+                        </ul>
 
                         <h3>Donné dans les conférences suivantes :</h3>
                         <ul>
                             {#for conference in page.data.conferences}
                             <li>
                                 <div class="event-conference">
-                                    <strong>"{=conference.name}</strong> <span>{#if conference.containsKey('video')}<a
+                                    <strong>{=conference.name}</strong> <span>{#if conference.containsKey('video')}<a
                                         href="{=conference.video}" target="_blank"><i
                                         class="fa-brands fa-youtube"></i> La captation</a>{/if}</span>
                                 </div>
