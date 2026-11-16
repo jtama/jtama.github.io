@@ -1,0 +1,19 @@
+# syntax=docker/sandbox-kit:3
+schemaVersion: "3"
+displayName: Java 27 + Maven
+description: Java 27
+sourceUrl: https://github.com/cli/cli
+licenses: [MIT]
+
+kind: mixin
+
+provides: ["java@27", "maven@3"]
+
+capabilities:
+  - type: com.docker.sandbox/lifecycle@1
+    config:
+      install:
+        - command: /usr/local/lib/java-maven/setup.sh
+          user: "0"
+
+dockerfile: Dockerfile

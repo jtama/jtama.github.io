@@ -1,3 +1,40 @@
+// Fold / unfold the whole TOC panel; the choice is remembered across pages.
+(function () {
+    const wrapper = document.querySelector('.guide-toc-wrapper');
+    const button = wrapper && wrapper.querySelector('.guide-toc-title');
+    if (!button) {
+        return;
+    }
+    const STORAGE_KEY = 'guide-toc-collapsed';
+
+    function setCollapsed(collapsed) {
+        wrapper.classList.toggle('is-collapsed', collapsed);
+        button.setAttribute('aria-expanded', String(!collapsed));
+        if (!collapsed) {
+            // sub-lists opened while hidden were measured at 0px: measure them again
+            wrapper.querySelectorAll('.toc-group.is-open > ul').forEach(function (ul) {
+                ul.style.maxHeight = ul.scrollHeight + 'px';
+            });
+        }
+    }
+
+    try {
+        setCollapsed(localStorage.getItem(STORAGE_KEY) === 'true');
+    } catch (e) {
+        // storage unavailable: keep the TOC unfolded
+    }
+
+    button.addEventListener('click', function () {
+        const collapsed = !wrapper.classList.contains('is-collapsed');
+        setCollapsed(collapsed);
+        try {
+            localStorage.setItem(STORAGE_KEY, String(collapsed));
+        } catch (e) {
+            // ignore
+        }
+    });
+})();
+
 (function () {
     const toc = document.querySelector('.guide-toc-wrapper .toc');
     if (!toc) {
