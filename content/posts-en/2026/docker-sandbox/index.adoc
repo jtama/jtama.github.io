@@ -2,13 +2,13 @@
 include::../../../../includes/attributes-en.adoc[]
 :description: Your agent runs in YOLO mode on your laptop. What if we gave it a box, some rules, and a corporate policy?
 :page-tags: docker,ai,agent,sandbox,security
-:page-image: title.webp
+:page-image: just-pics-national-history-museum-4314035_1920.webp
 :page-author: jtama
 :page-date: 2026-11-06
 :page-key: docker-sandboxes-kits
 :page-series: Docker not Docker Inc
 
-__Photo by Dmitry Kropachev.footnote:[https://unsplash.com/photos/a-large-skeleton-of-a-fish-hanging-from-a-ceiling-OP0zXwuxpYM?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText[Unsplash]]
+__Photo by Just-pics.footnote:[https://pixabay.com/users/just-pics-12939679/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=4314035[Pixabay]]
 __
 
 [TIP]
@@ -20,6 +20,8 @@ Many thanks to claude for its translation. It's been reviewed but may well conta
 
 Your AI agent has no business on your machine. Put it in a sandbox, describe what it's allowed to do in a YAML file, and version all that stuff for me. +
 Your CISO will thank you (don't forget to mention me). Or not, but they'll sleep better.
+
+And let's get the illustration question out of the way: it's a whale (wink, wink), and you can see its rib _cage_. Haha, hum.
 
 == YOLO mode is fun until the `rm -rf`
 
@@ -46,7 +48,7 @@ The problem isn't that the agent is malicious, let's not grant it a morality it 
 # Whatever your OS.<1>
 mise use github:docker/sbx-releases@latest
 ----
-<1> Did I ever tell you I like mise?
+<1> Did I ever tell you I like link:https://mise-versions.jdx.dev/[mise]?
 
 == The sandbox
 
@@ -63,9 +65,20 @@ Neighbouring sandboxes:: They don't talk to each other. They don't exist. What a
 And inside? The agent does whatever it wants: `sudo`, `apt install`, `docker build`, `docker run`... It can trash its VM as much as it likes, that's kind of the point.
 
 [quote, Attentive and curious reader]
-Wait, if the secret is injected by a proxy, what's in the `GH_TOKEN` variable on the agent side?
+Wait, if the secret is injected by a proxy, what's in the `GH_TOKEN` variable on the agent side? And what if I have a `.env` file in my project folder?
 
-A dummy value. The agent can print it, log it, post it on Pastebin if it feels like it (no it can't, the network rules prevent it): it's worthless. The real key is only added to requests heading to the declared domains.
+As for the secret, it's a dummy value. The agent can print it, log it, post it on Pastebin if it feels like it (no it can't, the network rules prevent it): it's worthless. The real key is only added to requests heading to the declared domains.
+
+[WARNING]
+====
+If you decide to mount your project directory in the sandbox, everything in it will be in the sandbox. Your project's `.env` file will be accessible there.
+
+Same goes for the `.git` folder: the agent commits straight into your repository, and its commits show up instantly on your machine. It can also drop a little script into `.git/hooks`, which will run *outside* the sandbox the next time you run `git commit`. Oops.
+
+If that bugs you (it bugs me), start the _sandbox_ with `--clone`: the agent works on a standalone clone, and you're the one fetching its work with a `git fetch sandbox-<name>`, when you decide to.
+
+Whatever happens, and without an explicit action on your part, the agent won't be able to _push_ its changes.
+====
 
 On the network side, the local policy is managed with `sbx policy`:
 
@@ -164,7 +177,7 @@ The dev image your team has been maintaining for two years, with the right JDK, 
 
 [source,dockerfile]
 ----
-FROM eclipse-temurin:21-jdk
+FROM maven:3-eclipse-temurin-27
 RUN apt-get update && apt-get install -y git curl
 COPY corp-ca.crt /usr/local/share/ca-certificates/
 ----
@@ -175,10 +188,12 @@ Same base, turned into a `mixin`. The Dockerfile starts again from an image prov
 
 [source,dockerfile]
 ----
-FROM eclipse-temurin:21-jdk <1>
+FROM maven:3-eclipse-temurin-27 as src<1>
 
 FROM scratch <2>
 COPY --from=src /opt/java/openjdk /opt/java/openjdk
+COPY --from=src /usr/share/maven /usr/share/maven
+
 COPY corp-ca.crt /usr/local/share/ca-certificates/ <3>
 COPY --chmod=0755 setup.sh /usr/local/lib/java-maven/setup.sh <4>
 ----
@@ -244,10 +259,10 @@ Locally, `sbx` also accepts the folder directly and, behind your back, starts a 
 
 [source,shell]
 ----
-docker buildx build -f my-workload/my-workload.yaml -t my-workload:dev my-workload/ # <1>
+docker buildx build -f my-workload/my-workload.yaml -t my-workload:dev my-workload/  --push # <1>
 sbx run --kit my-workload:dev # <2>
 ----
-<1> The YAML is passed with `-f`, it's the one driving the build through the _frontend_.
+<1> The YAML is passed with `-f`, it's the one driving the build through the _frontend_. Careful: if you don't push, it doesn't work.
 <2> We can now use the kit.
 
 [CAUTION]
@@ -455,6 +470,7 @@ public class BuildMixinKit implements Command<CommandInvocation> {
     }
 }
 ----
+====
 
 If you have the `dockerfile`, the `setup.sh` and the descriptor (in a `java` folder):
 
@@ -467,14 +483,12 @@ Nope.
 ----
     ○ claude — now ships as a kit; resolving docker.io/sbx/claude:latest
 
-  error: resolve kits: kit "quay.io/<namespace>/java27:dev": kit "quay.io/<namespace>/java27:dev" cannot be installed — its source is not in your allowlist; current kit.allowedSources: docker.io/, dhi.io/; if administrator policy permits, allow this kit's publisher and re-run your original command; otherwise ask your administrator to update the policy; allowing any remote source is not recommended
-    try: sbx settings set kit.allowedSources '["docker.io/","dhi.io/","quay.io/<namespace>/java27/"]'
+  error: resolve kits: kit "quay.io/<namespace>/sbx-mixin-kit-java27:dev": kit "quay.io/<namespace>/sbx-mixin-kit-java27:dev" cannot be installed — its source is not in your allowlist; current kit.allowedSources: docker.io/, dhi.io/; if administrator policy permits, allow this kit's publisher and re-run your original command; otherwise ask your administrator to update the policy; allowing any remote source is not recommended
+    try: sbx settings set kit.allowedSources '["docker.io/","dhi.io/","quay.io/<namespace>/sbx-mixin-kit-java27"]'
      or: sbx settings set kit.allowedSources '["*"]'
 ----
 
 #SecuredByDesign. Isn't that beautiful?
-
-====
 
 == One policy, a thousand workstations
 
@@ -552,10 +566,10 @@ I haven't tested the organization governance part myself. This whole section com
 Three things to remember:
 
 * The agent has every right inside its VM, and none outside. The network is closed by default and secrets never get into the sandbox.
-* Kits are regular OCI images: built with `buildx`, pushed to your registry, based on your existing Dockerfiles. Nothing new to learn tooling-wise.
+* Kits are regular OCI images: built with `buildx` or `podman`, pushed to your registry, based on your existing Dockerfiles. Nothing new to learn tooling-wise.
 * A published kit set, pinned by digest and checked on every update, is a security policy you can version and review like code.
 
-I've only scratched the surface: lifecycle hooks, long-running sandboxes, Docker Cloud Sandboxes running the same kits somewhere other than your laptop... There's enough for a second article.
+Obviously, there's a lot more to say: lifecycle hooks, long-running sandboxes, Docker Cloud Sandboxes running the same kits somewhere other than your laptop... But that's another story.
 
 === Resources
 

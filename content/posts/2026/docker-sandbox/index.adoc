@@ -43,7 +43,7 @@ Le problème n'est pas que l'agent soit malveillant, ne lui prêtons pas une mor
 # Quelque soit votre OS.<1>
 mise use github:docker/sbx-releases@latest
 ----
-<1> Je vous ai déjà dit que j'aime bien mise ?
+<1> Je vous ai déjà dit que j'aime bien https://mise-versions.jdx.dev/[mise] ?
 
 == Le bac à sable
 
