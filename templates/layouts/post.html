@@ -4,6 +4,13 @@ asciidoc-attributes:
   notitle: true
 ---
 {@io.quarkiverse.roq.frontmatter.runtime.model.Page page}
+<div class="post-shell">
+<aside class="guide-toc-wrapper">
+    <button type="button" class="guide-toc-title" aria-expanded="true" aria-controls="guide-toc">
+        <span>{=page.data.toc}</span>
+    </button>
+    <nav class="toc" id="guide-toc" aria-label="{=page.data.toc}">{=page.tocHtml}</nav>
+</aside>
 <main class="w-full sm:max-w-9/10 mx-auto mb-20 px-3 sm:px-4">
     <article class="art-nouveau-frame">
         <div class="p-4 sm:p-8 md:p-20 bg">
@@ -40,13 +47,7 @@ asciidoc-attributes:
                 {#i18n page/}
                 {#include partials/roq-series /}
                 <div class="post-layout">
-                    <div>
-                        {#insert /}
-                    </div>
-                    <div class="guide-toc-wrapper hide-tablet">
-                        <div class="guide-toc-title">{=page.data.toc}</div>
-                        <div class="toc">{=page.tocHtml}</div>
-                    </div>
+                    {#insert /}
                 </div>
             </div>
             <div class="mt-20 pt-12 border-t border-stone-100 flex items-center justify-between">
@@ -90,3 +91,4 @@ asciidoc-attributes:
     <span style="display: none" class="text-orange-500"></span>
     <span style="display: none" class="text-violet-400"></span>
 </main>
+</div>

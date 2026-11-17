@@ -1,18 +1,32 @@
 .post-layout {
-    display: grid;
-    grid-template-columns: 1fr 350px;
-    gap: 2.5rem;
     padding: 2rem;
     max-width: 1600px;
     margin-inline: auto;
 
-    @media screen and (max-width: 1200px) {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
     @media screen and (max-width: 768px) {
-        grid-template-columns: 1fr;
         padding: 1rem;
+    }
+}
+
+// Page shell for posts: on wide screens the TOC lives in a left column,
+// outside the article frame, so it never eats into the reading width.
+.post-shell {
+    @media screen and (min-width: 1201px) {
+        display: grid;
+        grid-template-columns: 17rem minmax(0, 1fr);
+        gap: 2rem;
+        padding-inline: 1.5rem;
+
+        > main {
+            max-width: none;
+            margin-inline: 0;
+            padding-inline: 0;
+        }
+
+        // TOC folded by the user (see guide-toc-scroll.js): only a thin rail remains
+        &:has(.guide-toc-wrapper.is-collapsed) {
+            grid-template-columns: auto minmax(0, 1fr);
+        }
     }
 }
 
@@ -26,13 +40,61 @@
     }
 
     .guide-toc-title {
-        display: block;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        text-align: left;
+        font-family: inherit;
         font-weight: 600;
         font-size: 0.875rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin-bottom: 1rem;
         color: var(--asciidoc-body-font-color);
+
+        &::after {
+            content: "";
+            width: 0.45rem;
+            height: 0.45rem;
+            border-right: 2px solid currentColor;
+            border-bottom: 2px solid currentColor;
+            transform: rotate(45deg);
+            transition: transform 0.2s ease;
+        }
+
+        &:hover {
+            color: var(--asciidoc-color-brand-primary);
+        }
+
+        // the folded button is rotated 180deg, so this renders as a chevron pointing right
+        &[aria-expanded="false"]::after {
+            transform: rotate(135deg);
+        }
+    }
+
+    // No TOC for this page: no need for a toggle either
+    &:has(.toc:empty) .guide-toc-title {
+        display: none;
+    }
+
+    &.is-collapsed {
+        .guide-toc-title {
+            margin-bottom: 0;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            padding: 0.75rem 0.4rem;
+            background-color: var(--asciidoc-color-smoke-50);
+            border: 1px solid var(--asciidoc-color-smoke-90);
+            border-radius: 0.5rem;
+        }
+        .toc {
+            display: none;
+        }
     }
 
     .toc {

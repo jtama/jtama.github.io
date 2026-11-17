@@ -872,8 +872,10 @@
 .doc .listingblock.wrap pre > code,
 .doc .listingblock.wrap pre:not(.highlight),
 .doc:not(.pdf-converter) table.tableblock pre > code,
-.doc:not(.pdf-converter) table.tableblock pre:not(.highlight) {
+.doc:not(.pdf-converter) table.tableblock pre:not(.highlight),
+.doc .literalblock pre {
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .doc.pdf-converter table.tableblock pre {

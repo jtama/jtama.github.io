@@ -1,0 +1,580 @@
+= Docker SBX: let the agent wreck everything, just not at your place
+include::../../../../includes/attributes-en.adoc[]
+:description: Your agent runs in YOLO mode on your laptop. What if we gave it a box, some rules, and a corporate policy?
+:page-tags: docker,ai,agent,sandbox,security
+:page-image: just-pics-national-history-museum-4314035_1920.webp
+:page-author: jtama
+:page-date: 2026-11-06
+:page-key: docker-sandboxes-kits
+:page-series: Docker not Docker Inc
+
+__Photo by Just-pics.footnote:[https://pixabay.com/users/just-pics-12939679/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=4314035[Pixabay]]
+__
+
+[TIP]
+====
+Many thanks to claude for its translation. It's been reviewed but may well contain errors. Feel free to PR ;)
+====
+
+== TL;DR;
+
+Your AI agent has no business on your machine. Put it in a sandbox, describe what it's allowed to do in a YAML file, and version all that stuff for me. +
+Your CISO will thank you (don't forget to mention me). Or not, but they'll sleep better.
+
+And let's get the illustration question out of the way: it's a whale (wink, wink), and you can see its rib _cage_. Haha, hum.
+
+== YOLO mode is fun until the `rm -rf`
+
+A few weeks ago, I told you about link:{=site.page('posts/2026/docker-agent/index.adoc').url}[Docker Agent], Docker's agent framework that doesn't need Docker. +
+Today I'm doing it again with another tool backed by https://www.docker.com/[Docker Inc], which doesn't use the docker runtime. Nope.
+
+Yet another tool with a very well-chosen name. Granted, I'm not the sharpest tool in the shed, but it took me a while to figure out that _SBX_ meant _sandbox_.
+
+Do we say Redhat Hibernate or HashiCorp Terraform? No, I don't think so. Please *_Docker_*: could you stop putting _docker_ in the name of every single one of your products?
+
+On the other hand, you really can run _docker agent_ inside _docker sbx_ and ask it to start _docker_ containers, but that's another story.
+
+Let's be honest for two minutes. How many of you have already started a coding agent with the option that disables every confirmation, because approving `grep` 47 times is a pain? +
+Not me. Because I'm a big paranoid, but boy does it get on my nerves, especially since I still end up approving stuff I don't 100% understand.
+And yet on my laptop there are _SSH_ keys, API keys, git credentials, and so on.
+
+And just last week, an agent asked me whether it could kindly, just like that, run a `find` on `/` (_«Oh no, I can't find what I'm looking for, I'll go look higher up in the tree, let's say ALL the way up?»_) +
+The problem isn't that the agent is malicious, let's not grant it a morality it doesn't have. The problem is that it executes what it reads. A booby-trapped `README` in a dependency, a carefully crafted GitHub issue, and your agent kindly sends your `~/.ssh/id_ed25519` to someone very grateful.
+
+*Docker Sandboxes* (the CLI is called `sbx`) tackles this problem with a simple idea: the agent has every right, but inside a box whose walls you set.
+
+[source,shell]
+----
+# Whatever your OS.<1>
+mise use github:docker/sbx-releases@latest
+----
+<1> Did I ever tell you I like link:https://mise-versions.jdx.dev/[mise]?
+
+== The sandbox
+
+Each _sandbox_ runs in its own VM. Not a container shared with the rest of your machine: a VM. Four walls and an armored door.
+
+Here's what you get by default:
+
+[horizontal]
+Files:: Only the current folder is mounted (read/write with `sbx run`). The rest of your disk doesn't exist for the agent. You can even trigger a repository clone inside the sandbox.
+Network:: All outbound TCP is blocked until a rule allows it. UDP disabled, ICMP blocked, and DNS goes through an internal resolver that enforces the policy.
+Secrets:: None by default. When you provide one (`sbx secret set`), a host-side proxy injects it into outgoing HTTP headers. The agent never sees the real value. For `git` too, yes, too.
+Neighbouring sandboxes:: They don't talk to each other. They don't exist. What are you talking about?
+
+And inside? The agent does whatever it wants: `sudo`, `apt install`, `docker build`, `docker run`... It can trash its VM as much as it likes, that's kind of the point.
+
+[quote, Attentive and curious reader]
+Wait, if the secret is injected by a proxy, what's in the `GH_TOKEN` variable on the agent side? And what if I have a `.env` file in my project folder?
+
+As for the secret, it's a dummy value. The agent can print it, log it, post it on Pastebin if it feels like it (no it can't, the network rules prevent it): it's worthless. The real key is only added to requests heading to the declared domains.
+
+[WARNING]
+====
+If you decide to mount your project directory in the sandbox, everything in it will be in the sandbox. Your project's `.env` file will be accessible there.
+
+Same goes for the `.git` folder: the agent commits straight into your repository, and its commits show up instantly on your machine. It can also drop a little script into `.git/hooks`, which will run *outside* the sandbox the next time you run `git commit`. Oops.
+
+If that bugs you (it bugs me), start the _sandbox_ with `--clone`: the agent works on a standalone clone, and you're the one fetching its work with a `git fetch sandbox-<name>`, when you decide to.
+
+Whatever happens, and without an explicit action on your part, the agent won't be able to _push_ its changes.
+====
+
+On the network side, the local policy is managed with `sbx policy`:
+
+[source,shell]
+----
+sbx policy ls # <1>
+sbx policy allow ... # <2>
+----
+<1> Lists the active rules. If your organization enforces a policy, the first line tells you so.
+<2> Adds an allow rule on your machine. I'll let you read `sbx policy allow --help` rather than copy the syntax here, it still moves quite a bit.
+
+Yes, there's a whole part of the tooling dedicated to enterprise governance of this kind of question. It's really a feature that should convince any CIO to look at the tool, but I couldn't test it, so there you go.
+
+== A workload, some mixins, and Lego
+
+Opening network ports by hand for every project doesn't scale. That's where *kits* come in.
+
+A kit is an OCI image, as plain as can be. You can perfectly well use its images with _Podman_, for instance. +
+What makes it special: a manifest annotation describing what the kit *asks for* (domains, secrets, volumes, install hooks, instructions for the agent). There are two kinds:
+
+[horizontal]
+workload:: The base environment and the launch command (an agent, a shell). Only one per sandbox. What you'd usually associate with a container image.
+mixin:: An add-on: a tool, its network rule, its secret, some context for the agent. As many as you want.
+
+[source,shell]
+----
+sbx run docker.io/sbx/docker-agent:latest \ <1>
+  --kit docker.io/jtama/sbx-mixin-kit-java27:dev # <2>
+----
+<1> The base image: _docker-agent_, in a yolo flavour. Because.
+<2> A mixin that adds maven and java 27, because I'm worth it.
+
+The real benefit is that each mixin carries *its own* rules. Here's the one for the GitHub CLI, taken from the spec announcement:
+
+[source,yaml]
+----
+capabilities:
+  - type: com.docker.sandbox/network-policy@2
+    config:
+      runtime:
+        allow:
+          - github.com
+          - hosts: [api.github.com]
+            methods: [GET, HEAD, POST, PATCH, PUT, DELETE]
+        deny: # <1>
+          - hosts: [api.github.com]
+            methods: [DELETE]
+            paths: ["/repos/**"]
+
+  - type: com.docker.sandbox/credential@1
+    optional: true # <2>
+    config:
+      service: github
+      phase: runtime
+      apiKey:
+        name: GH_TOKEN
+        proxyManaged: true # <3>
+        inject:
+          - {domain: api.github.com, header: Authorization, format: "Bearer %s"}
+----
+<1> `deny` wins over `allow`. The agent can open PRs, comment, push, but not delete a repository. For that alone, I'm sold.
+<2> The kit starts even if you haven't provided a token.
+<3> The famous proxy: the real value never enters the sandbox.
+
+When you stack several kits, the order of the `--kit` flags doesn't matter at all. Composition follows the `provides`/`requires` graph each kit declares. Network rules add up, hooks run in dependency order, and the instructions for the agent merge into a single document.
+
+Quick quiz. The `sbx-kit-claude` workload provides Claude Code. You add a home-made mixin that also installs Claude Code, in another version. What happens?
+
+[%collapsible]
+====
+It refuses to start. Two kits declaring the same `provides` is an error, not a "last one wins". +
+Same thing if a `requires` isn't satisfied within the set: `sbx` won't go fetch the missing piece on its own. And if a mandatory request can't be granted, the agent doesn't start at all, rather than starting with more or fewer rights than planned.
+====
+
+== Creating a mixin kit
+
+Your Dockerfiles aren't going in the bin.
+
+In its latest version, a kit is ultimately just an OCI image with annotations. So we can reuse what we already know and, above all, take advantage of the gargantuan heritage of existing images.
+
+A kit is a folder with at least two files that <<usually,usually*>> share the same name:
+
+[source,text]
+----
+my-mixin/
+├── my-mixin.yaml
+└── my-mixin.dockerfile
+----
+
+[[usually]]
++*+ That's the convention used by `sbx kit build`, but you'll see later on that these file names get changed at build time.
+
+=== Before
+
+The dev image your team has been maintaining for two years, with the right JDK, the right Maven, the internal PKI certificate:
+
+[source,dockerfile]
+----
+FROM maven:3-eclipse-temurin-27
+RUN apt-get update && apt-get install -y git curl
+COPY corp-ca.crt /usr/local/share/ca-certificates/
+----
+
+=== After
+
+Same base, turned into a `mixin`. The Dockerfile starts again from an image provided by Docker that already ships the agent:
+
+[source,dockerfile]
+----
+FROM maven:3-eclipse-temurin-27 as src<1>
+
+FROM scratch <2>
+COPY --from=src /opt/java/openjdk /opt/java/openjdk
+COPY --from=src /usr/share/maven /usr/share/maven
+
+COPY corp-ca.crt /usr/local/share/ca-certificates/ <3>
+COPY --chmod=0755 setup.sh /usr/local/lib/java-maven/setup.sh <4>
+----
+<1> The base doesn't change, it gives us the FS.
+<2> We start again from a blank image.
+<3> We copy the certificate.
+<4> A small script that sets the java env variables and puts java on the path.
+
+.`setup.sh`
+[%collapsible]
+====
+[source,shell]
+----
+include::../../../posts/2026/docker-sandbox/_java/setup.sh[]
+----
+====
+
+And the matching descriptor:
+
+.`spec.yaml`
+[%collapsible]
+====
+[source,yaml]
+----
+# syntax=docker/sandbox-kit:3
+schemaVersion: "3"
+displayName: Java 27 + Maven
+description: Java 27
+sourceUrl: https://github.com/cli/cli
+licenses: [MIT]
+kind: mixin
+provides: ["java@27", "maven@3"] <1>
+
+capabilities:
+  - type: com.docker.sandbox/lifecycle@1 <2>
+    config:
+      install:
+        - command: /usr/local/lib/java-maven/setup.sh
+          user: "0"
+
+dockerfile: Dockerfile
+----
+<1> Declares what the kit provides.
+<2> Adds a capability to the kit, in this case on the lifecycle.
+====
+
+=== Using the kit _without building it_
+
+._spoiler alert_
+[%collapsible]
+====
+Yes, we actually build it.
+====
+
+[source, console]
+----
+sbx run ./my-kit
+----
+
+Locally, `sbx` also accepts the folder directly and, behind your back, starts a _sbx-kit-builder_ micro-VM, which does contain a docker runtime, and builds your kit. The result, however, is only available in the _sandbox_ you just created. Getting at it to export it takes some contortions, but of course anything is always possible.
+
+=== Building the kit with docker
+
+[source,shell]
+----
+docker buildx build -f my-workload/my-workload.yaml -t my-workload:dev my-workload/  --push # <1>
+sbx run --kit my-workload:dev # <2>
+----
+<1> The YAML is passed with `-f`, it's the one driving the build through the _frontend_. Careful: if you don't push, it doesn't work.
+<2> We can now use the kit.
+
+[CAUTION]
+====
+`FROM` gets an image's files, not its rights. If you start from the image of a published kit, its network rules, its secrets and its hooks don't come along. To keep an existing kit's capabilities and add tools to it, you need to compose a <<kitset,*kit set*>> (we're getting there).
+====
+
+=== Building the kit with Podman
+
+It's more complicated because it isn't baked into podman, but a kit, in the end, is still an OCI image.
+With lots of annotations, but still.
+
+The following script builds a mixin image (for a workload, the script would need to be a bit more involved, but it can be done). +
+The build happens in 2 steps:
+
+. We create a first image containing the kit's fs. In our example, java.
+. We create the final image, which additionally contains the descriptor in the `/usr/share/sandbox/kit/<kit name>/` folder and whose image is annotated with the descriptor's content.
+
+I wrote you a little jbang script that does just that. It produces an image tagged `dev`, up to you to retag it properly.
+
+.BuildMixinKit
+[%collapsible]
+====
+[source,java]
+----
+///usr/bin/env jbang "$0" "$@" ; exit $?
+//JAVA 21+
+//DEPS com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2
+//DEPS org.aesh:aesh:3.19.1
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.aesh.AeshRuntimeRunner;
+import org.aesh.command.Command;
+import org.aesh.command.CommandDefinition;
+import org.aesh.command.CommandException;
+import org.aesh.command.CommandResult;
+import org.aesh.command.invocation.CommandInvocation;
+import org.aesh.command.option.Argument;
+import org.aesh.command.option.Option;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+/**
+ * Packages a v3 mixin Kit with Podman, without BuildKit or the Kit frontend.
+ * <p>
+ * Reads <kit-dir>/<kit_name>.yaml, builds <kit_name>.dockerfile, stages the sources
+ * under /usr/share/sandbox/kit/<kit_name>/ and writes the manifest annotations
+ * (SPEC-v3 §9.3 and §10).
+ * <p>
+ * Usage: jbang BuildMixinKit.java <kit-dir> <kit_name>
+ * With the spec checkout, the result is validated by `task tck:kit:layout`.
+ */
+@CommandDefinition(name = "build", description = "Builds a mixin sbx kit", generateHelp = true)
+public class BuildMixinKit implements Command<CommandInvocation> {
+
+    final ObjectMapper YAML = new ObjectMapper(new YAMLFactory());
+    final ObjectMapper JSON = new ObjectMapper();
+    final String KIT = "vnd.docker.sandbox.kit.";
+    final String OCI = "org.opencontainers.image.";
+
+    @Option(shortName = 'n', name = "name", description = "The kit image name", defaultValue = "")
+    private String imageName;
+
+    @Argument(description = "Kit directory", required = true)
+    private Path kitDir;
+
+    private CommandInvocation invocation;
+
+    public static void main(String[] args) throws Exception {
+        AeshRuntimeRunner.builder()
+                .command(BuildMixinKit.class)
+                .args(args)
+                .execute();
+    }
+
+    @Override
+    public CommandResult execute(CommandInvocation commandInvocation) throws CommandException, InterruptedException {
+        this.invocation = commandInvocation;
+        imageName = imageName.isEmpty() ? kitDir.getFileName().toString() : imageName;
+        String dockerFile = kitDir.resolve("Dockerfile").toString();
+        String kitFile = "spec.yaml";
+        JsonNode descriptor = null;
+        try {
+            descriptor = YAML.readTree(kitDir.resolve(kitFile).toFile());
+            checkSupported(descriptor, kitDir.resolve(dockerFile));
+
+            String contentRef = imageName + "-content:dev";
+            String kitRef = imageName + ":dev";
+            String tmpDir = imageName.substring(imageName.lastIndexOf("/")+1);
+            invocation.println(tmpDir);
+            Path work = Files.createTempDirectory(tmpDir + "-kit-");
+            invocation.println("Working directory (kept if the build fails): " + work);
+
+            buildContentImage(kitDir, dockerFile, contentRef);
+            Path staging = stageSources(kitDir, imageName, dockerFile, descriptor, work);
+            buildKit(kitRef, contentRef, annotations(descriptor), staging);
+            deleteRecursively(work);
+            return CommandResult.SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CommandException(e);
+        }
+    }
+
+    /**
+     * Refuses what only the real frontend handles: workloads and build-phase args.
+     */
+    void checkSupported(JsonNode d, Path dockerfile) {
+        require("3".equals(d.path("schemaVersion").asText()), "schemaVersion must be \"3\"");
+        require("mixin".equals(d.path("kind").asText()),
+                "only kind: mixin is supported (workloads need derived deb/apk provides)");
+        require(Files.isRegularFile(dockerfile), "missing companion recipe " + dockerfile);
+        for (JsonNode arg : d.path("args")) {
+            require(!arg.has("buildArg"), "build-phase args (buildArg) are not supported");
+        }
+        boolean hasVersion = d.has("version");
+        for (JsonNode p : d.path("provides")) {
+            require(hasVersion || p.asText().contains("@"), "provides entry needs a version: " + p.asText());
+        }
+    }
+
+    void buildContentImage(Path kitDir, String dockerFile, String contentRef) throws Exception {
+        invocation.println("Building content image " + contentRef);
+        run(kitDir, "podman", "build", "--format", "oci",
+                "--tag", contentRef,
+                "--file", dockerFile,
+                ".");
+    }
+
+    /**
+     * kit.yaml (published descriptor), kit.dockerfile (recipe) and the packaging Containerfile.
+     */
+    Path stageSources(Path kitDir, String kitName, String dockerFile, JsonNode descriptor, Path work) throws Exception {
+        Path staging = Files.createDirectory(work.resolve("staging"));
+        Files.writeString(staging.resolve("kit.yaml"), JSON.writeValueAsString(descriptor));
+        Files.copy(kitDir.resolve(dockerFile), staging.resolve("kit.dockerfile"));
+        Files.writeString(staging.resolve("Containerfile"), """
+                ARG CONTENT_IMAGE
+                FROM ${CONTENT_IMAGE}
+                COPY . /usr/share/sandbox/kit/%s/
+                """.formatted(kitName));
+        return staging;
+    }
+
+    /**
+     * SPEC-v3 §9.3, minus built-by: this tool is not the Kit frontend.
+     */
+    Map<String, String> annotations(JsonNode d) throws Exception {
+        Map<String, String> a = new LinkedHashMap<>();
+        a.put(KIT + "descriptor", JSON.writeValueAsString(d));
+        a.put(KIT + "schema-version", d.path("schemaVersion").asText());
+        a.put(KIT + "capabilities", stream(d.path("capabilities"))
+                .map(c -> c.path("type").asText()).distinct().sorted()
+                .collect(Collectors.joining(",")));
+        a.put(OCI + "title", d.path("displayName").asText());
+        a.put(OCI + "description", d.path("description").asText());
+        a.put(OCI + "authors", d.path("author").asText());
+        a.put(OCI + "source", d.path("sourceUrl").asText());
+        a.put(OCI + "licenses", stream(d.path("licenses")).map(JsonNode::asText)
+                .collect(Collectors.joining(",")));
+        a.put(OCI + "version", d.path("version").asText());
+        a.values().removeIf(String::isEmpty);   // empty fields emit no key
+        return a;
+    }
+
+    void buildKit(String kitRef, String contentRef, Map<String, String> annotations, Path staging)
+            throws Exception {
+        invocation.println("Building Kit " + kitRef + " with " + annotations.size() + " annotations");
+        List<String> cmd = new ArrayList<>(List.of("podman", "build", "--format", "oci",
+                "--build-arg", "CONTENT_IMAGE=" + contentRef));
+        annotations.forEach((key, value) -> {
+            cmd.add("--annotation");
+            cmd.add(key + "=" + value);
+        });
+        cmd.addAll(List.of("--tag", kitRef, "--file", "Containerfile", "."));
+        run(staging, cmd.toArray(String[]::new));
+    }
+
+    // --- helpers -------------------------------------------------------------
+
+    void run(Path dir, String... cmd) throws Exception {
+        int rc = new ProcessBuilder(cmd).directory(dir.toFile()).inheritIO().start().waitFor();
+        if (rc != 0) throw new IllegalStateException("Failed (" + rc + "): " + String.join(" ", cmd));
+    }
+
+    Stream<JsonNode> stream(JsonNode array) {
+        return StreamSupport.stream(array.spliterator(), false);
+    }
+
+    void require(boolean condition, String message) {
+        if (!condition) throw new IllegalArgumentException(message);
+    }
+
+    void deleteRecursively(Path root) throws Exception {
+        try (Stream<Path> files = Files.walk(root)) {
+            for (Path p : files.sorted(Comparator.reverseOrder()).toList()) Files.delete(p);
+        }
+    }
+}
+----
+====
+
+If you have the `dockerfile`, the `setup.sh` and the descriptor (in a `java` folder):
+
+`./BuildMixinKit.java -n quay.io/<namespace>/sbx-mixin-kit-java27 java`
+
+And we run `sbx run claude --kit quay.io/<namespace>/sbx-mixin-kit-java27:dev`. Which works. +
+Nope.
+
+[source,console]
+----
+    ○ claude — now ships as a kit; resolving docker.io/sbx/claude:latest
+
+  error: resolve kits: kit "quay.io/<namespace>/sbx-mixin-kit-java27:dev": kit "quay.io/<namespace>/sbx-mixin-kit-java27:dev" cannot be installed — its source is not in your allowlist; current kit.allowedSources: docker.io/, dhi.io/; if administrator policy permits, allow this kit's publisher and re-run your original command; otherwise ask your administrator to update the policy; allowing any remote source is not recommended
+    try: sbx settings set kit.allowedSources '["docker.io/","dhi.io/","quay.io/<namespace>/sbx-mixin-kit-java27"]'
+     or: sbx settings set kit.allowedSources '["*"]'
+----
+
+#SecuredByDesign. Isn't that beautiful?
+
+== One policy, a thousand workstations
+
+So far, we've secured *one* developer. Now, how do we do it when there are 300 of them?
+
+[[kitset]]
+=== The kit set: a versioned team environment
+
+A kit set (`kind: set`) assembles several published kits into a single artifact:
+
+[source,yaml]
+----
+# syntax=docker/sandbox-kit:3
+schemaVersion: "3"
+kind: set
+displayName: Codex with tools
+version: "1.0.0"
+
+kits:
+  - ref: docker.io/docker/sbx-kit-codex:0.155.1
+  - ref: docker.io/my-org/linter-kit:1.0.0
+    args:
+      mode: check # <1>
+
+capabilities:
+  - type: com.docker.sandbox/network-policy@1
+    config:
+      runtime:
+        allow:
+          - packages.company.example:443 # <2>
+----
+<1> An argument frozen at publication time. You can also expose it to the user through `args` and `--kit-arg`. Particularly handy, for instance, to inject prompts or skills.
+<2> An extra access the set as a whole is allowed to ask for, on top of what each component already asks for.
+
+[source,shell]
+----
+docker buildx build ./codex-tools -f ./codex-tools/codex-tools.yaml \
+  -t registry.corp.example/platform/codex-tools:1.0.0 --push
+----
+
+The build applies the same checks as at launch (missing dependency, duplicate `provides`, two workloads) and fails *before* publication. The published set records the digests of its components: if someone re-pushes a tag upstream, your set doesn't budge.
+
+On the developer side, only one line is left:
+
+[source,shell]
+----
+sbx run registry.corp.example/platform/codex-tools:1.0.0 --name my-project
+----
+
+== No implicit approval: every diff gets approved again.
+
+My favourite part of the spec. Each descriptor boils down to a normalized set of everything the host has to grant. A runtime that controls updates keeps that set in memory and compares it with every new version of the kit:
+
+* The new version asks for the same or less? It goes through without asking anything.
+* It asks for more? Everything stops, and someone has to approve.
+
+And removing a `deny` rule counts as a widening. If a future version of the `gh` kit dropped the ban on `DELETE /repos/**`, the update would stay blocked. +
+That's why the declarations live in the artifact itself, and not in a file next to it that nobody reads again.
+
+=== The organization layer
+
+For companies, Docker offers centralized governance (with an AI Governance subscription, which is paid). Administrators define network rules, mountable host paths and allowed MCP servers there, for all the sandboxes of the organization's members. Decisions are recorded in audit logs.
+
+The precedence rule is simple. When organization governance is active, only the organization's `allow` rules open access. Local `allow` rules are no longer evaluated, local `deny` rules still apply on top. +
+In other words, developers can restrict themselves further, but never open up more than what the organization allows.
+
+
+[WARNING]
+====
+I haven't tested the organization governance part myself. This whole section comes from the documentation, not from my own experience.
+====
+
+== Et woilà \o/ !
+
+Three things to remember:
+
+* The agent has every right inside its VM, and none outside. The network is closed by default and secrets never get into the sandbox.
+* Kits are regular OCI images: built with `buildx` or `podman`, pushed to your registry, based on your existing Dockerfiles. Nothing new to learn tooling-wise.
+* A published kit set, pinned by digest and checked on every update, is a security policy you can version and review like code.
+
+Obviously, there's a lot more to say: lifecycle hooks, long-running sandboxes, Docker Cloud Sandboxes running the same kits somewhere other than your laptop... But that's another story.
+
+=== Resources
+
+* https://docs.docker.com/ai/sandboxes/[Docker Sandboxes documentation]
+* https://docs.docker.com/ai/sandboxes/customize/[Kits] and https://docs.docker.com/ai/sandboxes/customize/author/[how to write them]
+* https://github.com/docker/sandbox-kit-spec[The v3 kit specification] (Apache 2.0, with examples and conformance suites)
+* https://www.docker.com/blog/docker-sandbox-kit-spec/[The spec announcement on the Docker blog]
+* https://docs.docker.com/ai/sandboxes/governance/[Organization governance]
