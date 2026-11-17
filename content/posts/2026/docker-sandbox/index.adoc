@@ -2,19 +2,21 @@
 include::../../../../includes/attributes-fr.adoc[]
 :description: Votre agent tourne en mode YOLO sur votre laptop. Et si on lui donnait une boîte, des règles, et une politique d'entreprise ?
 :page-tags: docker,ai,agent,sandbox,security
-:page-image: title.webp
+:page-image: just-pics-national-history-museum-4314035_1920.webp
 :page-author: jtama
 :page-date: 2026-11-06
 :page-key: docker-sandboxes-kits
 :page-series: Docker not Docker
 
-__Photo par Dmitry Kropachev.footnote:[https://unsplash.com/photos/a-large-skeleton-of-a-fish-hanging-from-a-ceiling-OP0zXwuxpYM?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText[Unsplash]]
+__Photo par Just-pics.footnote:[https://pixabay.com/users/just-pics-12939679/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=4314035[Pixabay]]
 __
 
 == TL;DR;
 
 Votre agent IA n'a rien à faire sur votre machine. Mettez-le dans une sandbox, décrivez ce qu'il a le droit de faire dans un fichier YAML, versionnez-moi toussa. +
 Votre RSSI vous dira merci (n'oubliez pas de lui parler de moi). Ou pas, mais il dormira mieux.
+
+Et aussi évacuons la question de l'illustration : C'est une baleine (wink, wink), dont on voit la _cage_ thoracique. Haha, hum.
 
 == Le mode YOLO, c'est fun jusqu'au `rm -rf`
 
@@ -58,9 +60,22 @@ Sandboxes voisines:: Elles ne se parlent pas. Elles n'existent pas. De quoi parl
 Et à l'intérieur ? L'agent fait ce qu'il veut : `sudo`, `apt install`, `docker build`, `docker run`... Il peut saccager sa VM autant qu'il le souhaite, c'est un peu le principe.
 
 [quote, Lecteur attentif et curieux]
-Attends, si le secret est injecté par un proxy, qu'est-ce qu'il y a dans la variable `GH_TOKEN` côté agent ?
+Attends, si le secret est injecté par un proxy, qu'est-ce qu'il y a dans la variable `GH_TOKEN` côté agent ? Et si j'ai un fichier `.env` dans mon dossier projet ?
 
-Une valeur fictive. L'agent peut l'afficher, la logguer, la poster sur Pastebin s'il en a envie (non il ne peut pas, les règles réseau l'en empêche) : elle ne vaut rien. La vraie clé n'est ajoutée qu'aux requêtes qui partent vers les domaines déclarés.
+Concernant le secret, c'est une valeur fictive. L'agent peut l'afficher, la logguer, la poster sur Pastebin s'il en a envie (non il ne peut pas, les règles réseau l'en empêche) : elle ne vaut rien. La vraie clé n'est ajoutée qu'aux requêtes qui partent vers les domaines déclarés.
+
+
+[WARNING]
+====
+Si vous décidez de monter le répertoire de votre projet dans le bac à sable, tout ce qui s'y trouve sera dans le bac à sable. Le fichier `.env` de votre projet y sera accessible.
+
+Même chose pour le dossier `.git` : l'agent commite directement dans votre dépôt, et ses commits apparaissent instantanément sur votre machine. Il peut aussi déposer un petit script dans `.git/hooks`, qui s'exécutera, lui, *hors* du bac à sable, au prochain `git commit` que vous lancerez. Ballot.
+
+Si ça vous chiffonne (moi oui), lancez la _sandbox_ avec `--clone` : l'agent travaille sur un clone autonome, et c'est vous qui récupérez son travail avec un `git fetch sandbox-<nom>`, quand vous l'avez décidé.
+
+Quoiqu'il arrive et sans action explicite de votre part, l'agent ne pourra pas _pousser_ ses modifications.
+====
+
 
 Côté réseau, la politique locale se gère avec `sbx policy` :
 
@@ -159,7 +174,7 @@ L'image de dev que votre équipe maintient depuis deux ans, avec le bon JDK, le 
 
 [source,dockerfile]
 ----
-FROM eclipse-temurin:21-jdk
+FROM maven:3-eclipse-temurin-27
 RUN apt-get update && apt-get install -y git curl
 COPY corp-ca.crt /usr/local/share/ca-certificates/
 ----
@@ -170,10 +185,12 @@ Même base, transformée en `mixin`. Le Dockerfile repart d'une image fournie pa
 
 [source,dockerfile]
 ----
-FROM eclipse-temurin:21-jdk as src<1>
+FROM maven:3-eclipse-temurin-27 as src<1>
 
 FROM scratch <2>
 COPY --from=src /opt/java/openjdk /opt/java/openjdk
+COPY --from=src /usr/share/maven /usr/share/maven
+
 COPY corp-ca.crt /usr/local/share/ca-certificates/ <3>
 COPY --chmod=0755 setup.sh /usr/local/lib/java-maven/setup.sh <4>
 ----
