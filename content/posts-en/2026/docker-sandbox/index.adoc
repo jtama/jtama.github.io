@@ -1,10 +1,10 @@
-= Docker SBX: let the agent wreck everything, just not at your place
+= Docker SBX: let the agent wreck everything, as you long as you contain the chaos
 include::../../../../includes/attributes-en.adoc[]
 :description: Your agent runs in YOLO mode on your laptop. What if we gave it a box, some rules, and a corporate policy?
 :page-tags: docker,ai,agent,sandbox,security
 :page-image: just-pics-national-history-museum-4314035_1920.webp
 :page-author: jtama
-:page-date: 2026-11-06
+:page-date: 2026-11-17
 :page-key: docker-sandboxes-kits
 :page-series: Docker not Docker Inc
 
@@ -35,7 +35,7 @@ Do we say Redhat Hibernate or HashiCorp Terraform? No, I don't think so. Please 
 On the other hand, you really can run _docker agent_ inside _docker sbx_ and ask it to start _docker_ containers, but that's another story.
 
 Let's be honest for two minutes. How many of you have already started a coding agent with the option that disables every confirmation, because approving `grep` 47 times is a pain? +
-Not me. Because I'm a big paranoid, but boy does it get on my nerves, especially since I still end up approving stuff I don't 100% understand.
+I haven't. Because I'm a big paranoid, but boy does it get on my nerves, especially since I still end up approving stuff I don't 100% understand.
 And yet on my laptop there are _SSH_ keys, API keys, git credentials, and so on.
 
 And just last week, an agent asked me whether it could kindly, just like that, run a `find` on `/` (_«Oh no, I can't find what I'm looking for, I'll go look higher up in the tree, let's say ALL the way up?»_) +
@@ -52,13 +52,13 @@ mise use github:docker/sbx-releases@latest
 
 == The sandbox
 
-Each _sandbox_ runs in its own VM. Not a container shared with the rest of your machine: a VM. Four walls and an armored door.
+Each _sandbox_ runs on its own VM. Not a container shared with the rest of your machine: a VM. Four walls and an armored door.
 
 Here's what you get by default:
 
 [horizontal]
 Files:: Only the current folder is mounted (read/write with `sbx run`). The rest of your disk doesn't exist for the agent. You can even trigger a repository clone inside the sandbox.
-Network:: All outbound TCP is blocked until a rule allows it. UDP disabled, ICMP blocked, and DNS goes through an internal resolver that enforces the policy.
+Network:: All outbound TCP is blocked as long as no rule allows it. UDP disabled, ICMP blocked, and DNS goes through an internal resolver that enforces the policy.
 Secrets:: None by default. When you provide one (`sbx secret set`), a host-side proxy injects it into outgoing HTTP headers. The agent never sees the real value. For `git` too, yes, too.
 Neighbouring sandboxes:: They don't talk to each other. They don't exist. What are you talking about?
 
@@ -67,7 +67,7 @@ And inside? The agent does whatever it wants: `sudo`, `apt install`, `docker bui
 [quote, Attentive and curious reader]
 Wait, if the secret is injected by a proxy, what's in the `GH_TOKEN` variable on the agent side? And what if I have a `.env` file in my project folder?
 
-As for the secret, it's a dummy value. The agent can print it, log it, post it on Pastebin if it feels like it (no it can't, the network rules prevent it): it's worthless. The real key is only added to requests heading to the declared domains.
+Well the secret is a dummy value. The agent can print it, log it, post it on Pastebin if it feels like it (no it can't, the network rules prevent it): it's worthless. The real key is only added to requests heading to the declared domains.
 
 [WARNING]
 ====
@@ -88,7 +88,7 @@ sbx policy ls # <1>
 sbx policy allow ... # <2>
 ----
 <1> Lists the active rules. If your organization enforces a policy, the first line tells you so.
-<2> Adds an allow rule on your machine. I'll let you read `sbx policy allow --help` rather than copy the syntax here, it still moves quite a bit.
+<2> Adds an allow rule on your machine. I'll let you read `sbx policy allow --help` rather than copy the syntax here.
 
 Yes, there's a whole part of the tooling dedicated to enterprise governance of this kind of question. It's really a feature that should convince any CIO to look at the tool, but I couldn't test it, so there you go.
 
@@ -96,7 +96,7 @@ Yes, there's a whole part of the tooling dedicated to enterprise governance of t
 
 Opening network ports by hand for every project doesn't scale. That's where *kits* come in.
 
-A kit is an OCI image, as plain as can be. You can perfectly well use its images with _Podman_, for instance. +
+A kit is an OCI image, as plain as can be. You can very well use its images with _Podman_, for instance. +
 What makes it special: a manifest annotation describing what the kit *asks for* (domains, secrets, volumes, install hooks, instructions for the agent). There are two kinds:
 
 [horizontal]
@@ -253,7 +253,7 @@ Yes, we actually build it.
 sbx run ./my-kit
 ----
 
-Locally, `sbx` also accepts the folder directly and, behind your back, starts a _sbx-kit-builder_ micro-VM, which does contain a docker runtime, and builds your kit. The result, however, is only available in the _sandbox_ you just created. Getting at it to export it takes some contortions, but of course anything is always possible.
+Locally, `sbx` also accepts the folder directly and, behind your back, starts a _sbx-kit-builder_ micro-VM, which does contain a docker runtime, and builds your kit. The result, however, is only available in the _sandbox_ you just created. Accessing it to export it takes some contortions, but of course anything is always possible.
 
 === Building the kit with docker
 
@@ -545,7 +545,7 @@ My favourite part of the spec. Each descriptor boils down to a normalized set of
 * The new version asks for the same or less? It goes through without asking anything.
 * It asks for more? Everything stops, and someone has to approve.
 
-And removing a `deny` rule counts as a widening. If a future version of the `gh` kit dropped the ban on `DELETE /repos/**`, the update would stay blocked. +
+And removing a `deny` rule counts as a widening. If a future version of the `gh` kit drops the ban on `DELETE /repos/**`, the update will stay blocked. +
 That's why the declarations live in the artifact itself, and not in a file next to it that nobody reads again.
 
 === The organization layer
